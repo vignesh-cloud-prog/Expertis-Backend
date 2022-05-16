@@ -20,7 +20,7 @@ mongoose
 
 app.use(express.json());
 
-app.get('/api',(req,res)=>res.send('API Working!!'));
+app.get('/api',(req,res)=>res.send('API is Working!!'));
 
 app.listen(process.env.port || 4000,function(){
     console.log('Now listening for requests 🚀');
