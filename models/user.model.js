@@ -43,7 +43,7 @@ const UserSchema = new Schema({
     type: Date,
     default: Date.now(),
   },
-});
+},{ timestamps: true });
 
 /**
  *  Here we are creating and setting an id property and 

@@ -100,9 +100,10 @@ req.end();
 
 async function updateProfile(params, callback) {
   const userId = params.id;
+  console.log(userId);
 
-  user
-    .findByIdAndUpdate(id, params, { useFindAndModify: true })
+  User
+    .findByIdAndUpdate(userId, params, { useFindAndModify: true })
     .then((response) => {
       if (!response) callback(`Cannot update Profile with id=${userId}. Maybe user was not found!`);
       else callback(null, response);

@@ -18,17 +18,16 @@ exports.updateProfile = (req, res, next) => {
       const path =
         req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
 
-      var model = {
-        id: req.params.id,
-        name: req.body.name,
-        address: req.body.address,
-        dob: req.body.dob,
-        gender: req.body.gender,
-        pic: path != "" ? url + "/" + path : "",
-      };
+        var model = {
+          id: req.body.id,
+          name: req.body.name,
+          address: req.body.address,
+          dob: req.body.dob,
+          gender: req.body.gender,
+          pic: path != "" ? url + "/" + path : "",
+        };
 
-      console.log(model,
-        'model');
+      console.log(model);
 
       userServices.updateProfile(model, (error, results) => {
         if (error) {

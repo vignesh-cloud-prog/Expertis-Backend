@@ -30,4 +30,4 @@ let upload = multer({
   fileSize: 1048576, // 10 Mb
 });
 
-module.exports = upload.single("userPic");
+module.exports = upload.single("pic");
