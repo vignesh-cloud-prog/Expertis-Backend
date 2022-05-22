@@ -1,64 +1,68 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const uniqueValidator = require("mongoose-unique-validator");
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
-const UserSchema = new Schema({
-  
-  email: {
-    type: String,
-    required: true,
-    unique: true,
+const UserSchema = new Schema(
+  {
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    phone: {
+      type: Number,
+      required: true,
+      unique: true,
+    },
+    dob: {
+      type: Date,
+      required: false,
+    },
+    gender: {
+      type: String,
+      required: false,
+    },
+    address: {
+      type: String,
+      required: false,
+    },
+    pic: {
+      type: String,
+      required: false,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    date: {
+      type: Date,
+      default: Date.now(),
+    },
+    verified: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
   },
-  name: {
-    type: String,
-    required: true,
-    
-  },
-  phone: {
-    type: Number,
-    required: true,
-    unique: true,
-  },
-  dob: {
-    type: Date,
-    required: false,
-  },
-  gender:{
-    type:String,
-    required:false,
-  },
-  address:{
-    type:String,
-    required:false,
-  },
-  pic:{
-    type:String,
-    required:false,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  date: {
-    type: Date,
-    default: Date.now(),
-  },
-  verified: {
-    type: Boolean,
-    required: true,
-    default: false
-},
-},{ timestamps: true });
+  { timestamps: true }
+);
 
 UserSchema.methods.generateVerificationToken = function () {
   const user = this;
-  console.log("user ",user._id);
-  console.log("process.env.USER_VERIFICATION_TOKEN_SECRET ",process.env.USER_VERIFICATION_TOKEN_SECRET);
+  console.log("user ", user._id);
+  console.log(
+    "process.env.USER_VERIFICATION_TOKEN_SECRET ",
+    process.env.USER_VERIFICATION_TOKEN_SECRET
+  );
   const verificationToken = jwt.sign(
-      { ID: user._id },
-      process.env.USER_VERIFICATION_TOKEN_SECRET,
-      { expiresIn: "7d" }
+    { ID: user._id },
+    process.env.USER_VERIFICATION_TOKEN_SECRET,
+    { expiresIn: "7d" }
   );
   return verificationToken;
 };
