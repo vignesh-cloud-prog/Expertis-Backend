@@ -6,6 +6,16 @@ const otpGenerator = require("otp-generator");
 const crypto = require("crypto");
 const key = "verysecretkey"; // Key for cryptograpy. Keep it secret
 var msg91 = require("msg91")("1", "1", "1");
+const nodemailer = require('nodemailer');
+
+
+const transporter = nodemailer.createTransport({
+  service: "Gmail",
+  auth: {
+      user: process.env.EMAIL_USERNAME,
+      pass: process.env.EMAIL_PASSWORD,
+  },
+});
 
 async function login({ email, password }, callback) {
   const user = await User.findOne({ email });
@@ -52,6 +62,17 @@ async function register(params, callback) {
   user
     .save()
     .then((response) => {
+       // Step 2 - Generate a verification token with the user's ID
+       console.log("generating token");
+       const verificationToken = user.generateVerificationToken();
+       console.log("sending email to ", user.email);
+       // Step 3 - Email the user a unique verification link
+       const url = `http://localhost:4000/api/verify/${verificationToken}`
+       transporter.sendMail({
+         to: user.email,
+         subject: 'Verify Account',
+         html: `Click <a href = '${url}'>here</a> to confirm your email.`
+       })
       return callback(null, response);
     })
     .catch((error) => {

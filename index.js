@@ -1,3 +1,5 @@
+require('dotenv').config()
+// console.log(process.env) // remove this after you've confirmed it working
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -56,9 +58,9 @@ app.use("/users", require("./routes/users.routes"));
 
 // middleware for error responses
 app.use(errors.errorHandler);
-
+const PORT=process.env.port || 4000
 // listen for requests
-app.listen(process.env.port || 4000, function () {
+app.listen(PORT, function () {
   console.log('Now listening for requests 🚀');
-    console.log('http://localhost:4000/api');
+    console.log(`http://localhost:${PORT}`);
 });

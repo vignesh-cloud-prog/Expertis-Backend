@@ -2,6 +2,8 @@ const bcrypt = require("bcryptjs");
 const userServices = require("../services/user.services");
 const upload = require("../middlewares/upload.js");
 
+
+
 /**
  * 1. To secure the password, we are using the bcryptjs, It stores the hashed password in the database.
  * 2. In the SignIn API, we are checking whether the assigned and retrieved passwords are the same or not using the bcrypt.compare() method.
