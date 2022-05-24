@@ -46,6 +46,8 @@ app.use(
       { url: "/users/register", methods: ["POST"] },
       { url: /^\/users\/verify\/.*/, methods: ["GET"] },
       { url: /^\/uploads\/.*/, methods: ["GET"] },
+      { url: "/users/send_otp", methods: ["POST"] },
+      { url: "/users/verify_otp", methods: ["POST"] },
     ],
   })
 );
