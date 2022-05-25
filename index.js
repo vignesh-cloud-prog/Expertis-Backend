@@ -47,6 +47,7 @@ app.use(
       { url: "/users/register", methods: ["POST"] },
       { url: /^\/users\/verify\/.*/, methods: ["GET"] },
       { url: /^\/uploads\/.*/, methods: ["GET"] },
+      { url: "/", methods: ["GET"] },
     ],
   })
 );
@@ -54,6 +55,7 @@ app.use(
 app.use(express.json());
 
 // initialize routes
+app.get('/',(req,res)=>res.send('API Working!!'));
 app.use("/uploads", express.static("uploads"));
 app.use("/users", require("./routes/users.routes"));
 
