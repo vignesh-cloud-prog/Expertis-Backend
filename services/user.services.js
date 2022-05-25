@@ -5,7 +5,6 @@ const jwt = require("jsonwebtoken");
 const otpGenerator = require("otp-generator");
 const crypto = require("crypto");
 const key = "verysecretkey"; // Key for cryptograpy. Keep it secret
-var msg91 = require("msg91")("1", "1", "1");
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
