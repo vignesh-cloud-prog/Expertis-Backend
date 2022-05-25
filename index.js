@@ -1,4 +1,4 @@
-// require("dotenv").config();
+require("dotenv").config();
 // console.log(process.env) // remove this after you've confirmed it working
 const express = require("express");
 const app = express();
@@ -61,7 +61,7 @@ app.use("/users", require("./routes/users.routes"));
 
 // middleware for error responses
 app.use(errors.errorHandler);
-const PORT = process.env.port || 4000;
+const PORT = process.env.PORT || 4000;
 // listen for requests
 app.listen(PORT, function () {
   console.log("Now listening for requests 🚀");
