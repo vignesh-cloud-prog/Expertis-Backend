@@ -37,6 +37,7 @@ async function login({ email, password }, callback) {
         });
       }
       const token = auth.generateAccessToken(email);
+      console.log(user, token);
       // call toJSON method applied during model instantiation
       return callback(null, { ...user.toJSON(), token });
     } else {
