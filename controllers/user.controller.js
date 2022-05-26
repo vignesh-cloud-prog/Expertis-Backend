@@ -96,3 +96,72 @@ exports.verify = (req, res, next) => {
 exports.userProfile = (req, res, next) => {
   return res.status(401).json({ message: "Authorized User!!" });
 };
+
+exports.send_otp = (req, res, next) => {
+
+  const email = req.body.email;
+  userServices.send_otp(email, (error, results) => {
+    if (error) {
+      return next(error);
+    }
+    return res.status(200).send({
+      message: "Success",
+      data: results,
+    });
+  });
+};
+
+exports.verify_otp = (req, res, next) => {
+
+  const email = req.body.email;
+  const otp = req.body.otp;
+  const hash = req.body.hash
+  userServices.verifyOTP(email, otp, hash, (error, results) => {
+    if (error) {
+      console.log(error)
+      return next(error);
+    }
+    return res.status(200).send({
+      message: "Success",
+      data: results,
+    });
+  });
+};
+
+exports.new_password = (req, res, next) => {
+
+  const { password } = req.body;
+
+  const salt = bcrypt.genSaltSync(10);
+
+  req.body.password = bcrypt.hashSync(password, salt);
+
+  userServices.new_password(req.body, (error, results) => {
+    if (error) {
+      console.log(error)
+      return next(error);
+    }
+    return res.status(200).send({
+      message: "Success",
+      data: results,
+    });
+  });
+};
+
+exports.reset_password = (req, res, next) => {
+  const { newPassword } = req.body;
+
+  const salt = bcrypt.genSaltSync(10);
+console.log("hit")
+  req.body.newPassword = bcrypt.hashSync(newPassword, salt);
+  userServices.reset_password(req.body, (error, results) => {
+    if (error) {
+      console.log(error)
+      return next(error);
+    }
+    return res.status(200).send({
+      message: "Success",
+      data: results,
+    });
+  });
+};
