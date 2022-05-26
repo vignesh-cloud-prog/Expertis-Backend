@@ -1,7 +1,7 @@
 {
   "name": "expertis-backend",
   "version": "1.0.0",
-  "description": "A expert service booking app backend",
+  "description": "An expert service booking app backend",
   "engines": {
     "node": "16.x"
   },
