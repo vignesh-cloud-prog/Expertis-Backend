@@ -5,7 +5,6 @@ const jwt = require("jsonwebtoken");
 const otpGenerator = require("otp-generator");
 const crypto = require("crypto");
 const key = "verysecretkey"; // Key for cryptograpy. Keep it secret
-var msg91 = require("msg91")("1", "1", "1");
 const nodemailer = require("nodemailer");
 
 
@@ -38,6 +37,7 @@ async function login({ email, password }, callback) {
         });
       }
       const token = auth.generateAccessToken(email);
+      console.log(user, token);
       // call toJSON method applied during model instantiation
       return callback(null, { ...user.toJSON(), token });
     } else {

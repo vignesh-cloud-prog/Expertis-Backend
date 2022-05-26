@@ -19,9 +19,10 @@ const unless = require("express-unless");
  * With useUnifiedTopology, the MongoDB driver sends a heartbeat every heartbeatFrequencyMS to check on the status of the connection.
  * A heartbeat is subject to serverSelectionTimeoutMS , so the MongoDB driver will retry failed heartbeats for up to 30 seconds by default.
  */
+const database=process.env.DATABASE_URL || dbConfig.db
 mongoose.Promise = global.Promise;
 mongoose
-  .connect(dbConfig.db, {
+  .connect(database, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -48,6 +49,7 @@ app.use(
       { url: /^\/uploads\/.*/, methods: ["GET"] },
       { url: "/users/send_otp", methods: ["POST"] },
       { url: "/users/verify_otp", methods: ["POST"] },
+      { url: "/", methods: ["GET"] },
     ],
   })
 );
@@ -55,12 +57,13 @@ app.use(
 app.use(express.json());
 
 // initialize routes
+app.get('/',(req,res)=>res.send('API Working!!'));
 app.use("/uploads", express.static("uploads"));
 app.use("/users", require("./routes/users.routes"));
 
 // middleware for error responses
 app.use(errors.errorHandler);
-const PORT = process.env.port || 4000;
+const PORT = process.env.PORT || 4000;
 // listen for requests
 app.listen(PORT, function () {
   console.log("Now listening for requests 🚀");
