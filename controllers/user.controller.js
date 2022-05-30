@@ -61,8 +61,9 @@ exports.register = (req, res, next) => {
 
 exports.login = (req, res, next) => {
   const { email, password } = req.body;
+  const host=req.headers.host;
 
-  userServices.login({ email, password }, (error, results) => {
+  userServices.login({ email, password, host }, (error, results) => {
     if (error) {
       return next(error);
     }
