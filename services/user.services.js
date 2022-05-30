@@ -40,7 +40,7 @@ async function login({ email, password,host }, callback) {
     }
   } else {
     return callback({
-      message: "Invalid Email",
+      message: "User does not exist!",
     });
   }
 }
@@ -55,15 +55,16 @@ async function verify({ token }, callback) {
   }
   try {
     // Step 2 - Find user with matching ID
-    const user = await User.findOne({ _id: payload.ID }).exec();
+    const user = await User.findOneAndUpdate({ _id: payload.ID },{verified:true},{new: true});
+    console.log(user);
     if (!user) {
       return callback({
         message: "User does not  exists",
       });
     }
     // Step 3 - Update user verification status to true
-    user.verified = true;
-    await user.save();
+    // user.verified = true;
+    // await user.save()
     return callback(null, { ...user.toJSON() });
   } catch (err) {
     return callback({ message: err });
@@ -71,6 +72,7 @@ async function verify({ token }, callback) {
 }
 
 async function register(params, callback) {
+  
   if (params.email === undefined) {
     console.log(params.email);
     return callback(
@@ -95,18 +97,8 @@ async function register(params, callback) {
       // Step 2 - Generate a verification token with the user's ID
       console.log("generating token");
       const verificationToken = user.generateVerificationToken();
-      console.log("sending email to ", user.email);
-      var os = require("os");
-      var hostname = os.hostname();
-      console.log(hostname);
-      // Step 3 - Email the user a unique verification link
-      const url = `http://localhost:4000/users/verify/${verificationToken}`;
-      console.log(url);
-      transporter.sendMail({
-        to: user.email,
-        subject: "Verify Account",
-        html: `Click <a href = '${url}'>here</a> to confirm your email.`,
-      });
+      sendVerificationMail(user.email,verificationToken,params.host)
+      
       return callback(null, response);
     })
     .catch((error) => {
@@ -118,7 +110,7 @@ async function updateProfile(params, callback) {
   const userId = params.id;
   console.log(userId);
 
-  User.findByIdAndUpdate(userId, params, { useFindAndModify: true })
+  User.findByIdAndUpdate(userId, params, { useFindAndModify: true, new: true, })
     .then((response) => {
       if (!response)
         callback(

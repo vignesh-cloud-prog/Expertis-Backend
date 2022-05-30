@@ -47,8 +47,9 @@ exports.register = (req, res, next) => {
   const salt = bcrypt.genSaltSync(10);
 
   req.body.password = bcrypt.hashSync(password, salt);
+  const host=req.headers.host;
 
-  userServices.register(req.body, (error, results) => {
+  userServices.register({...req.body,host}, (error, results) => {
     if (error) {
       return next(error);
     }
