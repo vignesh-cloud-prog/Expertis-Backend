@@ -42,6 +42,10 @@ mongoose
  */
 auth.authenticateToken.unless = unless;
 app.use(
+  cors()
+);
+
+app.use(
   auth.authenticateToken.unless({
     path: [
       { url: "/users/login", methods: ["POST"] },
@@ -55,12 +59,7 @@ app.use(
   })
 );
 app.use(express.json());
-app.use(
-  cors({
-    origin: "*",
-    allowedHeaders: "X-Requested-With, Content-Type, auth-token",
-  })
-);
+
 
 // initialize routes
 app.get("/", (req, res) => res.send("API Working!!"));
