@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
+const cors = require("cors");
 const dbConfig = require("./config/db.config");
 
 const auth = require("./middlewares/auth.js");
@@ -19,7 +20,7 @@ const unless = require("express-unless");
  * With useUnifiedTopology, the MongoDB driver sends a heartbeat every heartbeatFrequencyMS to check on the status of the connection.
  * A heartbeat is subject to serverSelectionTimeoutMS , so the MongoDB driver will retry failed heartbeats for up to 30 seconds by default.
  */
-const database=process.env.DATABASE_URL || dbConfig.db
+const database = process.env.DATABASE_URL || dbConfig.db;
 mongoose.Promise = global.Promise;
 mongoose
   .connect(database, {
@@ -53,11 +54,16 @@ app.use(
     ],
   })
 );
-
 app.use(express.json());
+app.use(
+  cors({
+    origin: "*",
+    allowedHeaders: "X-Requested-With, Content-Type, auth-token",
+  })
+);
 
 // initialize routes
-app.get('/',(req,res)=>res.send('API Working!!'));
+app.get("/", (req, res) => res.send("API Working!!"));
 app.use("/uploads", express.static("uploads"));
 app.use("/users", require("./routes/users.routes"));
 

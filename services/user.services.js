@@ -26,7 +26,7 @@ async function login({ email, password,host }, callback) {
         sendVerificationMail(user.email,verificationToken,host)
         
         return callback({
-          message: "Verify your Account.",
+          message: `Verify your Account. An email just sent to ${user.email}`,
         });
       }
       const token = auth.generateAccessToken(email);
