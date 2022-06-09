@@ -8,6 +8,15 @@ const dbConfig = require("./config/db.config");
 const auth = require("./middlewares/auth.js");
 const errors = require("./middlewares/errors.js");
 const unless = require("express-unless");
+var cors = require('cors');
+
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
+app.use(cors());
 
 // connect to mongodb
 
@@ -48,6 +57,9 @@ app.use(
       { url: /^\/uploads\/.*/, methods: ["GET"] },
       { url: "/users/send_otp", methods: ["POST"] },
       { url: "/users/verify_otp", methods: ["POST"] },
+      { url: "/shops/register", methods: ["POST"] },
+      { url: "/shops/login", methods: ["POST"] },
+
     ],
   })
 );
@@ -57,6 +69,7 @@ app.use(express.json());
 // initialize routes
 app.use("/uploads", express.static("uploads"));
 app.use("/users", require("./routes/users.routes"));
+app.use("/shops", require("./routes/shops.routes"));
 
 // middleware for error responses
 app.use(errors.errorHandler);
