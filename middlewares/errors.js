@@ -13,6 +13,10 @@ function errorHandler(err, req, res, next) {
     // jwt authentication error
     return res.status(401).json({ message: "Token not valid" });
   }
+  if (err.name === "queryA EREFUSED smtp.gmail.com") {
+    // jwt authentication error
+    return res.status(401).json({ message: "gamil not correct" });
+  }
 
   // default to 500 server error
   return res.status(500).json({ message: err.message });
