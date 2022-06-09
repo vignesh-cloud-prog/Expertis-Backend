@@ -9,7 +9,7 @@ const dbConfig = require("./config/db.config");
 const auth = require("./middlewares/auth.js");
 const errors = require("./middlewares/errors.js");
 const unless = require("express-unless");
-var cors = require('cors');
+
 
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
