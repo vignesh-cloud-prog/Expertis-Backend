@@ -60,6 +60,7 @@ exports.register = (req, res, next) => {
 };
 
 exports.login = (req, res, next) => {
+  console.log("gnc")
   const { email, password } = req.body;
 
   userServices.login({ email, password }, (error, results) => {
