@@ -153,13 +153,20 @@ async function send_otp(email, callback) {
         </div>
       </div>
     </div>`,
-    });
-    console.log(`Your OTP is ${otp}. it will expire in 5 minutes`);
-    return callback(null, fullHash);
+    }).then((par)=>{
+      console.log("Email sent",par)
+      console.log(`Your OTP is ${otp}. it will expire in 5 minutes`);
+      return callback(null, fullHash);
+    }).catch((e)=>{
+      console.log("Unable to send email",e)
+      return callback("Email Not Sent");
+      
+    })
+    
 
   } else {
     return callback({
-      message: "Invalid Email",
+      message: "Email Not Registered",
     });
   }
 }
