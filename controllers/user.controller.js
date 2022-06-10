@@ -130,6 +130,7 @@ exports.verify_otp = (req, res, next) => {
 };
 
 exports.new_password = (req, res, next) => {
+  console.log("hj")
 
   const { password } = req.body;
 
