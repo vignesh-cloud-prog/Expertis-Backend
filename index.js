@@ -66,6 +66,7 @@ app.use(
       { url: "/", methods: ["GET"] },
       { url: "/shops/register", methods: ["POST"] },
       { url: "/shops/login", methods: ["POST"] },
+      { url: "/shops/verify_otp", methods: ["POST"] },
 
     ],
   })
