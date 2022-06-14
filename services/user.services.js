@@ -199,7 +199,7 @@ async function new_password(params, callback) {
     .then((response) => {
       if (!response)
         callback(
-          `Cannot update Profile with id=${params.email}. Maybe user was not found!`
+          `Cannot update Profile with id=${params.id}. Maybe user was not found!`
         );
       else callback(null, response);
     })
@@ -216,7 +216,7 @@ async function reset_password(params, callback) {
       .then((response) => {
         if (!response)
           callback(
-            `Cannot update Profile with id=${params.email}. Maybe user was not found!`
+            `Cannot update Profile with id=${params.id}. Maybe user was not found!`
           );
         else callback(null, response);
       })

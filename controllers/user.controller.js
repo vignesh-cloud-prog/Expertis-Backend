@@ -118,7 +118,13 @@ exports.verify_otp = (req, res, next) => {
 
   const email = req.body.email;
   const otp = req.body.otp;
-  const hash = req.body.hash
+  const hash = req.body.hash;
+  if(!email && !otp && !hash){
+    return res.status(500).send({
+      message: "Insuffient data",
+      
+    });
+  }
   userServices.verifyOTP(email, otp, hash, (error, results) => {
     if (error) {
       console.log(error)
@@ -131,7 +137,7 @@ exports.verify_otp = (req, res, next) => {
   });
 };
 
-exports.new_password = (req, res, next) => {
+exports.new_password =  (req, res, next) => {
 
   const { password } = req.body;
 
