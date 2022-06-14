@@ -145,6 +145,25 @@ async function login(params, callback) {
     }
 }
 
+async function addservice(params, callback) {
+    const { id } = params;
+
+    const shop = await Shop.findByIdAndUpdate(id, {
+        $push: {
+            services: params.service_data
+        }
+    });
+
+    if (shop != null) {
+
+
+    } else {
+        return callback({
+            message: "Invalid ID",
+        });
+    }
+}
+
 async function verifyOTP(email, otp, hash, callback) {
     // Separate Hash value and expires from the hash returned from the user
     let [hashValue, expires] = hash.split(".");
@@ -174,4 +193,5 @@ module.exports = {
     register,
     login,
     verifyOTP,
+    addservice,
 };

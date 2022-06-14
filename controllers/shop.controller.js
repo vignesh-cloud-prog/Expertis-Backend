@@ -20,18 +20,33 @@ exports.register = (req, res, next) => {
   });
 };
 
+exports.addservice = (req, res, next) => {
+
+  shopServices.addservice(req.body, (error, results) => {
+    if (error) {
+      return next(error);
+    }
+    return res.status(200).send({
+      message: "Success",
+      data: results,
+    });
+  });
+};
+
 exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   shopServices.login({ email, password }, (error, results) => {
-    if (error.code == 302) {
-      return res.status(302).send({
-        message: "verify your account",
-        data: error,
-      });
-    }
+
 
     if (error) {
+
+      if (error.code == 302) {
+        return res.status(302).send({
+          message: "verify your account",
+          data: error,
+        });
+      }
       console.log(error)
       return next(error);
 
