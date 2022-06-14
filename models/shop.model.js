@@ -6,7 +6,8 @@ const { stringify } = require("nodemon/lib/utils");
 
 const ServiceSchema = new Schema(
     {
-        serciceName: {
+
+        serviceName: {
             type: String,
             required: false,
         },
@@ -19,7 +20,7 @@ const ServiceSchema = new Schema(
             required: false,
         },
         time: {
-            type: Date,
+            type: String,
             required: false,
         },
         discription: {
@@ -30,6 +31,11 @@ const ServiceSchema = new Schema(
             type: String,
             required: false,
             default: false,
+        },
+        shop: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+          
         },
     });
 
@@ -93,11 +99,11 @@ const ShopSchema = new Schema(
             type: String,
             required: false,
         },
-        sercices: {
-            type: [ServiceSchema],
-            required: false,
+        services: [{
+            type: Schema.Types.ObjectId,
+            ref: "Services",
 
-        },
+        }],
 
     },
     { timestamps: true }
@@ -139,5 +145,6 @@ ShopSchema.set("toJSON", {
  */
 ShopSchema.plugin(uniqueValidator, { message: "Email already in use." });
 
-const Shop = mongoose.model("shop", ShopSchema);
+const Shop = mongoose.model("Shop", ShopSchema);
+const Services = mongoose.model("Services", ServiceSchema);
 module.exports = Shop;
