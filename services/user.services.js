@@ -187,6 +187,8 @@ async function verifyOTP(email, otp, hash, callback) {
   if (newCalculatedHash === hashValue) {
     const user = await User.findOne({ email });
     const token = auth.generateAccessToken(email);
+    user.verified = true;
+    await user.save();
     // call toJSON method applied during model instantiation
     return callback(null, { ...user.toJSON(), token });
   }
