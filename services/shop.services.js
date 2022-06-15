@@ -148,21 +148,17 @@ async function login(params, callback) {
 
 async function addservice(params, callback) {
     const { id } = params;
-
     const shop = await Shop.findByIdAndUpdate(id, {
         $push: {
             services: params.service_data
         }
-    });
+    }, { new: true }).then((res) => {
+        return callback(null, res);
 
-    if (shop != null) {
+    }).catch((err) => {
+        return callback(err);
+    })
 
-
-    } else {
-        return callback({
-            message: "Invalid ID",
-        });
-    }
 }
 
 async function verifyOTP(email, otp, hash, callback) {

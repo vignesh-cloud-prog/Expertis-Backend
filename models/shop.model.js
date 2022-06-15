@@ -32,11 +32,6 @@ const ServiceSchema = new Schema(
             required: false,
             default: false,
         },
-        shop: {
-            type: Schema.Types.ObjectId,
-            ref: "User",
-          
-        },
     });
 
 const ShopSchema = new Schema(
@@ -66,8 +61,8 @@ const ShopSchema = new Schema(
         pincode: {
             type: Number,
             required: false,
-            maxlength:6,
-            minlength:6,
+            maxlength: 6,
+            minlength: 6,
         },
         logo: {
             type: String,
@@ -99,11 +94,7 @@ const ShopSchema = new Schema(
             type: String,
             required: false,
         },
-        services: [{
-            type: Schema.Types.ObjectId,
-            ref: "Services",
-
-        }],
+        services: [ServiceSchema],
 
     },
     { timestamps: true }

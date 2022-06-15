@@ -21,7 +21,7 @@ exports.register = (req, res, next) => {
 };
 
 exports.addservice = (req, res, next) => {
-
+  console.log("hello")
   shopServices.addservice(req.body, (error, results) => {
     if (error) {
       return next(error);
