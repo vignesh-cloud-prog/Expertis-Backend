@@ -9,7 +9,6 @@ const dbConfig = require("./config/db.config");
 const auth = require("./middlewares/auth.js");
 const errors = require("./middlewares/errors.js");
 const unless = require("express-unless");
-var cors = require('cors');
 
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -51,10 +50,6 @@ mongoose
  */
 auth.authenticateToken.unless = unless;
 app.use(
-  cors()
-);
-
-app.use(
   auth.authenticateToken.unless({
     path: [
       { url: "/users/login", methods: ["POST"] },
@@ -72,7 +67,6 @@ app.use(
   })
 );
 app.use(express.json());
-
 
 // initialize routes
 app.get("/", (req, res) => res.send("API Working!!"));

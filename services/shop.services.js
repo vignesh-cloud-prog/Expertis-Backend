@@ -5,9 +5,8 @@ const jwt = require("jsonwebtoken");
 const otpGenerator = require("otp-generator");
 const crypto = require("crypto");
 const key = "verysecretkey"; // Key for cryptograpy. Keep it secret
-var msg91 = require("msg91")("1", "1", "1");
 const nodemailer = require("nodemailer");
-const Services = require("../models/shop.model");
+const Services = require("../models/service.model");
 const { log } = require("console");
 
 const transporter = nodemailer.createTransport({
@@ -21,7 +20,7 @@ const transporter = nodemailer.createTransport({
 
 async function register(params, callback) {
     const { email } = params;
-    const shop = await Shop.findOne({ email });
+    const shop = await Shop.findOne({ email }).exec()
     console.log(shop)
     if (shop == null) {
         const shop = new Shop(params);
@@ -134,6 +133,7 @@ async function login(params, callback) {
 async function addservice(params, callback) {
     const { id } = params;
     Services.create({ ...params.service_data, "shop": id }).then(document => {
+       
         Shop.findByIdAndUpdate(id, {
             $push: {
                 services: document._id
@@ -144,6 +144,9 @@ async function addservice(params, callback) {
         }).catch((err) => {
             return callback(err);
         })
+    }).catch((e)=>{
+        console.log(e);
+        return callback(err);
     })
 
 
