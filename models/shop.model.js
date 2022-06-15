@@ -40,6 +40,7 @@ const ServiceSchema = new Schema(
 
 const ShopSchema = new Schema(
     {
+        // s
         owner: {
             type: String,
             required: false,
