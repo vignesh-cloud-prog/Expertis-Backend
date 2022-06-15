@@ -32,6 +32,10 @@ const ServiceSchema = new Schema(
             required: false,
             default: false,
         },
+        shop: {
+            type: Schema.Types.ObjectId,
+            ref: "Shop"
+        }
     });
 
 const ShopSchema = new Schema(
@@ -94,7 +98,15 @@ const ShopSchema = new Schema(
             type: String,
             required: false,
         },
-        services: [ServiceSchema],
+        services: {
+            type: [ServiceSchema],
+            required: false,
+        },
+        // services: [{
+        //     type: Schema.Types.ObjectId,
+        //     ref: "Services",
+        //     required: false,
+        // }],
 
     },
     { timestamps: true }
@@ -139,3 +151,4 @@ ShopSchema.plugin(uniqueValidator, { message: "Email already in use." });
 const Shop = mongoose.model("Shop", ShopSchema);
 const Services = mongoose.model("Services", ServiceSchema);
 module.exports = Shop;
+// module.exports = Services;
