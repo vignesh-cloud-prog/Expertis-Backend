@@ -34,9 +34,8 @@ const ServiceSchema = new Schema(
         },
         shop: {
             type: Schema.Types.ObjectId,
-            ref: "User",
-          
-        },
+            ref: "Shop"
+        }
     });
 
 const ShopSchema = new Schema(
@@ -66,8 +65,8 @@ const ShopSchema = new Schema(
         pincode: {
             type: Number,
             required: false,
-            maxlength:6,
-            minlength:6,
+            maxlength: 6,
+            minlength: 6,
         },
         logo: {
             type: String,
@@ -99,11 +98,15 @@ const ShopSchema = new Schema(
             type: String,
             required: false,
         },
-        services: [{
-            type: Schema.Types.ObjectId,
-            ref: "Services",
-
-        }],
+        services: {
+            type: [ServiceSchema],
+            required: false,
+        },
+        // services: [{
+        //     type: Schema.Types.ObjectId,
+        //     ref: "Services",
+        //     required: false,
+        // }],
 
     },
     { timestamps: true }
@@ -148,3 +151,4 @@ ShopSchema.plugin(uniqueValidator, { message: "Email already in use." });
 const Shop = mongoose.model("Shop", ShopSchema);
 const Services = mongoose.model("Services", ServiceSchema);
 module.exports = Shop;
+// module.exports = Services;

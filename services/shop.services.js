@@ -6,6 +6,8 @@ const otpGenerator = require("otp-generator");
 const crypto = require("crypto");
 const key = "verysecretkey"; // Key for cryptograpy. Keep it secret
 const nodemailer = require("nodemailer");
+const Services = require("../models/shop.model");
+const { log } = require("console");
 
 const transporter = nodemailer.createTransport({
     service: "Gmail",
@@ -17,29 +19,12 @@ const transporter = nodemailer.createTransport({
 
 
 async function register(params, callback) {
-    if (params.email === undefined) {
-        console.log(params.email);
-        return callback(
-            {
-                message: "Email Required",
-            },
-            ""
-        );
-    }
-
-    if (params.phone === undefined) {
-        console.log(params.email);
-        return callback({
-            message: "Phone Required",
-        });
-    }
     const { email } = params;
     const shop = await Shop.findOne({ email });
+    console.log(shop)
     if (shop == null) {
-
         const shop = new Shop(params);
-        shop
-            .save()
+        shop.save()
             .then((response) => {
                 console.log(params.email)
                 const otp = otpGenerator.generate(6, { alphabets: false, upperCase: false, specialChars: false });
@@ -147,21 +132,20 @@ async function login(params, callback) {
 
 async function addservice(params, callback) {
     const { id } = params;
+    Services.create({ ...params.service_data, "shop": id }).then(document => {
+        Shop.findByIdAndUpdate(id, {
+            $push: {
+                services: document._id
+            }
+        }, { new: true }).then((res) => {
+            return callback(null, res);
 
-    const shop = await Shop.findByIdAndUpdate(id, {
-        $push: {
-            services: params.service_data
-        }
-    });
-
-    if (shop != null) {
+        }).catch((err) => {
+            return callback(err);
+        })
+    })
 
 
-    } else {
-        return callback({
-            message: "Invalid ID",
-        });
-    }
 }
 
 async function verifyOTP(email, otp, hash, callback) {

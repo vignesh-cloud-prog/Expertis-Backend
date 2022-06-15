@@ -3,7 +3,20 @@ const bcrypt = require("bcryptjs");
 const upload = require("../middlewares/upload.js");
 
 exports.register = (req, res, next) => {
-  const { password } = req.body;
+  const { password, email, phone } = req.body;
+  if (email === undefined) {
+    return callback(
+      {
+        message: "Email Required",
+      },
+
+    );
+  }
+  if (phone === undefined) {
+    return callback({
+      message: "Phone Required",
+    });
+  }
 
   const salt = bcrypt.genSaltSync(10);
 
@@ -21,7 +34,7 @@ exports.register = (req, res, next) => {
 };
 
 exports.addservice = (req, res, next) => {
-
+  console.log("hello")
   shopServices.addservice(req.body, (error, results) => {
     if (error) {
       return next(error);
