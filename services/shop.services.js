@@ -156,7 +156,14 @@ async function addservice(params, callback) {
         { new: true }
       )
         .then((res) => {
-          return callback(null, res);
+            if(res==null){
+                return callback("Document not found");
+            }
+            else{
+
+                console.log("res ser",res);
+              return callback(null, res);
+            }
         })
         .catch((err) => {
           return callback(err);
