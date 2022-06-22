@@ -88,3 +88,19 @@ exports.verify_otp = (req, res, next) => {
     });
   });
 };
+
+exports.getShop = (req, res, next) => {
+  var model = {
+    shopId: req.params.id,
+  };
+
+  shopServices.getShopById(model, (error, results) => {
+    if (error) {
+      return next(error);
+    }
+    return res.status(200).send({
+      message: "Success",
+      data: results,
+    });
+  });
+};

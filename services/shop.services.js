@@ -206,9 +206,24 @@ async function verifyOTP(email, otp, hash, callback) {
   }
 }
 
+async function getShopById(params, callback) {
+  const shopId = params.shopId;
+
+  Shop
+    .findById(shopId).populate("services")
+    .then((response) => {
+      if (!response) callback("Not found Product with id " + shopId);
+      else callback(null, response);
+    })
+    .catch((error) => {
+      return callback(error);
+    });
+}
+
 module.exports = {
   register,
   login,
   verifyOTP,
   addservice,
+  getShopById,
 };
