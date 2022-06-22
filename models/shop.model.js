@@ -33,7 +33,7 @@ const ShopSchema = new Schema(
       maxlength: 6,
       minlength: 6,
     },
-    logo: {
+    shoplogo: {
       type: String,
       required: false,
     },

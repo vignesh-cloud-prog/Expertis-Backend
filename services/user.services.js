@@ -349,7 +349,7 @@ function sendVerificationMail(email, token, host){
   <!-- start body -->
   <table border="0" cellpadding="0" cellspacing="0" width="100%">
 
-    <!-- start logo -->
+    <!-- start shoplogo -->
     <tr>
       <td align="center" bgcolor="#e9ecef">
         <!--[if (gte mso 9)|(IE)]>
@@ -373,7 +373,7 @@ function sendVerificationMail(email, token, host){
         <![endif]-->
       </td>
     </tr>
-    <!-- end logo -->
+    <!-- end shoplogo -->
 
     <!-- start hero -->
     <tr>

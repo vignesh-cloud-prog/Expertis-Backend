@@ -1,6 +1,6 @@
 const bcrypt = require("bcryptjs");
 const userServices = require("../services/user.services");
-const upload = require("../middlewares/upload.js");
+const {uploadUserPic} = require("../middlewares/upload.js");
 
 /**
  * 1. To secure the password, we are using the bcryptjs, It stores the hashed password in the database.
@@ -8,7 +8,7 @@ const upload = require("../middlewares/upload.js");
  * 3. In the SignIn API, we set the JWT token expiration time. Token will be expired within the defined duration.
  */
 exports.updateProfile = (req, res, next) => {
-  upload(req, res, function (err) {
+  uploadUserPic(req, res, function (err) {
     if (err) {
       next(err);
     } else {
@@ -23,7 +23,7 @@ exports.updateProfile = (req, res, next) => {
         address: req.body.address,
         dob: req.body.dob,
         gender: req.body.gender,
-        pic: path != "" ? url + "/" + path : "",
+        userPic: path != "" ? url + "/" + path : "",
       };
 
       console.log(model);

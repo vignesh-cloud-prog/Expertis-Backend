@@ -31,7 +31,7 @@ const UserSchema = new Schema(
       type: String,
       required: false,
     },
-    pic: {
+    userPic: {
       type: String,
       required: false,
     },

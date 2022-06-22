@@ -1,9 +1,27 @@
 const multer = require("multer");
 const Path = require("path");
+const fs = require("fs");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./uploads");
+    let dir = "uploads";
+    console.log("fieldname ", file.fieldname);
+    if (file.fieldname == "userPic") {
+      dir = "uploads/user/profile_pic";
+    } else if (file.fieldname == "shopLogo") {
+      dir = "uploads/shop/logo";
+    }
+
+    try {
+      fs.exists(dir, (exist) => {
+        if (!exist) {
+          return fs.mkdir(dir, { recursive: true }, (error) => cb(error, dir));
+        }
+        return cb(null, dir);
+      });
+    } catch (e) {
+      console.log("An error occurred.", e);
+    }
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + "--" + file.originalname);
@@ -24,11 +42,18 @@ const fileFilter = (req, file, callback) => {
   callback(null, true);
 };
 
-let upload = multer({
+let uploadShopLogo = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  fileSize: 1048576, // 10 Mb
+});
+let uploadUserPic = multer({
   storage: storage,
   fileFilter: fileFilter,
   fileSize: 1048576, // 10 Mb
 });
 
-module.exports = upload.single("pic");
-module.exports = upload.single("logo");
+module.exports = {
+  uploadShopLogo: uploadShopLogo.single("shopLogo"),
+  uploadUserPic: uploadUserPic.single("userPic"),
+};
