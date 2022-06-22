@@ -101,8 +101,11 @@ exports.verify_otp = (req, res, next) => {
 };
 
 exports.getShop = (req, res, next) => {
-  console.log("hjghj")
-  shopServices.getShop(req.params, (error, results) => {
+  var model = {
+    shopId: req.params.id,
+  };
+
+  shopServices.getShopById(model, (error, results) => {
     if (error) {
       return next(error);
     }

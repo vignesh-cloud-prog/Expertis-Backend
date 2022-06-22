@@ -223,7 +223,7 @@ async function verifyOTP(email, otp, hash, callback) {
 }
 
 async function getShopById(params, callback) {
-    const shopId = params.shopId;
+  const shopId = params.shopId;
 
   Shop
     .findById(shopId).populate("services")
@@ -235,6 +235,7 @@ async function getShopById(params, callback) {
       return callback(error);
     });
 }
+
 
 async function updateShop(params, callback) {
   const shopId = params.shopId;
