@@ -33,9 +33,20 @@ exports.register = (req, res, next) => {
   });
 };
 
-exports.addservice = (req, res, next) => {
+exports.addService = (req, res, next) => {
   console.log("hello")
   shopServices.addservice(req.body, (error, results) => {
+    if (error) {
+      return next(error);
+    }
+    return res.status(200).send({
+      message: "Success",
+      data: results,
+    });
+  });
+};
+exports.updateService = (req, res, next) => {
+  shopServices.updateservice(req.body, (error, results) => {
     if (error) {
       return next(error);
     }
@@ -90,11 +101,8 @@ exports.verify_otp = (req, res, next) => {
 };
 
 exports.getShop = (req, res, next) => {
-  var model = {
-    shopId: req.params.id,
-  };
-
-  shopServices.getShopById(model, (error, results) => {
+  console.log("hjghj")
+  shopServices.getShop(req.params, (error, results) => {
     if (error) {
       return next(error);
     }
