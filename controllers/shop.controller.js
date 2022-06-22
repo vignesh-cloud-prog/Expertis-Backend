@@ -104,3 +104,53 @@ exports.getShop = (req, res, next) => {
     });
   });
 };
+
+exports.updateShop = (req, res, next) => {
+  upload(req, res, function (err) {
+    if (err) {
+      next(err);
+    } else {
+      const url = req.protocol + "://" + req.get("host");
+
+      const path =
+        req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
+
+      var model = {
+        shopId: req.params.id,
+        shopName: req.body.shopName,
+        phone: req.body.productName,
+        address: req.body.productDescription,
+        pincode: req.body.productPrice,
+        logo: path != "" ? url + "/" + path : "",
+      };
+
+      console.log(model);
+
+      shopServices.updateShop(model, (error, results) => {
+        if (error) {
+          return next(error);
+        }
+        return res.status(200).send({
+          message: "Success",
+          data: results,
+        });
+      });
+    }
+  });
+};
+
+exports.deleteShop = (req, res, next) => {
+  var model = {
+    shopId: req.params.id,
+  };
+
+  shopServices.deleteShop(model, (error, results) => {
+    if (error) {
+      return next(error);
+    }
+    return res.status(200).send({
+      message: "Success",
+      data: results,
+    });
+  });
+};

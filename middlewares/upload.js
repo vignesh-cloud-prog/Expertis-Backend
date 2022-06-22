@@ -31,3 +31,4 @@ let upload = multer({
 });
 
 module.exports = upload.single("pic");
+module.exports = upload.single("logo");

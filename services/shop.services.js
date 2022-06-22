@@ -212,7 +212,35 @@ async function getShopById(params, callback) {
   Shop
     .findById(shopId).populate("services")
     .then((response) => {
-      if (!response) callback("Not found Product with id " + shopId);
+      if (!response) callback("Not found Shop with id " + shopId);
+      else callback(null, response);
+    })
+    .catch((error) => {
+      return callback(error);
+    });
+}
+
+async function updateShop(params, callback) {
+  const shopId = params.shopId;
+
+  Shop
+    .findByIdAndUpdate(shopId, params, { useFindAndModify: false })
+    .then((response) => {
+      if (!response) callback(`Cannot update Shop with id=${shopId}. Maybe Tutorial was not found!`);
+      else callback(null, response);
+    })
+    .catch((error) => {
+      return callback(error);
+    });
+}
+
+async function deleteShop(params, callback) {
+  const shopId = params.shopId;
+
+  Shop
+    .findByIdAndRemove(shopId)
+    .then((response) => {
+      if (!response) callback(`Cannot delete Shop with id=${shopId}. Maybe Product was not found!`);
       else callback(null, response);
     })
     .catch((error) => {
@@ -226,4 +254,6 @@ module.exports = {
   verifyOTP,
   addservice,
   getShopById,
+  updateShop,
+  deleteShop,
 };
