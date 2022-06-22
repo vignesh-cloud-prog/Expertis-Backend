@@ -10,15 +10,6 @@ const auth = require("./middlewares/auth.js");
 const errors = require("./middlewares/errors.js");
 const unless = require("express-unless");
 
-app.use(cors());
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
-
-
-
 // connect to mongodb
 
 /**
@@ -50,6 +41,7 @@ mongoose
  * Conditionally skip a middleware when a condition is met.
  */
 auth.authenticateToken.unless = unless;
+app.use(cors());
 app.use(
   auth.authenticateToken.unless({
     path: [
