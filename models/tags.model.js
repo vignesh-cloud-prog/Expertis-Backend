@@ -4,43 +4,35 @@ const uniqueValidator = require("mongoose-unique-validator");
 const jwt = require("jsonwebtoken");
 
 
-const ServiceSchema = new Schema({
-  serviceName: {
+const TagSchema = new Schema({
+  tagName: {
     type: String,
-  },
-  price: {
-    type: Number,
+    required: true,
   },
   photo: {
     type: String,
     required: false,
   },
-  time: {
-    type: String,
-  },
   discription: {
     type: String,
     required: false,
   },
-  isVerifyedByAdmin: {
+  isVerifiedByAdmin: {
     type: String,
     required: false,
     default: false,
   },
-  shop: {
+  shops: [{
     type: Schema.Types.ObjectId,
     ref: "Shop",
-  },
-  tags: {
-    type: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Tags",
-      },
-    ],
-    required: false,
-  },
-  
+  }],
+  services: [{
+    type: Schema.Types.ObjectId,
+    ref: "Services",
+  }],
+
 });
-const Services = mongoose.model("Services", ServiceSchema);
-module.exports = Services;
+TagSchema.plugin(uniqueValidator, { message: "Tag already exist." });
+
+const Tags = mongoose.model("Tags", TagSchema);
+module.exports = Tags;

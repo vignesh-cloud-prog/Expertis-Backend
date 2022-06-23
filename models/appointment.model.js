@@ -3,12 +3,15 @@ const { Schema } = mongoose;
 const uniqueValidator = require("mongoose-unique-validator");
 const jwt = require("jsonwebtoken");
 
-
-const ShopSchema = new Schema(
+const AppointmentSchema = new Schema(
   {
-    owner: {
-      type: String,
-      required: false,
+    shop: {
+      type: Schema.Types.ObjectId,
+      ref: "Shop",
+    },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
     },
     email: {
       type: String,
@@ -19,7 +22,7 @@ const ShopSchema = new Schema(
       type: String,
       required: true,
     },
-    phone: {
+    totalPrice: {
       type: Number,
       required: true,
     },
@@ -90,42 +93,5 @@ const ShopSchema = new Schema(
   { timestamps: true }
 );
 
-ShopSchema.methods.generateVerificationToken = function () {
-  const shop = this;
-  console.log("shop ", shop._id);
-  console.log(
-    "process.env.USER_VERIFICATION_TOKEN_SECRET ",
-    process.env.USER_VERIFICATION_TOKEN_SECRET
-  );
-  const verificationToken = jwt.sign(
-    { ID: shop._id },
-    process.env.USER_VERIFICATION_TOKEN_SECRET,
-    { expiresIn: "7d" }
-  );
-  return verificationToken;
-};
-
-/**
- *  Here we are creating and setting an id property and 
-    removing _id, __v, and the password hash which we do not need 
-    to send back to the client.
- */
-ShopSchema.set("toJSON", {
-  transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString();
-    delete returnedObject._id;
-    delete returnedObject.__v;
-    //do not reveal passwordHash
-    delete returnedObject.password;
-  },
-});
-
-/**
- * 1. The userSchema.plugin(uniqueValidator) method won’t let duplicate email id to be stored in the database.
- * 2. The unique: true property in email schema does the internal optimization to enhance the performance.
- */
-ShopSchema.plugin(uniqueValidator, { message: "Email already in use." });
-
-const Shop = mongoose.model("Shop", ShopSchema);
-module.exports = Shop;
-
+const Appointment = mongoose.model("Appointment", AppointmentSchema);
+module.exports = Appointment;
