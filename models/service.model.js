@@ -1,8 +1,5 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
-const uniqueValidator = require("mongoose-unique-validator");
-const jwt = require("jsonwebtoken");
-
 
 const ServiceSchema = new Schema({
   serviceName: {
@@ -43,4 +40,4 @@ const ServiceSchema = new Schema({
   
 });
 const Services = mongoose.model("Services", ServiceSchema);
-module.exports = Services;
+module.exports = {Services,ServiceSchema};

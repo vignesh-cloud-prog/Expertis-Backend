@@ -66,6 +66,7 @@ app.get("/", (req, res) => res.send("API Working!!"));
 app.use("/uploads", express.static("uploads"));
 app.use("/users", require("./routes/users.routes"));
 app.use("/shops", require("./routes/shops.routes"));
+app.use("/appointments", require("./routes/appointments.routes"));
 
 // middleware for error responses
 app.use(errors.errorHandler);

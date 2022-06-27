@@ -6,8 +6,7 @@ const otpGenerator = require("otp-generator");
 const crypto = require("crypto");
 const key = "verysecretkey"; // Key for cryptograpy. Keep it secret
 const nodemailer = require("nodemailer");
-const Services = require("../models/service.model");
-const { log } = require("console");
+const {Services} = require("../models/service.model");
 
 const transporter = nodemailer.createTransport({
     service: "Gmail",

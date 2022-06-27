@@ -48,6 +48,14 @@ const UserSchema = new Schema(
       required: true,
       default: false,
     },
+    appointments: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "Appointment",
+        },
+      ],
+    },
   },
   { timestamps: true }
 );

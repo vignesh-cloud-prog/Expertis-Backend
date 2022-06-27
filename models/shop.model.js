@@ -3,6 +3,17 @@ const { Schema } = mongoose;
 const uniqueValidator = require("mongoose-unique-validator");
 const jwt = require("jsonwebtoken");
 
+const SlotsBookedSchema = new Schema({
+  date: {
+    type: String,
+    unique: true,
+    required: true,
+  },
+  slots: [Number],
+});
+
+SlotsBookedSchema.plugin(uniqueValidator, { message: "Date should be unique." });
+
 
 const ShopSchema = new Schema(
   {
@@ -63,10 +74,6 @@ const ShopSchema = new Schema(
       type: String,
       required: false,
     },
-    // services: {
-    //     type: [ServiceSchema],
-    //     required: false,
-    // },
     services: {
       type: [
         {
@@ -85,6 +92,15 @@ const ShopSchema = new Schema(
         },
       ],
       required: false,
+    },
+    slotsBooked: { type: [SlotsBookedSchema], unique: true },
+    appointments: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "Appointment",
+        },
+      ],
     },
   },
   { timestamps: true }
@@ -128,4 +144,3 @@ ShopSchema.plugin(uniqueValidator, { message: "Email already in use." });
 
 const Shop = mongoose.model("Shop", ShopSchema);
 module.exports = Shop;
-

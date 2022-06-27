@@ -1,94 +1,70 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
-const uniqueValidator = require("mongoose-unique-validator");
-const jwt = require("jsonwebtoken");
+const { ServiceSchema } = require("./service.model");
 
 const AppointmentSchema = new Schema(
   {
-    shop: {
+    shopId: {
       type: Schema.Types.ObjectId,
       ref: "Shop",
     },
-    user: {
+    userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    shopName: {
-      type: String,
-      required: true,
     },
     totalPrice: {
       type: Number,
       required: true,
     },
-    address: {
-      type: String,
-      required: false,
-    },
-    pincode: {
+    totalTime: {
       type: Number,
       required: false,
-      maxlength: 6,
-      minlength: 6,
     },
-    shoplogo: {
-      type: String,
-      required: false,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-    date: {
-      type: Date,
-      default: Date.now(),
-    },
-    verified: {
+    isAccepted: {
       type: Boolean,
       required: false,
       default: false,
     },
-    isVeifyedByAdmin: {
+    isPaid: {
       type: Boolean,
       required: false,
       default: false,
     },
-    gallery: {
-      type: [String],
+    isProcessed: {
+      type: Boolean,
       required: false,
+      default: false,
     },
-    location: {
-      type: String,
+    isCompleted: {
+      type: Boolean,
       required: false,
+      default: false,
     },
-    // services: {
-    //     type: [ServiceSchema],
-    //     required: false,
-    // },
+    isCanceled: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     services: {
       type: [
         {
-          type: Schema.Types.ObjectId,
-          ref: "Services",
+          type: ServiceSchema,
         },
       ],
       required: false,
     },
-
-    tags: {
-      type: [
-        {
-          type: Schema.Types.ObjectId,
-          ref: "Tags",
-        },
-      ],
-      required: false,
+    slots: {
+      type: [Number],
+      required: true,
     },
+    startTime: {
+      type: Date,
+      required: true,
+    },
+    endTime: {
+      type: Date,
+      required: true,
+    }
   },
   { timestamps: true }
 );
