@@ -3,6 +3,9 @@ function errorHandler(err, req, res, next) {
     // custom application error
     return res.status(400).json({ message: err });
   }
+  if(err.status && err.message){
+    return res.status(err.status).json({ message: err.message });
+  }
 
   if (err.name === "ValidationError") {
     // mongoose validation error
@@ -12,10 +15,6 @@ function errorHandler(err, req, res, next) {
   if (err.name === "UnauthorizedError") {
     // jwt authentication error
     return res.status(401).json({ message: "Token not valid" });
-  }
-  if (err.name === "queryA EREFUSED smtp.gmail.com") {
-    // jwt authentication error
-    return res.status(401).json({ message: "gamil not correct" });
   }
 
   // default to 500 server error

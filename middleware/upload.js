@@ -11,7 +11,10 @@ const storage = multer.diskStorage({
     } else if (file.fieldname == "shopLogo") {
       dir = "uploads/shop/logo";
     }
-
+    else if(file.fieldname == "tagPic"){
+      dir = "uploads/tags/tag_pic";
+    }
+    
     try {
       fs.exists(dir, (exist) => {
         if (!exist) {
@@ -52,8 +55,14 @@ let uploadUserPic = multer({
   fileFilter: fileFilter,
   fileSize: 1048576, // 10 Mb
 });
+let uploadTagPic = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  fileSize: 1048576, // 10 Mb
+});
 
 module.exports = {
   uploadShopLogo: uploadShopLogo.single("shopLogo"),
   uploadUserPic: uploadUserPic.single("userPic"),
+  uploadTagPic: uploadTagPic.single("tagPic"),
 };

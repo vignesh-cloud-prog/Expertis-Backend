@@ -1,6 +1,6 @@
 const bcrypt = require("bcryptjs");
 const userServices = require("../services/user.services");
-const {uploadUserPic} = require("../middlewares/upload.js");
+const {uploadUserPic} = require("../middleware/upload.js");
 
 /**
  * 1. To secure the password, we are using the bcryptjs, It stores the hashed password in the database.
@@ -121,7 +121,7 @@ exports.verify_otp = (req, res, next) => {
   const hash = req.body.hash;
   if(!email && !otp && !hash){
     return res.status(500).send({
-      message: "Insuffient data",
+      message: "Data is missing",
       
     });
   }

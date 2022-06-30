@@ -7,13 +7,13 @@ const jwt = require("jsonwebtoken");
 const TagSchema = new Schema({
   tagName: {
     type: String,
-    required: true,
+    required: [true,"tag name is required"],
   },
-  photo: {
+  tagPic: {
     type: String,
     required: false,
   },
-  discription: {
+  description: {
     type: String,
     required: false,
   },

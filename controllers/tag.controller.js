@@ -1,15 +1,34 @@
 const tagServices = require("../services/tag.services");
+const { uploadTagPic } = require("../middleware/upload");
 
-exports.addTag = (req, res, next) => {
-  console.log(req.body);
-  tagServices.addTag(req.body, (error, results) => {
-    if (error) {
-      return next(error);
+exports.createTag = (req, res, next) => {
+  uploadTagPic(req, res, function (err) {
+    if (err) {
+      next(err);
+    } else {
+      const url = req.protocol + "://" + req.get("host");
+
+      const path =
+        req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
+
+      var model = {
+        tagName: req.body.tagName,
+        tagPic: path != "" ? url + "/" + path : "",
+        description: req.body.description,
+      };
+
+      console.log(model);
+
+      tagServices.createTag(model, (error, results) => {
+        if (error) {
+          return next(error);
+        }
+        return res.status(200).send({
+          message: "Success",
+          data: results,
+        });
+      });
     }
-    return res.status(200).send({
-      message: "Success",
-      data: results,
-    });
   });
 };
 
@@ -26,14 +45,47 @@ exports.getTags = (req, res, next) => {
 };
 
 exports.updateTag = (req, res, next) => {
-  tagServices.updateTag(req.body, (error, results) => {
-    if (error) {
-      return next(error);
+  uploadTagPic(req, res, function (err) {
+    if (err) {
+      next(err);
+    } else {
+      const { tagName, description } = req.body;
+      let model = {
+        id: req.body.id,
+      };
+
+      const url = req.protocol + "://" + req.get("host");
+
+      const path =
+        req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
+      const tagPicUrl = path != "" ? url + "/" + path : "";
+      if (tagPicUrl != "" && tagPicUrl !== undefined && tagPicUrl !== null) {
+        model.tagPic = tagPicUrl;
+      }
+
+      if (tagName != "" && tagName !== undefined && tagName !== null) {
+        model.tagName = tagName;
+      }
+      if (
+        description != "" &&
+        description !== undefined &&
+        description !== null
+      ) {
+        model.description = description;
+      }
+
+      console.log(model);
+
+      tagServices.updateTag(model, (error, results) => {
+        if (error) {
+          return next(error);
+        }
+        return res.status(200).send({
+          message: "Success",
+          data: results,
+        });
+      });
     }
-    return res.status(200).send({
-      message: "Success",
-      data: results,
-    });
   });
 };
 

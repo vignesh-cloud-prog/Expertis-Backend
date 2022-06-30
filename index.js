@@ -5,9 +5,8 @@ const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors");
 const dbConfig = require("./config/db.config");
-
-const auth = require("./middlewares/auth.js");
-const errors = require("./middlewares/errors.js");
+const auth = require("./middleware/auth.js");
+const errors = require("./middleware/errors.js");
 const unless = require("express-unless");
 // const bodyParser = require('body-parser');
 
@@ -56,7 +55,6 @@ app.use(
       { url: "/shops/register", methods: ["POST"] },
       { url: "/shops/login", methods: ["POST"] },
       { url: "/shops/verify_otp", methods: ["POST"] },
-
     ],
   })
 );

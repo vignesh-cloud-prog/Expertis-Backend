@@ -32,19 +32,21 @@ const ShopSchema = new Schema(
     },
     phone: {
       type: Number,
-      required: true,
+      
+      required: [true, 'Phone number is required']
     },
     address: {
       type: String,
       required: false,
     },
-    pincode: {
+    pinCode: {
       type: Number,
       required: false,
-      maxlength: 6,
-      minlength: 6,
+      min: [6, 'Minimum 6 digit Pin Code'],
+      max: [6, 'Maximum 6 digit Pin Code'],
+      
     },
-    shoplogo: {
+    shopLogo: {
       type: String,
       required: false,
     },
@@ -61,7 +63,7 @@ const ShopSchema = new Schema(
       required: false,
       default: false,
     },
-    isVeifyedByAdmin: {
+    isVerifiedByAdmin: {
       type: Boolean,
       required: false,
       default: false,

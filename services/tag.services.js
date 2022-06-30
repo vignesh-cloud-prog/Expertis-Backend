@@ -1,6 +1,6 @@
 const Tags = require("../models/tags.model");
 
-async function addTag(params, callback) {
+async function createTag(params, callback) {
   console.log(params);
   Tags.create(params)
     .then((res) => {
@@ -20,30 +20,36 @@ async function getTags(params, callback) {
 
 async function updateTag(params, callback) {
   const { id } = params;
-  console.log("updateTag ",id);
+  console.log(id);
+  
   await Tags.findByIdAndUpdate(id, params, {
     useFindAndModify: true,
     new: true,
-  }).then((res) => {
-    console.log(res);
-    return callback(null, res);
-  }
-  ).catch((e) => {
-    console.log(e);
-    return callback(e); 
-  }
-  );
-  
+  })
+    .then((res) => {
+      if (res==null || res==undefined) {
+        return callback({ status: 404, message: "Tag not found!" });
+      }
+      return callback(null, res);
+    })
+    .catch((e) => {
+      console.log(e);
+      return callback(e);
+    });
 }
 
 async function deleteTag(params, callback) {
   const { id } = params;
   const tags = await Tags.findByIdAndDelete(id);
-  return callback(null, tags);
+  if (tags) {
+    return callback(null, tags);
+  } else {
+    return callback({ status: 404, message: "Tag not found!" });
+  }
 }
 
 module.exports = {
-  addTag,
+  createTag,
   getTags,
   updateTag,
   deleteTag,

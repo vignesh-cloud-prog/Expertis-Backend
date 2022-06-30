@@ -1,6 +1,6 @@
 const shopServices = require("../services/shop.services");
 const bcrypt = require("bcryptjs");
-const {uploadShopLogo} = require("../middlewares/upload.js");
+const {uploadShopLogo} = require("../middleware/upload.js");
 
 exports.register = (req, res, next) => {
   const { password, email, phone } = req.body;
