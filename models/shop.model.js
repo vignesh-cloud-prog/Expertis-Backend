@@ -3,18 +3,6 @@ const { Schema } = mongoose;
 const uniqueValidator = require("mongoose-unique-validator");
 const jwt = require("jsonwebtoken");
 
-const SlotsBookedSchema = new Schema({
-  date: {
-    type: String,
-    unique: true,
-    required: true,
-  },
-  slots: [Number],
-});
-
-SlotsBookedSchema.plugin(uniqueValidator, { message: "Date should be unique." });
-
-
 const ShopSchema = new Schema(
   {
     owner: {
@@ -32,8 +20,8 @@ const ShopSchema = new Schema(
     },
     phone: {
       type: Number,
-      
-      required: [true, 'Phone number is required']
+
+      required: [true, "Phone number is required"],
     },
     address: {
       type: String,
@@ -42,9 +30,8 @@ const ShopSchema = new Schema(
     pinCode: {
       type: Number,
       required: false,
-      min: [6, 'Minimum 6 digit Pin Code'],
-      max: [6, 'Maximum 6 digit Pin Code'],
-      
+      min: [6, "Minimum 6 digit Pin Code"],
+      max: [6, "Maximum 6 digit Pin Code"],
     },
     shopLogo: {
       type: String,
@@ -95,7 +82,16 @@ const ShopSchema = new Schema(
       ],
       required: false,
     },
-    slotsBooked: { type: [SlotsBookedSchema], unique: true },
+    slotsBooked: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "SlotBooking",
+          
+        },
+      ],
+      
+    },
     appointments: {
       type: [
         {

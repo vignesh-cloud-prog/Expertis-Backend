@@ -1,35 +1,22 @@
 const Appointment = require("../models/appointment.model");
 const User = require("../models/user.model");
 const Shop = require("../models/shop.model");
+const SlotsBooked = require("../models/slotsBooking.model");
 const { Services } = require("../models/service.model");
 const moment = require("moment");
-const { findOneAndUpdate } = require("../models/appointment.model");
+const { getSlots, getSlot } = require("../utils/utils");
 
-function getSlot(date) {
-  let hours = date.getHours();
-  let minutes = date.getMinutes();
-  let slot = hours * 2;
-  slot = Math.round(slot);
-  if (minutes > 30) {
-    slot += 1;
-  }
-  return slot;
-}
 
-function getSlots(startTime, endTime) {
-  let slots = [];
-  let start = getSlot(startTime);
-  console.log("start ", start);
-  let end = getSlot(endTime);
-  console.log("end ", end);
-  for (let i = start; i <= end; i++) {
-    slots.push(i);
-  }
-  return slots;
-}
 async function bookAppointment(params, callback) {
+  try{
   const { shopId, userId } = params;
   let startTime = new Date(params.startTime);
+  if (startTime < new Date()) {
+    return callback({
+      status: 400,
+      message: "Start time should be greater than current time",
+    });
+  }
   let user = await User.findById(userId);
   let shop = await Shop.findById(shopId);
 
@@ -52,27 +39,41 @@ async function bookAppointment(params, callback) {
     }
   }
 
-  console.log("shop ", shop);
-  console.log("user ", user);
+  //console.log("shop ", shop);
+  //console.log("user ", user);
 
-  console.log("services ", shop.services);
-  console.log("services ", services);
-  console.log("totalPrice ", totalPrice);
-  console.log("totalTime ", totalTime);
-  console.log("startTime ", startTime);
-  console.log(startTime.getHours());
-  console.log(startTime.getMinutes());
+  //console.log("services ", shop.services);
+  //console.log("services ", services);
+  //console.log("totalPrice ", totalPrice);
+  //console.log("totalTime ", totalTime);
+  //console.log("startTime ", startTime);
+  //console.log(startTime.getHours());
+  //console.log(startTime.getMinutes());
 
   let endTime = moment(startTime).add(totalTime, "minutes").toDate();
-  console.log("endTime ", endTime);
-  console.log(endTime.getHours());
-  console.log(endTime.getMinutes());
+  //console.log("endTime ", endTime);
+  //console.log(endTime.getHours());
+  //console.log(endTime.getMinutes());
 
   let slots = getSlots(startTime, endTime);
-  console.log("slots ", slots);
+  if (slots.length === 0) {
+    return callback("Slots time is not available today");
+  }
+  //console.log("slots ", slots);
 
   let bookingDate = startTime.toLocaleDateString();
-  console.log("bookingDate ", bookingDate);
+  ////console.log("bookingDate ", bookingDate);
+
+  const preBookedSlots = await SlotsBooked.find({
+    shopId: shopId,
+    date: bookingDate,
+    slots: { $in: slots },
+  });
+  // console.log("preBookedSlots ", preBookedSlots);
+  if (preBookedSlots.length > 0) {
+    return callback("Slots are already booked");
+  }
+
 
   const appointment = await Appointment.create({
     shopId: shopId,
@@ -83,24 +84,11 @@ async function bookAppointment(params, callback) {
     slots: slots,
     startTime: startTime,
     endTime: endTime,
-  });
-  console.log(appointment);
-  // shop.appointments.push(appointment._id);
-  // shop.slotsBooked.push({date:bookingDate,slots:slots})
-  // shop.updateOne(
-
-  //   { $push: { appointments: appointment._id } },
-  //   {$},
-  //   function(err, result) {
-  //     if (err) {
-  //       res.send(err);
-  //     } else {
-  //       res.send(result);
-  //     }
-  //   }
-  // );
-
-  user = await User.findOneAndUpdate(
+  })
+  if (!appointment) return callback("Appointment not created");
+  
+  //console.log(appointment);
+  const updatedUser = await User.findOneAndUpdate(
     { _id: userId },
     {
       $push: {
@@ -108,39 +96,40 @@ async function bookAppointment(params, callback) {
       },
     },
     { new: true, upsert: true }
-  ).catch((e) => console.log(e));
-  console.log(user);
+  )
+  if (!updatedUser) return callback("User not found");
 
-  shop = await Shop.findOneAndUpdate(
-    { _id: shopId, "slotsBooked.date": bookingDate },
+  const slotBooked = await SlotsBooked.findOneAndUpdate(
+    { date: bookingDate, shopId: shopId },
     {
-      "slotsBooked.date": {date: bookingDate, slots: slots},
+      shopId: shopId,
+      date: bookingDate,
+      $addToSet: { slots: slots },
+    },
+    { new: true, upsert: true }
+  )
+  if (!slotBooked) {
+    return callback("Slot not booked");
+  }
+  //console.log(" slotBooked \n", slotBooked);
+
+  const updatedShop = await Shop.findOneAndUpdate(
+    { _id: shopId},
+    {
+      
       $addToSet: {
+        slotsBooked: slotBooked._id,
         appointments: appointment._id,
       },
     },
-    { new: true, upsert: true }
-  ).catch((e) => console.log(e));
-  console.log(shop);
-
-  //   let slotofshop = await Shop.update({'comments._id': comment_id},
-  //   {'$set': {
-  //          'comments.$.post': "this is Update comment",
-  //  }},
-  //       function(err,model) {
-  //    if(err){
-  //       console.log(err);
-  //       return res.send(err);
-  //     }
-  //     return res.json(model);
-  // });
-
-  // Shop.findByIdAndUpdate(shopId,$push,{ useFindAndModify: true })
-  // Shop.updateOne
-  //   await shop.save()
-  //   console.log(shop);
-  // }
-  return callback(null, { shop });
+    { new: true}
+  )
+  if (!updatedShop) return callback("Shop not found");
+  const bookingData= await Appointment.findById(appointment._id).populate("shopId").populate("userId");
+  return callback(null, bookingData );
+  }catch(error){
+    return callback(error);
+  }
 }
 
 module.exports = {
