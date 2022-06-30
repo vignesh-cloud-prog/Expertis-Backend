@@ -1,18 +1,37 @@
 const reviewServices = require("../services/review.services");
+const { uploadReviewPhoto } = require("../middleware/upload.js");
 
 
 exports.addReview = (req, res, next) => {
-  // console.log(req);
-  console.log("addReview ", req.Body);
-  // res.send({message:"success"});
-  reviewServices.addReview(req.body, (error, results) => {
-    if (error) {
-      return next(error);
+  uploadReviewPhoto(req, res, function (err) {
+    if (err) {
+      next(err);
+    } else {
+      const url = req.protocol + "://" + req.get("host");
+
+      const path =
+        req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
+
+      var model = {
+        from: req.body.from,
+        to: req.body.to,
+        rating: req.body.rating,
+        model_type: req.body.model_type,
+        reviewPhotos: path != "" ? url + "/" + path : "",
+      };
+      console.log(model);
+
+
+      reviewServices.addReview(model, (error, results) => {
+        if (error) {
+          return next(error);
+        }
+        return res.status(200).send({
+          message: "Success",
+          data: results,
+        });
+      });
     }
-    return res.status(200).send({
-      message: "Success",
-      data: results,
-    });
   });
 };
 

@@ -114,7 +114,7 @@ async function bookAppointment(params, callback) {
   shop = await Shop.findOneAndUpdate(
     { _id: shopId, "slotsBooked.date": bookingDate },
     {
-      "slotsBooked.date": {date: bookingDate, slots: slots},
+      "slotsBooked.date": { date: bookingDate, slots: slots },
       $addToSet: {
         appointments: appointment._id,
       },
