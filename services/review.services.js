@@ -3,7 +3,7 @@ const User = require("../models/user.model");
 const Reviews = require("../models/review.model");
 
 async function addReview(params, callback) {
-  const { from, to, model_type, comment, rating } = params;
+  // const { from, to, model_type, comment, rating } = params;
   console.log(params);
   Reviews.create(params).then(res=>{
     console.log(res);
