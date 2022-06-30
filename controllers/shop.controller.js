@@ -1,6 +1,6 @@
 const shopServices = require("../services/shop.services");
 const bcrypt = require("bcryptjs");
-const {uploadShopLogo} = require("../middlewares/upload.js");
+const { uploadShopLogo } = require("../middlewares/upload.js");
 
 exports.register = (req, res, next) => {
   const { password, email, phone } = req.body;
@@ -119,7 +119,7 @@ exports.getShop = (req, res, next) => {
 exports.updateShop = (req, res, next) => {
   uploadShopLogo(req, res, function (err) {
     if (err) {
-      next(err);
+      next("ERR", err);
     } else {
       const url = req.protocol + "://" + req.get("host");
 
@@ -134,6 +134,7 @@ exports.updateShop = (req, res, next) => {
         pincode: req.body.productPrice,
         shoplogo: path != "" ? url + "/" + path : "",
       };
+
 
       console.log(model);
 

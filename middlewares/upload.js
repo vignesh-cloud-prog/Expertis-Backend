@@ -52,8 +52,14 @@ let uploadUserPic = multer({
   fileFilter: fileFilter,
   fileSize: 1048576, // 10 Mb
 });
+let uploadReview = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  fileSize: 1048576, // 10 Mb
+});
 
 module.exports = {
   uploadShopLogo: uploadShopLogo.single("shopLogo"),
   uploadUserPic: uploadUserPic.single("userPic"),
+  uploadReviewPic: uploadReview.single("reviewPic"),
 };

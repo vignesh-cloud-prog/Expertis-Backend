@@ -6,7 +6,7 @@ const otpGenerator = require("otp-generator");
 const crypto = require("crypto");
 const key = "verysecretkey"; // Key for cryptograpy. Keep it secret
 const nodemailer = require("nodemailer");
-const {Services} = require("../models/service.model");
+const { Services } = require("../models/service.model");
 
 const transporter = nodemailer.createTransport({
     service: "Gmail",
@@ -153,7 +153,7 @@ async function addservice(params, callback) {
                     },
                 },
                 { new: true }
-            )
+            ).populate("services")
                 .then((res) => {
                     if (res == null) {
                         return callback("Document not found");
@@ -222,54 +222,54 @@ async function verifyOTP(email, otp, hash, callback) {
 }
 
 async function getShopById(params, callback) {
-  const shopId = params.shopId;
+    const shopId = params.shopId;
 
-  Shop
-    .findById(shopId).populate("services")
-    .then((response) => {
-      if (!response) callback("Not found Shop with id " + shopId);
-      else callback(null, response);
-    })
-    .catch((error) => {
-      return callback(error);
-    });
+    Shop
+        .findById(shopId).populate("services")
+        .then((response) => {
+            if (!response) callback("Not found Shop with id " + shopId);
+            else callback(null, response);
+        })
+        .catch((error) => {
+            return callback(error);
+        });
 }
 
 
 async function updateShop(params, callback) {
-  const shopId = params.shopId;
+    const shopId = params.shopId;
 
-  Shop
-    .findByIdAndUpdate(shopId, params, { useFindAndModify: false })
-    .then((response) => {
-      if (!response) callback(`Cannot update Shop with id=${shopId}. Maybe Tutorial was not found!`);
-      else callback(null, response);
-    })
-    .catch((error) => {
-      return callback(error);
-    });
+    Shop
+        .findByIdAndUpdate(shopId, params, { useFindAndModify: false })
+        .then((response) => {
+            if (!response) callback(`Cannot update Shop with id=${shopId}. Maybe Tutorial was not found!`);
+            else callback(null, response);
+        })
+        .catch((error) => {
+            return callback(error);
+        });
 }
 
 async function deleteShop(params, callback) {
-  const shopId = params.shopId;
+    const shopId = params.shopId;
 
-  Shop
-    .findByIdAndRemove(shopId)
-    .then((response) => {
-      if (!response) callback(`Cannot delete Shop with id=${shopId}. Maybe Product was not found!`);
-      else callback(null, response);
-    })
-    .catch((error) => {
-      return callback(error);
-    });
+    Shop
+        .findByIdAndRemove(shopId)
+        .then((response) => {
+            if (!response) callback(`Cannot delete Shop with id=${shopId}. Maybe Product was not found!`);
+            else callback(null, response);
+        })
+        .catch((error) => {
+            return callback(error);
+        });
 }
 
 module.exports = {
-  register,
-  login,
-  verifyOTP,
-  addservice,
-  getShopById,
-  updateShop,
-  deleteShop,
+    register,
+    login,
+    verifyOTP,
+    addservice,
+    getShopById,
+    updateShop,
+    deleteShop,
 };

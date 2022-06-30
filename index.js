@@ -9,9 +9,12 @@ const dbConfig = require("./config/db.config");
 const auth = require("./middlewares/auth.js");
 const errors = require("./middlewares/errors.js");
 const unless = require("express-unless");
-// const bodyParser = require('body-parser');
+var bodyParser = require('body-parser')
 
 // connect to mongodb
+app.use(express.json());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 /**
  * With useNewUrlParser: The underlying MongoDB driver has deprecated their current connection string parser.
@@ -60,9 +63,7 @@ app.use(
     ],
   })
 );
-app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
-// app.use(bodyParser.json());
+
 
 // initialize routes
 app.get("/", (req, res) => res.send("API Working!!"));
