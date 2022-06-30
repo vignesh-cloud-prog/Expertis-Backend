@@ -78,7 +78,7 @@ const ShopSchema = new Schema(
       type: [
         {
           type: Schema.Types.ObjectId,
-          ref: "Services",
+          ref: "Service",
         },
       ],
       required: false,

@@ -9,6 +9,7 @@ const dbConfig = require("./config/db.config");
 const auth = require("./middlewares/auth.js");
 const errors = require("./middlewares/errors.js");
 const unless = require("express-unless");
+// const bodyParser = require('body-parser');
 
 // connect to mongodb
 
@@ -60,6 +61,8 @@ app.use(
   })
 );
 app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+// app.use(bodyParser.json());
 
 // initialize routes
 app.get("/", (req, res) => res.send("API Working!!"));
@@ -67,6 +70,7 @@ app.use("/uploads", express.static("uploads"));
 app.use("/users", require("./routes/users.routes"));
 app.use("/shops", require("./routes/shops.routes"));
 app.use("/appointments", require("./routes/appointments.routes"));
+app.use("/reviews", require("./routes/reviews.routes"));
 
 // middleware for error responses
 app.use(errors.errorHandler);
