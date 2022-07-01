@@ -15,11 +15,11 @@ const ServiceSchema = new Schema({
   time: {
     type: String,
   },
-  discription: {
+  description: {
     type: String,
     required: false,
   },
-  isVerifyedByAdmin: {
+  isVerifiedByAdmin: {
     type: String,
     required: false,
     default: false,
