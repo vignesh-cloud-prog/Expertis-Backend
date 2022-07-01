@@ -5,6 +5,6 @@
 ```bash
 
 npm i
-npm run serve
+npm run server
 
 ```
