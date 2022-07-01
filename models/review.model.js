@@ -17,7 +17,7 @@ const ReviewSchema = new Schema({
     enum: ["Shop", "Service"],
     required: true,
   },
-  photos: {
+  reviewPhotos: {
     type: [String],
     required: false,
   },

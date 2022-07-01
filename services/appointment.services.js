@@ -116,7 +116,6 @@ async function bookAppointment(params, callback) {
   const updatedShop = await Shop.findOneAndUpdate(
     { _id: shopId},
     {
-      
       $addToSet: {
         slotsBooked: slotBooked._id,
         appointments: appointment._id,
