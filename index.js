@@ -8,7 +8,7 @@ const dbConfig = require("./config/db.config");
 const auth = require("./middleware/auth.js");
 const errors = require("./middleware/errors.js");
 const unless = require("express-unless");
-const bodyParser = require('body-parser');
+
 
 // connect to mongodb
 
@@ -59,8 +59,7 @@ app.use(
   })
 );
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+
 
 // initialize routes
 app.get("/", (req, res) => res.send("API Working!!"));
