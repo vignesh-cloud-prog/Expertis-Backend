@@ -27,7 +27,6 @@ exports.getShopAppointments = (req, res, next) => {
 };
 
 exports.getUserAppointments = (req, res, next) => {
-  
   appointmentServices.getUserAppointments(req, res, (error, results) => {
     if (error) {
       return next(error);
@@ -51,7 +50,6 @@ exports.getAppointment = (req, res, next) => {
 };
 
 exports.cancelAppointment = (req, res, next) => {
-  
   appointmentServices.cancelAppointment(req, res, (error, results) => {
     if (error) {
       return next(error);
@@ -73,9 +71,9 @@ exports.acceptAppointment = (req, res, next) => {
       data: results,
     });
   });
-}
+};
 
-exports.rejectAppointment= (req, res, next) => {
+exports.rejectAppointment = (req, res, next) => {
   appointmentServices.rejectAppointment(req, res, (error, results) => {
     if (error) {
       return next(error);
@@ -85,9 +83,9 @@ exports.rejectAppointment= (req, res, next) => {
       data: results,
     });
   });
-}
+};
 
-exports.completeAppointment= (req, res, next) => {
+exports.completeAppointment = (req, res, next) => {
   appointmentServices.completeAppointment(req, res, (error, results) => {
     if (error) {
       return next(error);
@@ -97,4 +95,4 @@ exports.completeAppointment= (req, res, next) => {
       data: results,
     });
   });
-}
+};
