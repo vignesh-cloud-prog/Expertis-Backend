@@ -29,7 +29,7 @@ async function login({ email, password,host }, callback) {
           message: `Verify your Account. An email just sent to ${user.email}`,
         });
       }
-      const token = auth.generateAccessToken(email);
+      const token = auth.generateAccessToken(user._id);
       console.log(user, token);
       // call toJSON method applied during model instantiation
       return callback(null, { ...user.toJSON(), token });

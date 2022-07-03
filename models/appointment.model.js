@@ -20,31 +20,34 @@ const AppointmentSchema = new Schema(
       type: Number,
       required: false,
     },
-    isAccepted: {
-      type: Boolean,
-      required: false,
-      default: false,
+    paymentStatus: {
+      type: String,
+      // PENDING : payment is not done
+      // PARTIAL : payment is done partially
+      // FULLY_PAID : payment is done fully
+      enum: ["PENDING", "PARTIALLY_PAID", "FULLY_PAID"],
+      default: "PENDING",
+      required: true,
     },
-    isPaid: {
-      type: Boolean,
-      required: false,
-      default: false,
+    appointmentStatus: {
+      type: String,
+      // PENDING : User has requested the appointment
+      // ACCEPTED : Shop has accepted the appointment
+      // CONFIRMED : User has confirmed the appointment by payment
+      // COMPLETED : Appointment is completed
+      // CANCELLED : User has cancelled the appointment
+      // REJECTED : Shop has rejected the appointment
+      enum: [
+        "PENDING",
+        "ACCEPTED",
+        "CONFIRMED",
+        "COMPLETED",
+        "CANCELED",
+        "REJECTED",
+      ],
+      default: "PENDING",
     },
-    isProcessed: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    isCompleted: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    isCanceled: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
+
     services: {
       type: [
         {
@@ -64,7 +67,7 @@ const AppointmentSchema = new Schema(
     endTime: {
       type: Date,
       required: true,
-    }
+    },
   },
   { timestamps: true }
 );
