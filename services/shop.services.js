@@ -126,7 +126,7 @@ async function login(params, callback) {
                     hash: fullHash,
                 });
             }
-            const token = auth.generateAccessToken(email);
+            const token = auth.generateAccessToken(shop._id);
             // call toJSON method applied during model instantiation
             return callback(null, { ...shop.toJSON(), token });
         } else {

@@ -27,7 +27,7 @@ exports.getShopAppointments = (req, res, next) => {
 };
 
 exports.getUserAppointments = (req, res, next) => {
-  console.log("userid", req.params.id);
+  
   appointmentServices.getUserAppointments(req, res, (error, results) => {
     if (error) {
       return next(error);

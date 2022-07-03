@@ -135,6 +135,12 @@ async function bookAppointment(params, callback) {
 async function getUserAppointments(req, res, callback) {
   try {
     const { id } = req.params;
+    let appointmentStatus=["PENDING","CONFIRMED","CANCELLED","COMPLETED","REJECTED"];
+    let filter = {
+      userId: id,
+      appointmentStatus: { $in: appointmentStatus },
+
+    };
     if (!ObjectId.isValid(id)) {
       return callback({
         status: 400,
@@ -143,14 +149,14 @@ async function getUserAppointments(req, res, callback) {
     }
 
     console.log("userId ", id);
-    if (!isAuthorizedUser(id, req.headers.authorization)) {
+    if (! await isAuthorizedUser(id, req.headers.authorization)) {
       return callback({
         status: 401,
         message: "Unauthorized",
       });
     }
 
-    const appointments = await Appointment.find({ userId: id })
+    const appointments = await Appointment.find(filter)
       .populate("shopId")
       .populate("userId");
     return callback(null, appointments);
@@ -169,7 +175,7 @@ async function getShopAppointments(req, res, callback) {
       });
     }
 
-    if (!isAuthorizedUser(id, req.headers.authorization)) {
+    if (! await isAuthorizedUser(id, req.headers.authorization)) {
       return callback({
         status: 401,
         message: "Unauthorized",
@@ -213,7 +219,8 @@ async function cancelAppointment(req, res, callback) {
     console.log("appointment ", appointment);
     if (!appointment) return callback("Appointment not found");
 
-    if (!isAuthorizedUser(appointment.userId, req.headers.authorization)) {
+    console.log("access ",Boolean( await isAuthorizedUser(appointment.userId, req.headers.authorization)));
+    if (! await isAuthorizedUser(appointment.userId, req.headers.authorization)) {
       return callback("User not authorized");
     }
 
@@ -254,7 +261,7 @@ async function rejectAppointment(req, res, callback) {
     console.log("appointment ", appointment);
     if (!appointment) return callback("Appointment not found");
 
-    if (!isAuthorizedUser(appointment.shopId, req.headers.authorization)) {
+    if (! await isAuthorizedUser(appointment.shopId, req.headers.authorization)) {
       return callback("User not authorized");
     }
 
@@ -294,7 +301,7 @@ async function acceptAppointment(req, res, callback) {
     console.log("appointment ", appointment);
     if (!appointment) return callback("Appointment not found");
 
-    if (!isAuthorizedUser(appointment.shopId, req.headers.authorization)) {
+    if (! await isAuthorizedUser(appointment.shopId, req.headers.authorization)) {
       return callback("User not authorized");
     }
 
@@ -320,7 +327,7 @@ async function completeAppointment(req, res, callback) {
     console.log("appointment ", appointment);
     if (!appointment) return callback("Appointment not found");
 
-    if (!isAuthorizedUser(appointment.userId, req.headers.authorization)) {
+    if (! await isAuthorizedUser(appointment.userId, req.headers.authorization)) {
       return callback("User not authorized");
     }
 
