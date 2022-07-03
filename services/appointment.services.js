@@ -207,34 +207,15 @@ async function getAppointment(req, callback) {
 
 async function cancelAppointment(req, res, callback) {
   try {
-    const { appointmentId } = req.body.appointmentId;
-    const appointment = await Appointment.findById(appointmentId);
+    const { id } = req.params;
+    console.log("appointmentId ", id);
+    const appointment = await Appointment.findById(id);
+    console.log("appointment ", appointment);
     if (!appointment) return callback("Appointment not found");
 
     if (!isAuthorizedUser(appointment.userId, req.headers.authorization)) {
       return callback("User not authorized");
     }
-
-    const updatedUser = await User.findOneAndUpdate(
-      { _id: appointment.userId },
-      {
-        $pull: {
-          appointments: appointment._id,
-        },
-      },
-      { new: true }
-    );
-    if (!updatedUser) return callback("User not found");
-    const updatedShop = await Shop.findOneAndUpdate(
-      { _id: appointment.shopId },
-      {
-        $pull: {
-          appointments: appointment._id,
-        },
-      },
-      { new: true }
-    );
-    if (!updatedShop) return callback("Shop not found");
 
     const updateSlotsBooked = await SlotsBooked.findOneAndUpdate(
       {
@@ -242,32 +223,129 @@ async function cancelAppointment(req, res, callback) {
         shopId: appointment.shopId,
       },
       {
-        $pull: {
+        $pullAll: {
           slots: appointment.slots,
         },
       },
       { new: true }
     );
+    console.log("updateSlotsBooked ", updateSlotsBooked);
     if (!updateSlotsBooked) return callback("Slots not found");
 
     const updatedAppointment = await Appointment.findByIdAndUpdate(
-      { _id: appointmentId },
+      { _id: id },
       {
         appointmentStatus: "CANCELLED",
       },
       { new: true }
     );
-    if (!updatedAppointment) return callback("Appointment not found");
+    if (!updatedAppointment) return callback("Operation failed");
     return callback(null, updatedAppointment);
   } catch (error) {
     return callback(error);
   }
 }
 
+async function rejectAppointment(req, res, callback) {
+  try {
+    const { id } = req.params;
+    console.log("appointmentId ", id);
+    const appointment = await Appointment.findById(id);
+    console.log("appointment ", appointment);
+    if (!appointment) return callback("Appointment not found");
+
+    if (!isAuthorizedUser(appointment.shopId, req.headers.authorization)) {
+      return callback("User not authorized");
+    }
+
+    const updateSlotsBooked = await SlotsBooked.findOneAndUpdate(
+      {
+        date: appointment.startTime.toLocaleDateString(),
+        shopId: appointment.shopId,
+      },
+      {
+        $pullAll: {
+          slots: appointment.slots,
+        },
+      },
+      { new: true }
+    );
+    console.log("updateSlotsBooked ", updateSlotsBooked);
+
+    const updatedAppointment = await Appointment.findByIdAndUpdate(
+      { _id: id },
+      {
+        appointmentStatus: "REJECTED",
+      },
+      { new: true }
+    );
+    if (!updatedAppointment) return callback("Operation failed");
+    return callback(null, updatedAppointment);
+  } catch (error) {
+    return callback(error);
+  }
+}
+
+async function acceptAppointment(req, res, callback) {
+  try {
+    const { id } = req.params;
+    console.log("appointmentId ", id);
+    const appointment = await Appointment.findById(id);
+    console.log("appointment ", appointment);
+    if (!appointment) return callback("Appointment not found");
+
+    if (!isAuthorizedUser(appointment.shopId, req.headers.authorization)) {
+      return callback("User not authorized");
+    }
+
+    const updatedAppointment = await Appointment.findByIdAndUpdate(
+      { _id: id },
+      {
+        appointmentStatus: "ACCEPTED",
+      },
+      { new: true }
+    );
+    if (!updatedAppointment) return callback("Operation failed");
+    return callback(null, updatedAppointment);
+  } catch (error) {
+    return callback(error);
+  }
+}
+
+async function completeAppointment(req, res, callback) {
+  try {
+    const { id } = req.params;
+    console.log("appointmentId ", id);
+    const appointment = await Appointment.findById(id);
+    console.log("appointment ", appointment);
+    if (!appointment) return callback("Appointment not found");
+
+    if (!isAuthorizedUser(appointment.userId, req.headers.authorization)) {
+      return callback("User not authorized");
+    }
+
+    const updatedAppointment = await Appointment.findByIdAndUpdate(
+      { _id: id },
+      {
+        appointmentStatus: "COMPLETED",
+      },
+      { new: true }
+    );
+    if (!updatedAppointment) return callback("Operation failed");
+    return callback(null, updatedAppointment);
+  } catch (error) {
+    return callback(error);
+  }
+}
+
+
 module.exports = {
   bookAppointment,
   getUserAppointments,
   getShopAppointments,
+  acceptAppointment,
   cancelAppointment,
+  rejectAppointment,
+  completeAppointment,
   getAppointment,
 };

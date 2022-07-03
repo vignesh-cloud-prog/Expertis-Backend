@@ -51,8 +51,7 @@ exports.getAppointment = (req, res, next) => {
 };
 
 exports.cancelAppointment = (req, res, next) => {
-  console.log(req.body);
-
+  
   appointmentServices.cancelAppointment(req, res, (error, results) => {
     if (error) {
       return next(error);
@@ -63,3 +62,39 @@ exports.cancelAppointment = (req, res, next) => {
     });
   });
 };
+
+exports.acceptAppointment = (req, res, next) => {
+  appointmentServices.acceptAppointment(req, res, (error, results) => {
+    if (error) {
+      return next(error);
+    }
+    return res.status(200).send({
+      message: "Success",
+      data: results,
+    });
+  });
+}
+
+exports.rejectAppointment= (req, res, next) => {
+  appointmentServices.rejectAppointment(req, res, (error, results) => {
+    if (error) {
+      return next(error);
+    }
+    return res.status(200).send({
+      message: "Success",
+      data: results,
+    });
+  });
+}
+
+exports.completeAppointment= (req, res, next) => {
+  appointmentServices.completeAppointment(req, res, (error, results) => {
+    if (error) {
+      return next(error);
+    }
+    return res.status(200).send({
+      message: "Success",
+      data: results,
+    });
+  });
+}
