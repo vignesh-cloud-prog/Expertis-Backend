@@ -2,27 +2,9 @@ const shopServices = require("../services/shop.services");
 const bcrypt = require("bcryptjs");
 const {uploadShopLogo} = require("../middleware/upload.js");
 
-exports.register = (req, res, next) => {
-  const { password, email, phone } = req.body;
-  if (email === undefined) {
-    return callback(
-      {
-        message: "Email Required",
-      },
-
-    );
-  }
-  if (phone === undefined) {
-    return callback({
-      message: "Phone Required",
-    });
-  }
-
-  const salt = bcrypt.genSaltSync(10);
-
-  req.body.password = bcrypt.hashSync(password, salt);
-
-  shopServices.register(req.body, (error, results) => {
+exports.create = (req, res, next) => {
+  
+  shopServices.create(req.body, (error, results) => {
     if (error) {
       return next(error);
     }

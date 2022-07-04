@@ -48,7 +48,7 @@ exports.updateProfile = (req, res, next) => {
 };
 
 exports.register = (req, res, next) => {
-  const { password, name, email, phone } = req.body;
+  const { password} = req.body;
   
 
   const errors = validationResult(req);

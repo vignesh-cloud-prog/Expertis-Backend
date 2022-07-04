@@ -6,17 +6,23 @@ const jwt = require("jsonwebtoken");
 const ShopSchema = new Schema(
   {
     owner: {
-      type: String,
-      required: false,
-    },
-    email: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "user",
       required: true,
-      unique: true,
     },
+    beauticians: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "user",
+      },
+    ],
     shopName: {
       type: String,
       required: true,
+    },
+    email: {
+      type: String,
+      required: false,
     },
     phone: {
       type: Number,
@@ -37,19 +43,6 @@ const ShopSchema = new Schema(
       type: String,
       required: false,
     },
-    password: {
-      type: String,
-      required: true,
-    },
-    date: {
-      type: Date,
-      default: Date.now(),
-    },
-    verified: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
     isVerifiedByAdmin: {
       type: Boolean,
       required: false,
@@ -57,10 +50,6 @@ const ShopSchema = new Schema(
     },
     gallery: {
       type: [String],
-      required: false,
-    },
-    location: {
-      type: String,
       required: false,
     },
     services: {
@@ -87,10 +76,8 @@ const ShopSchema = new Schema(
         {
           type: Schema.Types.ObjectId,
           ref: "SlotBooking",
-          
         },
       ],
-      
     },
     appointments: {
       type: [
@@ -104,33 +91,11 @@ const ShopSchema = new Schema(
   { timestamps: true }
 );
 
-ShopSchema.methods.generateVerificationToken = function () {
-  const shop = this;
-  console.log("shop ", shop._id);
-  console.log(
-    "process.env.USER_VERIFICATION_TOKEN_SECRET ",
-    process.env.USER_VERIFICATION_TOKEN_SECRET
-  );
-  const verificationToken = jwt.sign(
-    { ID: shop._id },
-    process.env.USER_VERIFICATION_TOKEN_SECRET,
-    { expiresIn: "7d" }
-  );
-  return verificationToken;
-};
-
-/**
- *  Here we are creating and setting an id property and 
-    removing _id, __v, and the password hash which we do not need 
-    to send back to the client.
- */
 ShopSchema.set("toJSON", {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString();
     delete returnedObject._id;
     delete returnedObject.__v;
-    //do not reveal passwordHash
-    delete returnedObject.password;
   },
 });
 

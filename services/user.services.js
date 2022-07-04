@@ -72,25 +72,6 @@ async function verify({ token }, callback) {
 }
 
 async function register(params, callback) {
-
-  if (params.email === undefined) {
-    console.log(params.email);
-    return callback(
-      {
-        message: "Email Required",
-      },
-      ""
-    );
-  }
-
-  if (params.phone === undefined) {
-    console.log(params.email);
-    return callback({
-      message: "Phone Required",
-    });
-  }
-
-
   const { email } = params;
   const user = await User.findOne({ email }).exec();
   console.log(user);
@@ -144,7 +125,7 @@ async function register(params, callback) {
       });
   } else {
     return callback({
-      message: "Email allready exist try to login",
+      message: "Email already exist try to login",
     });
   }
 }
