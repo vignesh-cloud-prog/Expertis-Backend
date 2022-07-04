@@ -9,8 +9,9 @@ const ReviewSchema = new Schema({
     required: true,
   },
   to: {
-    type: [Schema.Types.ObjectId],
+    type: Schema.Types.ObjectId,
     refPath: "model_type",
+    required: true,
   },
   model_type: {
     type: String,

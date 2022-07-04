@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const userServices = require("../services/user.services");
-const {uploadUserPic} = require("../middleware/upload.js");
+const { uploadUserPic } = require("../middleware/upload.js");
+const { body, validationResult } = require('express-validator');
 
 /**
  * 1. To secure the password, we are using the bcryptjs, It stores the hashed password in the database.
@@ -42,14 +43,20 @@ exports.updateProfile = (req, res, next) => {
 };
 
 exports.register = (req, res, next) => {
-  const { password } = req.body;
+  const { password, name, email, phone } = req.body;
+  
+
+  const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
   const salt = bcrypt.genSaltSync(10);
 
   req.body.password = bcrypt.hashSync(password, salt);
-  const host=req.headers.host;
+  const host = req.headers.host;
 
-  userServices.register({...req.body,host}, (error, results) => {
+  userServices.register({ ...req.body, host }, (error, results) => {
     if (error) {
       return next(error);
     }
@@ -61,9 +68,9 @@ exports.register = (req, res, next) => {
 };
 
 exports.login = (req, res, next) => {
-  console.log("gnc")
+  console.log("gnc");
   const { email, password } = req.body;
-  const host=req.headers.host;
+  const host = req.headers.host;
 
   userServices.login({ email, password, host }, (error, results) => {
     if (error) {
@@ -101,7 +108,6 @@ exports.userProfile = (req, res, next) => {
 };
 
 exports.send_otp = (req, res, next) => {
-
   const email = req.body.email;
   userServices.send_otp(email, (error, results) => {
     if (error) {
@@ -115,19 +121,17 @@ exports.send_otp = (req, res, next) => {
 };
 
 exports.verify_otp = (req, res, next) => {
-
   const email = req.body.email;
   const otp = req.body.otp;
   const hash = req.body.hash;
-  if(!email && !otp && !hash){
+  if (!email && !otp && !hash) {
     return res.status(500).send({
       message: "Data is missing",
-      
     });
   }
   userServices.verifyOTP(email, otp, hash, (error, results) => {
     if (error) {
-      console.log(error)
+      console.log(error);
       return next(error);
     }
     return res.status(200).send({
@@ -137,8 +141,7 @@ exports.verify_otp = (req, res, next) => {
   });
 };
 
-exports.new_password =  (req, res, next) => {
-
+exports.new_password = (req, res, next) => {
   const { password } = req.body;
 
   const salt = bcrypt.genSaltSync(10);
@@ -147,7 +150,7 @@ exports.new_password =  (req, res, next) => {
 
   userServices.new_password(req.body, (error, results) => {
     if (error) {
-      console.log(error)
+      console.log(error);
       return next(error);
     }
     return res.status(200).send({
@@ -161,11 +164,11 @@ exports.reset_password = (req, res, next) => {
   const { newPassword } = req.body;
 
   const salt = bcrypt.genSaltSync(10);
-console.log("hit")
+  console.log("hit");
   req.body.newPassword = bcrypt.hashSync(newPassword, salt);
   userServices.reset_password(req.body, (error, results) => {
     if (error) {
-      console.log(error)
+      console.log(error);
       return next(error);
     }
     return res.status(200).send({
