@@ -33,6 +33,7 @@
     "ejs": "^3.1.5",
     "express": "^4.17.1",
     "express-unless": "^1.0.0",
+    "express-validator": "^6.14.2",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.3",
     "mongoose": "^6.0.10",
@@ -42,6 +43,6 @@
     "otp-generator": "^3.0.0"
   },
   "devDependencies": {
-    "nodemon": "^1.19.4"
+    "nodemon": "^2.0.18"
   }
 }
