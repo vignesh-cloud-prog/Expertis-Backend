@@ -25,11 +25,25 @@ const UserSchema = new Schema(
     },
     gender: {
       type: String,
+      enum: ["MALE", "FEMALE"],
+      required: false,
+    },
+
+    role: {
+      type: [String],
+      enum: ["CUSTOMER", "OWNER", "BEAUTICIAN", "ADMIN"],
+      default: ["CUSTOMER"],
       required: false,
     },
     address: {
       type: String,
       required: false,
+    },
+    pinCode: {
+      type: Number,
+      required: false,
+      min: [6, "Minimum 6 digit Pin Code"],
+      max: [6, "Maximum 6 digit Pin Code"],
     },
     userPic: {
       type: String,
