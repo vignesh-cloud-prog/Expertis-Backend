@@ -16,15 +16,15 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-async function login({ email, password,host }, callback) {
+async function login({ email, password, host }, callback) {
   const user = await User.findOne({ email });
 
   if (user != null) {
     if (bcrypt.compareSync(password, user.password)) {
       if (!user.verified) {
         const verificationToken = user.generateVerificationToken();
-        sendVerificationMail(user.email,verificationToken,host)
-        
+        sendVerificationMail(user.email, verificationToken, host)
+
         return callback({
           message: `Verify your Account. An email just sent to ${user.email}`,
         });
@@ -55,7 +55,7 @@ async function verify({ token }, callback) {
   }
   try {
     // Step 2 - Find user with matching ID
-    const user = await User.findOneAndUpdate({ _id: payload.ID },{verified:true},{new: true});
+    const user = await User.findOneAndUpdate({ _id: payload.ID }, { verified: true }, { new: true });
     console.log(user);
     if (!user) {
       return callback({
@@ -72,7 +72,7 @@ async function verify({ token }, callback) {
 }
 
 async function register(params, callback) {
-  
+
   if (params.email === undefined) {
     console.log(params.email);
     return callback(
@@ -97,8 +97,8 @@ async function register(params, callback) {
       // Step 2 - Generate a verification token with the user's ID
       console.log("generating token");
       const verificationToken = user.generateVerificationToken();
-      sendVerificationMail(user.email,verificationToken,params.host)
-      
+      sendVerificationMail(user.email, verificationToken, params.host)
+
       return callback(null, response);
     })
     .catch((error) => {
@@ -153,16 +153,16 @@ async function send_otp(email, callback) {
         </div>
       </div>
     </div>`,
-    }).then((par)=>{
-      console.log("Email sent",par)
+    }).then((par) => {
+      console.log("Email sent", par)
       console.log(`Your OTP is ${otp}. it will expire in 5 minutes`);
       return callback(null, fullHash);
-    }).catch((e)=>{
-      console.log("Unable to send email",e)
+    }).catch((e) => {
+      console.log("Unable to send email", e)
       return callback("Email Not Sent");
-      
+
     })
-    
+
 
   } else {
     return callback({
@@ -184,15 +184,22 @@ async function verifyOTP(email, otp, hash, callback) {
     .update(data)
     .digest("hex");
   // Match the hashes
+
   if (newCalculatedHash === hashValue) {
-    const user = await User.findOne({ email });
-    const token = auth.generateAccessToken(email);
-    user.verified = true;
-    await user.save();
-    // call toJSON method applied during model instantiation
-    return callback(null, { ...user.toJSON(), token });
+    console.log("matched");
+    let doc = await User.findOneAndUpdate({ email }, { verified: true });
+    console.log(doc);
+    if (!doc)
+      callback(
+        `Cannot update Profile with id=${email}. Maybe user was not found!`
+      );
+    else {
+      const token = auth.generateAccessToken(email);
+      return callback(null, { ...doc.toJSON(), token });
+    }
+  } else {
+    return callback("Invalid OTP");
   }
-  return callback("Invalid OTP");
 }
 
 async function new_password(params, callback) {
@@ -232,17 +239,17 @@ async function reset_password(params, callback) {
   }
 };
 
-function sendVerificationMail(email, token, host){
+function sendVerificationMail(email, token, host) {
 
-      console.log("sending email to ", email);
-      
-      // Step 3 - Email the user a unique verification link
-      const url = `http://${host}/users/verify/${token}`;
-      console.log(url);
-      transporter.sendMail({
-        to: email,
-        subject: "Verify Your Expertis Account",
-        html: `
+  console.log("sending email to ", email);
+
+  // Step 3 - Email the user a unique verification link
+  const url = `http://${host}/users/verify/${token}`;
+  console.log(url);
+  transporter.sendMail({
+    to: email,
+    subject: "Verify Your Expertis Account",
+    html: `
         
         <!DOCTYPE html>
 <html>
@@ -508,7 +515,7 @@ function sendVerificationMail(email, token, host){
 </html>
         
         `,
-      });
+  });
 }
 
 
