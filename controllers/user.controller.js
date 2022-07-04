@@ -1,7 +1,9 @@
 const bcrypt = require("bcryptjs");
 const userServices = require("../services/user.services");
 const { uploadUserPic } = require("../middleware/upload.js");
+
 const { body, validationResult } = require('express-validator');
+
 
 /**
  * 1. To secure the password, we are using the bcryptjs, It stores the hashed password in the database.
@@ -26,6 +28,9 @@ exports.updateProfile = (req, res, next) => {
         gender: req.body.gender,
         userPic: path != "" ? url + "/" + path : "",
       };
+      if (model.userPic == "") {
+        delete model.userPic;
+      }
 
       console.log(model);
 
@@ -127,6 +132,7 @@ exports.verify_otp = (req, res, next) => {
   if (!email && !otp && !hash) {
     return res.status(500).send({
       message: "Data is missing",
+
     });
   }
   userServices.verifyOTP(email, otp, hash, (error, results) => {
@@ -142,6 +148,7 @@ exports.verify_otp = (req, res, next) => {
 };
 
 exports.new_password = (req, res, next) => {
+
   const { password } = req.body;
 
   const salt = bcrypt.genSaltSync(10);
@@ -164,7 +171,7 @@ exports.reset_password = (req, res, next) => {
   const { newPassword } = req.body;
 
   const salt = bcrypt.genSaltSync(10);
-  console.log("hit");
+
   req.body.newPassword = bcrypt.hashSync(newPassword, salt);
   userServices.reset_password(req.body, (error, results) => {
     if (error) {
