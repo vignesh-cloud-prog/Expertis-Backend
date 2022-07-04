@@ -3,6 +3,7 @@ const { uploadReviewPhoto } = require("../middleware/upload.js");
 
 
 exports.addReview = (req, res, next) => {
+
   uploadReviewPhoto(req, res, function (err) {
     if (err) {
       next(err);
@@ -17,6 +18,7 @@ exports.addReview = (req, res, next) => {
         to: req.body.to,
         rating: req.body.rating,
         model_type: req.body.model_type,
+        comment: req.body.comment,
         reviewPhotos: path != "" ? url + "/" + path : "",
       };
       console.log(model);
