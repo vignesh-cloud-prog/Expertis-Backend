@@ -1,6 +1,6 @@
 const shopServices = require("../services/shop.services");
 const bcrypt = require("bcryptjs");
-const { uploadShopLogo } = require("../middleware/upload.js");
+const { uploadShopLogo, uploadServicePhoto } = require("../middleware/upload.js");
 
 exports.create = (req, res, next) => {
 
@@ -19,14 +19,14 @@ exports.create = (req, res, next) => {
         phone: req.body.phone,
         address: req.body.address,
         pincode: req.body.pincode,
-        shoplogo: path != "" ? url + "/" + path : "",
+        shopLogo: path != "" ? url + "/" + path : "",
       };
 
-      if (model.shoplogo == "") {
-        delete model.shoplogo;
+      if (model.shopLogo == "") {
+        delete model.shopLogo;
       }
 
-      console.log(model);
+      // console.log(model);
 
       shopServices.create(model, (error, results) => {
         if (error) {
@@ -42,26 +42,82 @@ exports.create = (req, res, next) => {
 };
 
 exports.addService = (req, res, next) => {
-  console.log("hello")
-  shopServices.addservice(req.body, (error, results) => {
-    if (error) {
-      return next(error);
+
+  uploadServicePhoto(req, res, function (err) {
+    if (err) {
+      next(err);
+    } else {
+      const url = req.protocol + "://" + req.get("host");
+
+      const path =
+        req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
+
+      var model = {
+        id: req.body.shop_id,
+        service_data: {
+          serviceName: req.body.serviceName,
+          price: req.body.price,
+          time: req.body.time,
+          discription: req.body.discription,
+          photo: path != "" ? url + "/" + path : "",
+        }
+      }
+
+      if (model.service_data.photo == "") {
+        delete model.service_data.photo;
+      }
+
+      console.log(model);
+
+      shopServices.addservice(model, (error, results) => {
+        if (error) {
+          return next(error);
+        }
+        return res.status(200).send({
+          message: "Success",
+          data: results,
+        });
+      });
     }
-    return res.status(200).send({
-      message: "Success",
-      data: results,
-    });
   });
 };
 exports.updateService = (req, res, next) => {
-  shopServices.updateservice(req.body, (error, results) => {
-    if (error) {
-      return next(error);
+  uploadServicePhoto(req, res, function (err) {
+    if (err) {
+      next(err);
+    } else {
+      const url = req.protocol + "://" + req.get("host");
+
+      const path =
+        req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
+
+      var model = {
+        id: req.body.service_id,
+        service_data: {
+          serviceName: req.body.serviceName,
+          price: req.body.price,
+          time: req.body.time,
+          discription: req.body.discription,
+          photo: path != "" ? url + "/" + path : "",
+        }
+      }
+
+      if (model.service_data.photo == "") {
+        delete model.service_data.photo;
+      }
+
+      console.log(model);
+
+      shopServices.updateservice(model, (error, results) => {
+        if (error) {
+          return next(error);
+        }
+        return res.status(200).send({
+          message: "Success",
+          data: results,
+        });
+      });
     }
-    return res.status(200).send({
-      message: "Success",
-      data: results,
-    });
   });
 };
 

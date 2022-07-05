@@ -52,7 +52,7 @@ const ShopSchema = new Schema(
       type: [String],
       required: false,
     },
-    
+
 
     tags: {
       type: [
@@ -70,6 +70,15 @@ const ShopSchema = new Schema(
           ref: "SlotBooking",
         },
       ],
+    },
+    services: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "Service",
+        },
+      ],
+      required: false,
     },
     appointments: {
       type: [

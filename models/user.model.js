@@ -62,19 +62,13 @@ const UserSchema = new Schema(
       required: true,
       default: false,
     },
-    services: {
+    shop: {
       type: [
         {
           type: Schema.Types.ObjectId,
-          ref: "Service",
+          ref: "Shop",
         },
       ],
-      required: false,
-    },
-    shop: {
-
-      type: Schema.Types.ObjectId,
-      ref: "Shop",
       required: false,
     },
     appointments: {

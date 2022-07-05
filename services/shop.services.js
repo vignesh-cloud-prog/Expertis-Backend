@@ -31,8 +31,26 @@ async function create(params, callback) {
     shop
       .save()
       .then((response) => {
-        // call toJSON method applied during model instantiation
-        return callback(null, { ...response.toJSON() });
+        console.log(response._id)
+        User.findByIdAndUpdate(
+          owner,
+          {
+            $push: {
+              shop: response._id,
+            },
+          },
+          { new: true }
+        ).then((res) => {
+          if (res == null) {
+            return callback("Document not found");
+          } else {
+            // console.log("res ser", res);
+            return callback(null, response);
+          }
+        })
+          .catch((err) => {
+            return callback(err);
+          });
       })
       .catch((error) => {
         console.log(error);
@@ -78,7 +96,7 @@ async function addservice(params, callback) {
 
 async function updateservice(params, callback) {
   const { id } = params;
-  Services.findByIdAndUpdate(id, params, { useFindAndModify: true, new: true })
+  Services.findByIdAndUpdate(id, params.service_data, { useFindAndModify: true, new: true })
     .then((response) => {
       if (!response)
         callback(
@@ -139,7 +157,7 @@ async function getShopById(params, callback) {
 async function updateShop(params, callback) {
   const shopId = params.shopId;
 
-  Shop.findByIdAndUpdate(shopId, params, { useFindAndModify: false })
+  Shop.findByIdAndUpdate(shopId, params, { useFindAndModify: false, new: true })
     .then((response) => {
       if (!response)
         callback(
@@ -170,7 +188,7 @@ async function deleteShop(params, callback) {
 
 module.exports = {
   create,
-
+  updateservice,
   verifyOTP,
   addservice,
   getShopById,
