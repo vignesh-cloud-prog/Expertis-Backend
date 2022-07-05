@@ -3,8 +3,11 @@ function errorHandler(err, req, res, next) {
     // custom application error
     return res.status(400).json({ message: err });
   }
-  if(err.status && err.message){
+  if (err.status && err.message) {
     return res.status(err.status).json({ message: err.message });
+  }
+  if (err.status && err.data) {
+    return res.status(err.status).json({ data: err.data });
   }
 
   if (err.name === "ValidationError") {

@@ -9,4 +9,4 @@ router.get("/shop/:id", shopsController.getShop);
 router.put("/shop/:id", shopsController.updateShop);
 router.delete("/shop/:id", shopsController.deleteShop);
 
-module.exports = router
+module.exports = router;

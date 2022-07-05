@@ -9,7 +9,6 @@ const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const { Services } = require("../models/service.model");
 
-
 async function create(params, callback) {
   const { owner, phone } = params;
   const user = await User.findById(owner).exec();
@@ -31,7 +30,7 @@ async function create(params, callback) {
     shop
       .save()
       .then((response) => {
-        console.log(response._id)
+        console.log(response._id);
         User.findByIdAndUpdate(
           owner,
           {
@@ -40,14 +39,15 @@ async function create(params, callback) {
             },
           },
           { new: true }
-        ).then((res) => {
-          if (res == null) {
-            return callback("Document not found");
-          } else {
-            // console.log("res ser", res);
-            return callback(null, response);
-          }
-        })
+        )
+          .then((res) => {
+            if (res == null) {
+              return callback("Document not found");
+            } else {
+              // console.log("res ser", res);
+              return callback(null, response);
+            }
+          })
           .catch((err) => {
             return callback(err);
           });
@@ -96,7 +96,10 @@ async function addservice(params, callback) {
 
 async function updateservice(params, callback) {
   const { id } = params;
-  Services.findByIdAndUpdate(id, params.service_data, { useFindAndModify: true, new: true })
+  Services.findByIdAndUpdate(id, params.service_data, {
+    useFindAndModify: true,
+    new: true,
+  })
     .then((response) => {
       if (!response)
         callback(

@@ -53,7 +53,6 @@ const ShopSchema = new Schema(
       required: false,
     },
 
-
     tags: {
       type: [
         {

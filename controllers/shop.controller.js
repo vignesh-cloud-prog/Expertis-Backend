@@ -1,9 +1,11 @@
 const shopServices = require("../services/shop.services");
 const bcrypt = require("bcryptjs");
-const { uploadShopLogo, uploadServicePhoto } = require("../middleware/upload.js");
+const {
+  uploadShopLogo,
+  uploadServicePhoto,
+} = require("../middleware/upload.js");
 
 exports.create = (req, res, next) => {
-
   uploadShopLogo(req, res, function (err) {
     if (err) {
       next(err);
@@ -42,7 +44,6 @@ exports.create = (req, res, next) => {
 };
 
 exports.addService = (req, res, next) => {
-
   uploadServicePhoto(req, res, function (err) {
     if (err) {
       next(err);
@@ -60,8 +61,8 @@ exports.addService = (req, res, next) => {
           time: req.body.time,
           discription: req.body.discription,
           photo: path != "" ? url + "/" + path : "",
-        }
-      }
+        },
+      };
 
       if (model.service_data.photo == "") {
         delete model.service_data.photo;
@@ -99,8 +100,8 @@ exports.updateService = (req, res, next) => {
           time: req.body.time,
           discription: req.body.discription,
           photo: path != "" ? url + "/" + path : "",
-        }
-      }
+        },
+      };
 
       if (model.service_data.photo == "") {
         delete model.service_data.photo;
@@ -125,19 +126,15 @@ exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   shopServices.login({ email, password }, (error, results) => {
-
-
     if (error) {
-
       if (error.code == 302) {
         return res.status(302).send({
           message: "verify your account",
           data: error,
         });
       }
-      console.log(error)
+      console.log(error);
       return next(error);
-
     }
 
     return res.status(200).send({
@@ -148,13 +145,12 @@ exports.login = (req, res, next) => {
 };
 
 exports.verify_otp = (req, res, next) => {
-
   const email = req.body.email;
   const otp = req.body.otp;
-  const hash = req.body.hash
+  const hash = req.body.hash;
   shopServices.verifyOTP(email, otp, hash, (error, results) => {
     if (error) {
-      console.log(error)
+      console.log(error);
       return next(error);
     }
     return res.status(200).send({
@@ -233,4 +229,3 @@ exports.deleteShop = (req, res, next) => {
     });
   });
 };
-

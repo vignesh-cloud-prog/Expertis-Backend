@@ -32,7 +32,7 @@ exports.updateProfile = (req, res, next) => {
         delete model.userPic;
       }
 
-      console.log(model);
+      // console.log(model);
 
       userServices.updateProfile(model, (error, results) => {
         if (error) {
@@ -66,7 +66,6 @@ exports.register = (req, res, next) => {
 };
 
 exports.login = (req, res, next) => {
-  console.log("gnc");
   const { email, password } = req.body;
   const host = req.headers.host;
 
@@ -82,9 +81,8 @@ exports.login = (req, res, next) => {
 };
 
 exports.verify = (req, res, next) => {
-  console.log("hjbhj");
   const { token } = req.params;
-  console.log("token ", token);
+  // console.log("token ", token);
   // Check we have an id
   if (!token) {
     return res.status(422).send({
@@ -120,18 +118,18 @@ exports.forgetPassword = (req, res, next) => {
 };
 
 exports.verifyOTP = (req, res, next) => {
-  const email = req.body.email;
+  const id = req.body.id;
   const otp = req.body.otp;
   const hash = req.body.hash;
 
-  if (!email && !otp && !hash) {
-    return res.status(500).send({
+  if (!id && !otp && !hash) {
+    return res.status(400).send({
       message: "Data is missing",
     });
   }
-  userServices.verifyOTP(email, otp, hash, (error, results) => {
+  userServices.verifyOTP(id, otp, hash, (error, results) => {
     if (error) {
-      console.log(error);
+      // console.log(error);
       return next(error);
     }
     return res.status(200).send({
@@ -142,7 +140,7 @@ exports.verifyOTP = (req, res, next) => {
 };
 
 exports.changePassword = (req, res, next) => {
-  console.log("changePassword");
+  // console.log("changePassword");
   const email = req.body.email;
   const otp = req.body.otp;
   const hash = req.body.hash;
@@ -167,7 +165,7 @@ exports.changePassword = (req, res, next) => {
   // Match the hashes
 
   if (newCalculatedHash === hashValue) {
-    console.log("matched");
+    // console.log("matched");
 
     const salt = bcrypt.genSaltSync(10);
 
@@ -175,7 +173,7 @@ exports.changePassword = (req, res, next) => {
 
     userServices.changePassword(req.body, (error, results) => {
       if (error) {
-        console.log(error);
+        // console.log(error);
         return next(error);
       }
       return res.status(200).send({
@@ -198,7 +196,7 @@ exports.reset_password = (req, res, next) => {
   req.body.newPassword = bcrypt.hashSync(newPassword, salt);
   userServices.reset_password(req.body, (error, results) => {
     if (error) {
-      console.log(error);
+      // console.log(error);
       return next(error);
     }
     return res.status(200).send({

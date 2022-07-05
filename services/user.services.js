@@ -21,7 +21,8 @@ async function login(params, callback) {
 
   if (user != null) {
     if (bcrypt.compareSync(password, user.password)) {
-      if (!user.verified) {
+      if (user.verified == false) {
+        console.log("User not verified");
         const otp = otpGenerator.generate(6, {
           alphabets: false,
           upperCase: false,
@@ -29,17 +30,18 @@ async function login(params, callback) {
         });
         const ttl = 5 * 60 * 1000; //5 Minutes in miliseconds
         const expires = Date.now() + ttl; //timestamp to 5 minutes in the future
-        const data = `${params.email}.${otp}.${expires}`; // phone.otp.expiry_timestamp
+        const data = `${user._id}.${otp}.${expires}`; // phone.otp.expiry_timestamp
         const hash = crypto
           .createHmac("sha256", key)
           .update(data)
           .digest("hex"); // creating SHA256 hash of the data
         const fullHash = `${hash}.${expires}`; // Hash.expires, format to send to the user
         // you have to implement the function to send SMS yourself. For demo purpose. let's assume it's called sendSMS
-        transporter.sendMail({
-          to: email,
-          subject: "Verify Account",
-          html: `<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
+        await transporter
+          .sendMail({
+            to: email,
+            subject: "Verify Account",
+            html: `<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
       <div style="margin:50px auto;width:70%;padding:20px 0">
         <div style="border-bottom:1px solid #eee">
           <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">Expertis Inc</a>
@@ -56,14 +58,27 @@ async function login(params, callback) {
         </div>
       </div>
     </div>`,
-        });
-        console.log(`Your OTP is ${otp}. it will expire in 5 minutes`);
-        return callback(null, fullHash);
+          })
+          .then((response) => {
+            console.log(`Your OTP is ${otp} . it will expire in 5 minutes`);
+            return callback({
+              status: 300,
+              data: {
+                hash: fullHash,
+                email: user.email,
+                id: user._id,
+              },
+            });
+          })
+          .catch((err) => {
+            return callback({ status: 400, message: "Email can't be sent" });
+          });
+      } else {
+        const token = auth.generateAccessToken(user._id);
+        console.log(user, token);
+        // call toJSON method applied during model instantiation
+        return callback(null, { ...user.toJSON(), token });
       }
-      const token = auth.generateAccessToken(user._id);
-      console.log(user, token);
-      // call toJSON method applied during model instantiation
-      return callback(null, { ...user.toJSON(), token });
     } else {
       return callback({
         status: 400,
@@ -110,32 +125,26 @@ async function verify({ token }, callback) {
 
 async function register(params, callback) {
   const { email } = params;
+  console.log("email", email);
   const user = await User.findOne({ email }).exec();
-  console.log(user);
-  if (user == null) {
-    const user = new User(params);
-    user
-      .save()
-      .then((response) => {
-        console.log(params.email);
-        const otp = otpGenerator.generate(6, {
-          alphabets: false,
-          upperCase: false,
-          specialChars: false,
-        });
-        const ttl = 5 * 60 * 1000; //5 Minutes in miliseconds
-        const expires = Date.now() + ttl; //timestamp to 5 minutes in the future
-        const data = `${params.email}.${otp}.${expires}`; // phone.otp.expiry_timestamp
-        const hash = crypto
-          .createHmac("sha256", key)
-          .update(data)
-          .digest("hex"); // creating SHA256 hash of the data
-        const fullHash = `${hash}.${expires}`; // Hash.expires, format to send to the user
-        // you have to implement the function to send SMS yourself. For demo purpose. let's assume it's called sendSMS
-        transporter.sendMail({
-          to: email,
-          subject: "Verify Account",
-          html: `<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
+  if (user != null) {
+    return callback({
+      status: 400,
+      message: "User already exists!",
+    });
+  }
+  const otp = otpGenerator.generate(6, {
+    alphabets: false,
+    upperCase: false,
+    specialChars: false,
+  });
+
+  // you have to implement the function to send SMS yourself. For demo purpose. let's assume it's called sendSMS
+  transporter
+    .sendMail({
+      to: email,
+      subject: "Verify Account",
+      html: `<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
       <div style="margin:50px auto;width:70%;padding:20px 0">
         <div style="border-bottom:1px solid #eee">
           <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">Expertis Inc</a>
@@ -152,25 +161,41 @@ async function register(params, callback) {
         </div>
       </div>
     </div>`,
-        }).then((response) => {
+    })
+    .then((response) => {
+      console.log("OTP response", response);
+      console.log(`Your OTP is ${otp} . it will expire in 5 minutes`);
+
+      const user = new User(params);
+      user
+        .save()
+        .then((response) => {
           console.log(response);
-        }
-        ).catch((err) => {
-          console.log(err);
-        }
-        );
-        console.log(`Your OTP is ${otp}. it will expire in 5 minutes`);
-        return callback(null, fullHash);
-      })
-      .catch((error) => {
-        console.log(error);
-        return callback(error);
-      });
-  } else {
-    return callback({
-      message: "Email already exist try to login",
+          console.log(user._id);
+
+          const ttl = 5 * 60 * 1000; //5 Minutes in miliseconds
+          const expires = Date.now() + ttl; //timestamp to 5 minutes in the future
+          const data = `${user._id}.${otp}.${expires}`; // phone.otp.expiry_timestamp
+          const hash = crypto
+            .createHmac("sha256", key)
+            .update(data)
+            .digest("hex"); // creating SHA256 hash of the data
+          const fullHash = `${hash}.${expires}`; // Hash.expires, format to send to the user
+          return callback(null, {
+            hash: fullHash,
+            email: user.email,
+            id: user._id,
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+          return callback(error);
+        });
+    })
+    .catch((err) => {
+      console.log(err);
+      return callback({ status: 400, message: "Email can't be sent" });
     });
-  }
 }
 
 async function updateProfile(params, callback) {
@@ -242,15 +267,15 @@ async function forgetPassword(email, callback) {
   }
 }
 
-async function verifyOTP(email, otp, hash, callback) {
+async function verifyOTP(id, otp, hash, callback) {
   // Separate Hash value and expires from the hash returned from the user
-
   let [hashValue, expires] = hash.split(".");
   // Check if expiry time has passed
   let now = Date.now();
-  if (now > parseInt(expires)) return callback("OTP Expired");
+  if (now > parseInt(expires))
+    return callback({ status: 400, message: "OTP Expired" });
   // Calculate new hash with the same key and the same algorithm
-  let data = `${email}.${otp}.${expires}`;
+  let data = `${id}.${otp}.${expires}`;
   let newCalculatedHash = crypto
     .createHmac("sha256", key)
     .update(data)
@@ -259,14 +284,18 @@ async function verifyOTP(email, otp, hash, callback) {
 
   if (newCalculatedHash === hashValue) {
     console.log("matched");
-    let doc = await User.findOneAndUpdate({ email }, { verified: true });
+    let doc = await User.findByIdAndUpdate(
+      id,
+      { verified: true },
+      { useFindAndModify: true, new: true }
+    );
     console.log(doc);
     if (!doc)
       callback(
-        `Cannot update Profile with id=${email}. Maybe user was not found!`
+        `Cannot update Profile with id=${id}. Maybe user was not found!`
       );
     else {
-      const token = auth.generateAccessToken(email);
+      const token = auth.generateAccessToken(doc._id);
       return callback(null, { ...doc.toJSON(), token });
     }
   } else {

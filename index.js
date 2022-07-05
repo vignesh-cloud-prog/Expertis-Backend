@@ -9,7 +9,6 @@ const auth = require("./middleware/auth.js");
 const errors = require("./middleware/errors.js");
 const unless = require("express-unless");
 
-
 // connect to mongodb
 
 /**
@@ -51,7 +50,7 @@ app.use(
       { url: /^\/uploads\/.*/, methods: ["GET"] },
       { url: "/users/forget-password", methods: ["POST"] },
       { url: "/users/change-password", methods: ["POST"] },
-      { url: "/users/verify_otp", methods: ["POST"] },
+      { url: "/users/verify-otp", methods: ["POST"] },
       { url: "/", methods: ["GET"] },
       { url: "/shops/login", methods: ["POST"] },
       { url: "/shops/verify_otp", methods: ["POST"] },
@@ -59,7 +58,6 @@ app.use(
   })
 );
 app.use(express.json());
-
 
 // initialize routes
 app.get("/", (req, res) => res.send("API Working!!"));
