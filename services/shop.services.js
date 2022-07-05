@@ -10,14 +10,20 @@ const nodemailer = require("nodemailer");
 const { Services } = require("../models/service.model");
 
 
-async function register(params, callback) {
-  const {userId}=params;
-  const user = await User.findById(userId).exec();
-  if (user == null || user.verified == false) {
+async function create(params, callback) {
+  const { owner, phone } = params;
+  const user = await User.findById(owner).exec();
+  if (user == null) {
     return callback({
       message: "Invalid User",
     });
   }
+  if (user.verified == false) {
+    return callback({
+      message: "User not veryfied",
+    });
+  }
+
   const shop = await Shop.findOne({ phone }).exec();
   console.log(shop);
   if (shop == null) {
@@ -163,8 +169,8 @@ async function deleteShop(params, callback) {
 }
 
 module.exports = {
-  register,
-  
+  create,
+
   verifyOTP,
   addservice,
   getShopById,

@@ -1,17 +1,43 @@
 const shopServices = require("../services/shop.services");
 const bcrypt = require("bcryptjs");
-const {uploadShopLogo} = require("../middleware/upload.js");
+const { uploadShopLogo } = require("../middleware/upload.js");
 
 exports.create = (req, res, next) => {
-  
-  shopServices.create(req.body, (error, results) => {
-    if (error) {
-      return next(error);
+
+  uploadShopLogo(req, res, function (err) {
+    if (err) {
+      next(err);
+    } else {
+      const url = req.protocol + "://" + req.get("host");
+
+      const path =
+        req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
+
+      var model = {
+        owner: req.body.owner_id,
+        shopName: req.body.shopName,
+        phone: req.body.phone,
+        address: req.body.address,
+        pincode: req.body.pincode,
+        shoplogo: path != "" ? url + "/" + path : "",
+      };
+
+      if (model.shoplogo == "") {
+        delete model.shoplogo;
+      }
+
+      console.log(model);
+
+      shopServices.create(model, (error, results) => {
+        if (error) {
+          return next(error);
+        }
+        return res.status(200).send({
+          message: "Success",
+          data: results,
+        });
+      });
     }
-    return res.status(200).send({
-      message: "Success",
-      data: results,
-    });
   });
 };
 
@@ -111,11 +137,15 @@ exports.updateShop = (req, res, next) => {
       var model = {
         shopId: req.params.id,
         shopName: req.body.shopName,
-        phone: req.body.productName,
-        address: req.body.productDescription,
-        pincode: req.body.productPrice,
+        phone: req.body.phone,
+        address: req.body.address,
+        pincode: req.body.pincode,
         shoplogo: path != "" ? url + "/" + path : "",
       };
+
+      if (model.shoplogo == "") {
+        delete model.shoplogo;
+      }
 
       console.log(model);
 

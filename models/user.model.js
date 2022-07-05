@@ -62,6 +62,21 @@ const UserSchema = new Schema(
       required: true,
       default: false,
     },
+    services: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "Service",
+        },
+      ],
+      required: false,
+    },
+    shop: {
+
+      type: Schema.Types.ObjectId,
+      ref: "Shop",
+      required: false,
+    },
     appointments: {
       type: [
         {
