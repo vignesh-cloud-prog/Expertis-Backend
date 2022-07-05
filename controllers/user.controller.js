@@ -2,8 +2,8 @@ const bcrypt = require("bcryptjs");
 const userServices = require("../services/user.services");
 const { uploadUserPic } = require("../middleware/upload.js");
 
-const { body, validationResult } = require('express-validator');
-
+const crypto = require("crypto");
+const key = "verysecretkey";
 
 /**
  * 1. To secure the password, we are using the bcryptjs, It stores the hashed password in the database.
@@ -48,14 +48,7 @@ exports.updateProfile = (req, res, next) => {
 };
 
 exports.register = (req, res, next) => {
-  const { password} = req.body;
-  
-
-  const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
+  const { password } = req.body;
   const salt = bcrypt.genSaltSync(10);
 
   req.body.password = bcrypt.hashSync(password, salt);
@@ -89,7 +82,7 @@ exports.login = (req, res, next) => {
 };
 
 exports.verify = (req, res, next) => {
-  console.log("hjbhj")
+  console.log("hjbhj");
   const { token } = req.params;
   console.log("token ", token);
   // Check we have an id
@@ -113,9 +106,9 @@ exports.userProfile = (req, res, next) => {
   return res.status(401).json({ message: "Authorized User!!" });
 };
 
-exports.send_otp = (req, res, next) => {
+exports.forgetPassword = (req, res, next) => {
   const email = req.body.email;
-  userServices.send_otp(email, (error, results) => {
+  userServices.forgetPassword(email, (error, results) => {
     if (error) {
       return next(error);
     }
@@ -126,16 +119,14 @@ exports.send_otp = (req, res, next) => {
   });
 };
 
-exports.verify_otp = (req, res, next) => {
-  console.log("ghvhv")
+exports.verifyOTP = (req, res, next) => {
   const email = req.body.email;
   const otp = req.body.otp;
   const hash = req.body.hash;
-  
+
   if (!email && !otp && !hash) {
     return res.status(500).send({
       message: "Data is missing",
-
     });
   }
   userServices.verifyOTP(email, otp, hash, (error, results) => {
@@ -150,24 +141,53 @@ exports.verify_otp = (req, res, next) => {
   });
 };
 
-exports.new_password = (req, res, next) => {
-
+exports.changePassword = (req, res, next) => {
+  console.log("changePassword");
+  const email = req.body.email;
+  const otp = req.body.otp;
+  const hash = req.body.hash;
   const { password } = req.body;
 
-  const salt = bcrypt.genSaltSync(10);
+  // Separate Hash value and expires from the hash returned from the user
 
-  req.body.password = bcrypt.hashSync(password, salt);
-
-  userServices.new_password(req.body, (error, results) => {
-    if (error) {
-      console.log(error);
-      return next(error);
-    }
-    return res.status(200).send({
-      message: "Success",
-      data: results,
+  let [hashValue, expires] = hash.split(".");
+  // Check if expiry time has passed
+  let now = Date.now();
+  if (now > parseInt(expires)) {
+    return res.status(400).send({
+      message: "OTP Expired",
     });
-  });
+  }
+  // Calculate new hash with the same key and the same algorithm
+  let data = `${email}.${otp}.${expires}`;
+  let newCalculatedHash = crypto
+    .createHmac("sha256", key)
+    .update(data)
+    .digest("hex");
+  // Match the hashes
+
+  if (newCalculatedHash === hashValue) {
+    console.log("matched");
+
+    const salt = bcrypt.genSaltSync(10);
+
+    req.body.password = bcrypt.hashSync(password, salt);
+
+    userServices.changePassword(req.body, (error, results) => {
+      if (error) {
+        console.log(error);
+        return next(error);
+      }
+      return res.status(200).send({
+        message: "Success",
+        data: results,
+      });
+    });
+  } else {
+    return res.status(400).send({
+      message: "OTP does not match",
+    });
+  }
 };
 
 exports.reset_password = (req, res, next) => {

@@ -7,7 +7,6 @@ const crypto = require("crypto");
 const key = "verysecretkey"; // Key for cryptograpy. Keep it secret
 const nodemailer = require("nodemailer");
 
-
 const transporter = nodemailer.createTransport({
   service: "Gmail",
   auth: {
@@ -67,11 +66,13 @@ async function login(params, callback) {
       return callback(null, { ...user.toJSON(), token });
     } else {
       return callback({
+        status: 400,
         message: "Invalid Password!",
       });
     }
   } else {
     return callback({
+      status: 400,
       message: "User does not exist!",
     });
   }
@@ -87,7 +88,11 @@ async function verify({ token }, callback) {
   }
   try {
     // Step 2 - Find user with matching ID
-    const user = await User.findOneAndUpdate({ _id: payload.ID }, { verified: true }, { new: true });
+    const user = await User.findOneAndUpdate(
+      { _id: payload.ID },
+      { verified: true },
+      { new: true }
+    );
     console.log(user);
     if (!user) {
       return callback({
@@ -147,7 +152,13 @@ async function register(params, callback) {
         </div>
       </div>
     </div>`,
-        });
+        }).then((response) => {
+          console.log(response);
+        }
+        ).catch((err) => {
+          console.log(err);
+        }
+        );
         console.log(`Your OTP is ${otp}. it will expire in 5 minutes`);
         return callback(null, fullHash);
       })
@@ -166,7 +177,7 @@ async function updateProfile(params, callback) {
   const userId = params.id;
   console.log(userId);
 
-  User.findByIdAndUpdate(userId, params, { useFindAndModify: true, new: true, })
+  User.findByIdAndUpdate(userId, params, { useFindAndModify: true, new: true })
     .then((response) => {
       if (!response)
         callback(
@@ -179,20 +190,25 @@ async function updateProfile(params, callback) {
     });
 }
 
-async function send_otp(email, callback) {
+async function forgetPassword(email, callback) {
   const user = await User.findOne({ email });
   if (user != null) {
-    const otp = otpGenerator.generate(6, { alphabets: false, upperCase: false, specialChars: false });
+    const otp = otpGenerator.generate(6, {
+      alphabets: false,
+      upperCase: false,
+      specialChars: false,
+    });
     const ttl = 5 * 60 * 1000; //5 Minutes in miliseconds
     const expires = Date.now() + ttl; //timestamp to 5 minutes in the future
     const data = `${email}.${otp}.${expires}`; // phone.otp.expiry_timestamp
     const hash = crypto.createHmac("sha256", key).update(data).digest("hex"); // creating SHA256 hash of the data
     const fullHash = `${hash}.${expires}`; // Hash.expires, format to send to the user
     // you have to implement the function to send SMS yourself. For demo purpose. let's assume it's called sendSMS
-    transporter.sendMail({
-      to: email,
-      subject: "Verify Account",
-      html: `<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
+    transporter
+      .sendMail({
+        to: email,
+        subject: "Verify Account",
+        html: `<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
       <div style="margin:50px auto;width:70%;padding:20px 0">
         <div style="border-bottom:1px solid #eee">
           <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">Expertis Inc</a>
@@ -209,17 +225,16 @@ async function send_otp(email, callback) {
         </div>
       </div>
     </div>`,
-    }).then((par) => {
-      console.log("Email sent", par)
-      console.log(`Your OTP is ${otp}. it will expire in 5 minutes`);
-      return callback(null, fullHash);
-    }).catch((e) => {
-      console.log("Unable to send email", e)
-      return callback("Email Not Sent");
-
-    })
-
-
+      })
+      .then((par) => {
+        console.log("Email sent", par);
+        console.log(`Your OTP is ${otp}. it will expire in 5 minutes`);
+        return callback(null, { hash: fullHash, email: user.email });
+      })
+      .catch((e) => {
+        console.log("Unable to send email", e);
+        return callback("Email Not Sent");
+      });
   } else {
     return callback({
       message: "Email Not Registered",
@@ -229,7 +244,7 @@ async function send_otp(email, callback) {
 
 async function verifyOTP(email, otp, hash, callback) {
   // Separate Hash value and expires from the hash returned from the user
-  console.log("Hekoo")
+
   let [hashValue, expires] = hash.split(".");
   // Check if expiry time has passed
   let now = Date.now();
@@ -259,9 +274,10 @@ async function verifyOTP(email, otp, hash, callback) {
   }
 }
 
-async function new_password(params, callback) {
-
-  User.findByIdAndUpdate(params.id, params, { useFindAndModify: true })
+async function changePassword(params, callback) {
+  User.findOneAndUpdate({ email: params.email }, params, {
+    useFindAndModify: true,
+  })
     .then((response) => {
       if (!response)
         callback(
@@ -275,10 +291,14 @@ async function new_password(params, callback) {
 }
 
 async function reset_password(params, callback) {
-  const { id, newPassword, oldPassword } = params
+  const { id, newPassword, oldPassword } = params;
   const user = await User.findOne({ id });
   if (bcrypt.compareSync(oldPassword, user.password)) {
-    User.findByIdAndUpdate(params.id, { "password": newPassword }, { useFindAndModify: true })
+    User.findByIdAndUpdate(
+      params.id,
+      { password: newPassword },
+      { useFindAndModify: true }
+    )
       .then((response) => {
         if (!response)
           callback(
@@ -294,10 +314,9 @@ async function reset_password(params, callback) {
       message: "Invalid Password",
     });
   }
-};
+}
 
 function sendVerificationMail(email, token, host) {
-
   console.log("sending email to ", email);
 
   // Step 3 - Email the user a unique verification link
@@ -575,14 +594,13 @@ function sendVerificationMail(email, token, host) {
   });
 }
 
-
 module.exports = {
   login,
   register,
   verify,
   updateProfile,
-  send_otp,
+  forgetPassword,
   verifyOTP,
-  new_password,
+  changePassword,
   reset_password,
 };
