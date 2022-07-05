@@ -16,18 +16,50 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-async function login({ email, password, host }, callback) {
+async function login(params, callback) {
+  const { email, password } = params;
   const user = await User.findOne({ email });
 
   if (user != null) {
     if (bcrypt.compareSync(password, user.password)) {
       if (!user.verified) {
-        const verificationToken = user.generateVerificationToken();
-        sendVerificationMail(user.email, verificationToken, host)
-
-        return callback({
-          message: `Verify your Account. An email just sent to ${user.email}`,
+        const otp = otpGenerator.generate(6, {
+          alphabets: false,
+          upperCase: false,
+          specialChars: false,
         });
+        const ttl = 5 * 60 * 1000; //5 Minutes in miliseconds
+        const expires = Date.now() + ttl; //timestamp to 5 minutes in the future
+        const data = `${params.email}.${otp}.${expires}`; // phone.otp.expiry_timestamp
+        const hash = crypto
+          .createHmac("sha256", key)
+          .update(data)
+          .digest("hex"); // creating SHA256 hash of the data
+        const fullHash = `${hash}.${expires}`; // Hash.expires, format to send to the user
+        // you have to implement the function to send SMS yourself. For demo purpose. let's assume it's called sendSMS
+        transporter.sendMail({
+          to: email,
+          subject: "Verify Account",
+          html: `<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
+      <div style="margin:50px auto;width:70%;padding:20px 0">
+        <div style="border-bottom:1px solid #eee">
+          <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">Expertis Inc</a>
+        </div>
+        <p style="font-size:1.1em">Verify,</p>
+        <p>Thank you for choosing Expertis. Use the following OTP to reset password pocess. OTP is valid for 5 minutes</p>
+        <h2 style="background: #00466a;margin: 0 auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">${otp}</h2>
+        <p style="font-size:0.9em;">Regards,<br />Expertis</p>
+        <hr style="border:none;border-top:1px solid #eee" />
+        <div style="float:right;padding:8px 0;color:#aaa;font-size:0.8em;line-height:1;font-weight:300">
+          <p>Expertis Inc</p>
+          <p>Find your best</p>
+          <p>India</p>
+        </div>
+      </div>
+    </div>`,
+        });
+        console.log(`Your OTP is ${otp}. it will expire in 5 minutes`);
+        return callback(null, fullHash);
       }
       const token = auth.generateAccessToken(user._id);
       console.log(user, token);
@@ -197,6 +229,7 @@ async function send_otp(email, callback) {
 
 async function verifyOTP(email, otp, hash, callback) {
   // Separate Hash value and expires from the hash returned from the user
+  console.log("Hekoo")
   let [hashValue, expires] = hash.split(".");
   // Check if expiry time has passed
   let now = Date.now();

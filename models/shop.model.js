@@ -26,7 +26,7 @@ const ShopSchema = new Schema(
     },
     phone: {
       type: Number,
-
+      unique: [true, "Phone number should be unique"],
       required: [true, "Phone number is required"],
     },
     address: {
@@ -52,15 +52,7 @@ const ShopSchema = new Schema(
       type: [String],
       required: false,
     },
-    services: {
-      type: [
-        {
-          type: Schema.Types.ObjectId,
-          ref: "Service",
-        },
-      ],
-      required: false,
-    },
+    
 
     tags: {
       type: [

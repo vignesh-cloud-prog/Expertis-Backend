@@ -52,7 +52,6 @@ app.use(
       { url: "/users/send_otp", methods: ["POST"] },
       { url: "/users/verify_otp", methods: ["POST"] },
       { url: "/", methods: ["GET"] },
-      { url: "/shops/register", methods: ["POST"] },
       { url: "/shops/login", methods: ["POST"] },
       { url: "/shops/verify_otp", methods: ["POST"] },
     ],

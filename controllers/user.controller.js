@@ -89,6 +89,7 @@ exports.login = (req, res, next) => {
 };
 
 exports.verify = (req, res, next) => {
+  console.log("hjbhj")
   const { token } = req.params;
   console.log("token ", token);
   // Check we have an id
@@ -126,9 +127,11 @@ exports.send_otp = (req, res, next) => {
 };
 
 exports.verify_otp = (req, res, next) => {
+  console.log("ghvhv")
   const email = req.body.email;
   const otp = req.body.otp;
   const hash = req.body.hash;
+  
   if (!email && !otp && !hash) {
     return res.status(500).send({
       message: "Data is missing",

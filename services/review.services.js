@@ -3,15 +3,16 @@ const User = require("../models/user.model");
 const Reviews = require("../models/review.model");
 
 async function addReview(params, callback) {
-  // const { from, to, model_type, comment, rating } = params;
+  const { from, to, model_type, comment, rating } = params;
   // console.log(params);
-  Reviews.create(params).then(res => {
+  Reviews.findOneAndUpdate({ from, to, model_type }, params, { new: true, upsert: true }).then(res => {
     return callback(null, res);
   }).catch(e => {
     console.log(e)
     return callback(e)
 
   })
+  // Reviews.create(params)
 }
 async function updateReview(params, callback) {
   const { id } = params;
