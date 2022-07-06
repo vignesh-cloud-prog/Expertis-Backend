@@ -67,6 +67,7 @@ async function login(params, callback) {
                 hash: fullHash,
                 email: user.email,
                 id: user._id,
+                message:'Verify your email, OTP sent to your email',
               },
             });
           })
@@ -77,7 +78,7 @@ async function login(params, callback) {
         const token = auth.generateAccessToken(user._id);
         console.log(user, token);
         // call toJSON method applied during model instantiation
-        return callback(null, { ...user.toJSON(), token });
+        return callback(null, { ...user.toJSON(), token, message: "Login Successful" });
       }
     } else {
       return callback({
