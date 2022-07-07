@@ -22,7 +22,7 @@ router.post(
 );
 router.get("/verify/:token", usersController.verify);
 router.post("/update-profile/:id", usersController.updateProfile);
-router.get("/user-profile", usersController.userProfile);
+router.get("/verify-token", usersController.verifyToken);
 router.post("/forget-password", usersController.forgetPassword);
 router.post("/verify-otp", usersController.verifyOTP);
 router.post("/change-password", usersController.changePassword);

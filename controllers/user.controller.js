@@ -100,8 +100,8 @@ exports.verify = (req, res, next) => {
   });
 };
 
-exports.userProfile = (req, res, next) => {
-  return res.status(401).json({ message: "Authorized User!!" });
+exports.verifyToken = (req, res, next) => {
+  return res.status(200).json({ message: "Authorized User!!" });
 };
 
 exports.forgetPassword = (req, res, next) => {

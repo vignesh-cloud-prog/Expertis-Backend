@@ -68,6 +68,7 @@ async function login(params, callback) {
                 email: user.email,
                 id: user._id,
                 message:'Verify your email, OTP sent to your email',
+                
               },
             });
           })
