@@ -3,6 +3,36 @@ const { Schema } = mongoose;
 const uniqueValidator = require("mongoose-unique-validator");
 const jwt = require("jsonwebtoken");
 
+const ShopRatingSchema = new Schema({
+  avg: {
+    type: Number,
+    default: 0
+  },
+  oneStar: {
+    type: Number,
+    default: 0
+  },
+  twoStar: {
+    type: Number,
+    default: 0
+  },
+  threeStar: {
+    type: Number,
+    default: 0
+  },
+  fourStar: {
+    type: Number,
+    default: 0
+  },
+  fiveStar: {
+    type: Number,
+    default: 0
+  },
+  totalMembers: {
+    type: Number,
+    default: 0
+  },
+});
 const ShopSchema = new Schema(
   {
     owner: {
@@ -47,6 +77,9 @@ const ShopSchema = new Schema(
       type: Boolean,
       required: false,
       default: false,
+    },
+    rating: {
+      type: ShopRatingSchema
     },
     gallery: {
       type: [String],
