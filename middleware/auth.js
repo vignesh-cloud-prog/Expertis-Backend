@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const { TOKEN_EXPIRATION_TIME } = require("../utils/constants.js");
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
@@ -10,7 +11,7 @@ function authenticateToken(req, res, next) {
     return res.status(401).json({ message: "No token provided" });
 
   try {
-    jwt.verify(token, "process.env.TOKEN_SECRET", (err, user) => {
+    jwt.verify(token, process.env.TOKEN_SECRET || "secretKey", (err, user) => {
       console.log(err);
       if (err) {
         if (err.name == "TokenExpiredError") {
@@ -27,9 +28,12 @@ function authenticateToken(req, res, next) {
   }
 }
 
-function generateAccessToken(username) {
-  return jwt.sign({ data: username }, "process.env.TOKEN_SECRET", {
-    expiresIn: "5h",
+function generateAccessToken(id) {
+  console.log("id ", id);
+  console.log("process.env.TOKEN_SECRET ", process.env.TOKEN_SECRET);
+  console.log("TOKEN_EXPIRATION_TIME ", TOKEN_EXPIRATION_TIME);
+  return jwt.sign({ data: id }, process.env.TOKEN_SECRET || "secretKey", {
+    expiresIn: TOKEN_EXPIRATION_TIME,
   });
 }
 

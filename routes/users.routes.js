@@ -14,18 +14,20 @@ router.post(
   validate,
   usersController.register
 );
+router.post("/verify-otp", usersController.verifyOTP);
+router.patch("/update", usersController.updateUser);
+
 router.post(
   "/login",
   userLoginValidationRules(),
   validate,
   usersController.login
 );
-router.get("/verify/:token", usersController.verify);
-router.post("/update-profile/:id", usersController.updateProfile);
 router.get("/verify-token", usersController.verifyToken);
 router.post("/forget-password", usersController.forgetPassword);
-router.post("/verify-otp", usersController.verifyOTP);
 router.post("/change-password", usersController.changePassword);
-router.post("/reset_password", usersController.reset_password);
+router.post("/reset-password", usersController.reset_password);
+router.post("/delete", usersController.deleteUser);
+// router.get("/verify/:token", usersController.verify);
 
 module.exports = router;

@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const uniqueValidator = require("mongoose-unique-validator");
 const jwt = require("jsonwebtoken");
+const { TOKEN_EXPIRATION_TIME } = require("../utils/constants.js");
 
 const UserSchema = new Schema(
   {
@@ -17,7 +18,6 @@ const UserSchema = new Schema(
     phone: {
       type: Number,
       required: true,
-
     },
     dob: {
       type: Date,
@@ -30,9 +30,9 @@ const UserSchema = new Schema(
     },
 
     role: {
-      type: [String],
-      enum: ["CUSTOMER", "OWNER", "BEAUTICIAN", "ADMIN"],
-      default: ["CUSTOMER"],
+      type: String,
+      enum: ["CUSTOMER", "OWNER", "MEMBER", "ADMIN"],
+      default: "CUSTOMER",
       required: false,
     },
     address: {
@@ -52,10 +52,6 @@ const UserSchema = new Schema(
     password: {
       type: String,
       required: true,
-    },
-    date: {
-      type: Date,
-      default: Date.now(),
     },
     verified: {
       type: Boolean,
@@ -88,12 +84,13 @@ UserSchema.methods.generateVerificationToken = function () {
   console.log("user ", user._id);
   console.log(
     "process.env.USER_VERIFICATION_TOKEN_SECRET ",
-    process.env.USER_VERIFICATION_TOKEN_SECRET
+    process.env.USER_VERIFICATION_TOKEN_SECRET || "secret"
   );
+  console.log("TOKEN_EXPIRATION_TIME ", TOKEN_EXPIRATION_TIME);
   const verificationToken = jwt.sign(
     { ID: user._id },
-    process.env.USER_VERIFICATION_TOKEN_SECRET,
-    { expiresIn: "7d" }
+    process.env.USER_VERIFICATION_TOKEN_SECRET || "secret",
+    { expiresIn: TOKEN_EXPIRATION_TIME }
   );
   return verificationToken;
 };
@@ -120,4 +117,5 @@ UserSchema.set("toJSON", {
 UserSchema.plugin(uniqueValidator, { message: "Email already in use." });
 
 const User = mongoose.model("user", UserSchema);
+
 module.exports = User;

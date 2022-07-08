@@ -10,7 +10,8 @@ const key = "verysecretkey";
  * 2. In the SignIn API, we are checking whether the assigned and retrieved passwords are the same or not using the bcrypt.compare() method.
  * 3. In the SignIn API, we set the JWT token expiration time. Token will be expired within the defined duration.
  */
-exports.updateProfile = (req, res, next) => {
+exports.updateUser = (req, res, next) => {
+  const { id, name, phone, dob, gender, role, address, pinCode } = req.body;
   uploadUserPic(req, res, function (err) {
     if (err) {
       next(err);
@@ -19,22 +20,40 @@ exports.updateProfile = (req, res, next) => {
 
       const path =
         req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
+      let picURL = path != "" ? url + "/" + path : "";
 
-      var model = {
+      let model = {
         id: req.body.id,
-        name: req.body.name,
-        address: req.body.address,
-        dob: req.body.dob,
-        gender: req.body.gender,
-        userPic: path != "" ? url + "/" + path : "",
       };
-      if (model.userPic == "") {
-        delete model.userPic;
+
+      if (picURL != "" || picURL !== undefined) {
+        model.userPic = picURL;
+      }
+      if (name != "" && name !== undefined && name !== null) {
+        model.name = name;
+      }
+      if (phone != "" && phone !== undefined && phone !== null) {
+        model.phone = phone;
+      }
+      if (dob != "" && dob !== undefined && dob !== null) {
+        model.dob = dob;
+      }
+      if (gender != "" && gender !== undefined && gender !== null) {
+        model.gender = gender;
+      }
+      if (role != "" && role !== undefined && role !== null) {
+        model.role = role;
+      }
+      if (address != "" && address !== undefined && address !== null) {
+        model.address = address;
+      }
+      if (pinCode != "" && pinCode !== undefined && pinCode !== null) {
+        model.pinCode = pinCode;
       }
 
-      // console.log(model);
+      console.log(model);
 
-      userServices.updateProfile(model, (error, results) => {
+      userServices.updateUser(model, (error, results) => {
         if (error) {
           return next(error);
         }
@@ -197,6 +216,19 @@ exports.reset_password = (req, res, next) => {
   userServices.reset_password(req.body, (error, results) => {
     if (error) {
       // console.log(error);
+      return next(error);
+    }
+    return res.status(200).send({
+      message: "Success",
+      data: results,
+    });
+  });
+};
+
+exports.deleteUser = (req, res, next) => {
+  const { id } = req.params;
+  userServices.deleteUser(id, (error, results) => {
+    if (error) {
       return next(error);
     }
     return res.status(200).send({

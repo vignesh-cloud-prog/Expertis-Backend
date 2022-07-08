@@ -6,6 +6,7 @@ const otpGenerator = require("otp-generator");
 const crypto = require("crypto");
 const key = "verysecretkey"; // Key for cryptograpy. Keep it secret
 const nodemailer = require("nodemailer");
+const { strict } = require("assert");
 
 const transporter = nodemailer.createTransport({
   service: "Gmail",
@@ -67,8 +68,7 @@ async function login(params, callback) {
                 hash: fullHash,
                 email: user.email,
                 id: user._id,
-                message:'Verify your email, OTP sent to your email',
-                
+                message: "Verify your email, OTP sent to your email",
               },
             });
           })
@@ -79,7 +79,11 @@ async function login(params, callback) {
         const token = auth.generateAccessToken(user._id);
         console.log(user, token);
         // call toJSON method applied during model instantiation
-        return callback(null, { ...user.toJSON(), token, message: "Login Successful" });
+        return callback(null, {
+          ...user.toJSON(),
+          token,
+          message: "Login Successful",
+        });
       }
     } else {
       return callback({
@@ -200,11 +204,11 @@ async function register(params, callback) {
     });
 }
 
-async function updateProfile(params, callback) {
-  const userId = params.id;
+async function updateUser(body, callback) {
+  const userId = body.id;
   console.log(userId);
 
-  User.findByIdAndUpdate(userId, params, { useFindAndModify: true, new: true })
+  User.findByIdAndUpdate(userId, body, { useFindAndModify: true, new: true })
     .then((response) => {
       if (!response)
         callback(
@@ -625,13 +629,29 @@ function sendVerificationMail(email, token, host) {
   });
 }
 
+async function deleteUser(userId) {
+  const user = await User.findById(userId);
+  if (!user) {
+    return {
+      status: 404,
+      message: "User not found",
+    };
+  }
+  await user.remove().exec();
+  return {
+    status: 200,
+    message: "User deleted",
+  };
+}
+
 module.exports = {
   login,
   register,
   verify,
-  updateProfile,
+  updateUser,
   forgetPassword,
   verifyOTP,
   changePassword,
   reset_password,
+  deleteUser,
 };
