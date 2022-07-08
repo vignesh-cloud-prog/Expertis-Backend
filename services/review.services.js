@@ -6,6 +6,11 @@ async function addReview(params, callback) {
   const { from, to, model_type, comment, rating } = params;
   // console.log(params);
   Reviews.findOneAndUpdate({ from, to, model_type }, params, { new: true, upsert: true }).then(res => {
+   
+    Shop.findById(to).then(res=>{
+      //to get the old details of the review
+      console.log(res.rating,res,"fun")
+    })
     return callback(null, res);
   }).catch(e => {
     console.log(e)
