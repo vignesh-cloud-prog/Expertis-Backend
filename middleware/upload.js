@@ -5,7 +5,7 @@ const fs = require("fs");
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     let dir = "./uploads";
-    console.log("fieldname ", file.fieldname);
+    //console.log("fieldname ", file.fieldname);
     if (file.fieldname == "userPic") {
       dir = "uploads/user/profile_pic";
     } else if (file.fieldname == "shopLogo") {
@@ -27,7 +27,7 @@ const storage = multer.diskStorage({
         return cb(null, dir);
       });
     } catch (e) {
-      console.log("An error occurred.", e);
+      //console.log("An error occurred.", e);
     }
   },
   filename: function (req, file, cb) {

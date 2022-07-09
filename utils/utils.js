@@ -14,9 +14,9 @@ function getSlot(date) {
 function getSlots(startTime, endTime) {
   let slots = [];
   let start = getSlot(startTime);
-  console.log("start ", start);
+  //console.log("start ", start);
   let end = getSlot(endTime);
-  console.log("end ", end);
+  //console.log("end ", end);
   for (let i = start; i <= end; i++) {
     slots.push(i);
   }
@@ -25,14 +25,14 @@ function getSlots(startTime, endTime) {
 
 const isAuthorizedUser = async (id, token) => {
   try {
-  console.log("token ", token, "id ", id);
+  //console.log("token ", token, "id ", id);
   if (token == null) return 0;
   decoded = jwt.verify(token, process.env.TOKEN_SECRET || "secret");
-  console.log("decoded ", decoded);
+  //console.log("decoded ", decoded);
   if (decoded.data == id) return 1;
   }
   catch (err) {
-    console.log("err ", err);
+    //console.log("err ", err);
     return 0;
   }
 

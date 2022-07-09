@@ -17,7 +17,7 @@ exports.createTag = (req, res, next) => {
         description: req.body.description,
       };
 
-      console.log(model);
+      //console.log(model);
 
       tagServices.createTag(model, (error, results) => {
         if (error) {
@@ -74,7 +74,7 @@ exports.updateTag = (req, res, next) => {
         model.description = description;
       }
 
-      console.log(model);
+      //console.log(model);
 
       tagServices.updateTag(model, (error, results) => {
         if (error) {

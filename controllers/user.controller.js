@@ -3,7 +3,7 @@ const userServices = require("../services/user.services");
 const { uploadUserPic } = require("../middleware/upload.js");
 
 const crypto = require("crypto");
-const { log } = require("console");
+const { log } = require("//console");
 const key = "verysecretkey";
 
 /**
@@ -12,14 +12,14 @@ const key = "verysecretkey";
  * 3. In the SignIn API, we set the JWT token expiration time. Token will be expired within the defined duration.
  */
 exports.updateUser = (req, res, next) => {
-  console.log("updateUser");
+  //console.log("updateUser");
   uploadUserPic(req, res, function (err) {
     if (err) {
       next(err);
     } else {
       const { id, name, phone, dob, gender, role, address, pinCode } = req.body;
 
-      console.log("Inside update user")
+      //console.log("Inside update user")
       const url = req.protocol + "://" + req.get("host");
 
       const path =
@@ -55,7 +55,7 @@ exports.updateUser = (req, res, next) => {
         model.pinCode = pinCode;
       }
 
-      console.log("model: ", model);
+      //console.log("model: ", model);
 
       userServices.updateUser(model, (error, results) => {
         if (error) {
@@ -105,7 +105,7 @@ exports.login = (req, res, next) => {
 
 exports.verify = (req, res, next) => {
   const { token } = req.params;
-  // console.log("token ", token);
+  // //console.log("token ", token);
   // Check we have an id
   if (!token) {
     return res.status(422).send({
@@ -152,7 +152,7 @@ exports.verifyOTP = (req, res, next) => {
   }
   userServices.verifyOTP(id, otp, hash, (error, results) => {
     if (error) {
-      // console.log(error);
+      // //console.log(error);
       return next(error);
     }
     return res.status(200).send({
@@ -163,7 +163,7 @@ exports.verifyOTP = (req, res, next) => {
 };
 
 exports.changePassword = (req, res, next) => {
-  // console.log("changePassword");
+  // //console.log("changePassword");
   const email = req.body.email;
   const otp = req.body.otp;
   const hash = req.body.hash;
@@ -188,7 +188,7 @@ exports.changePassword = (req, res, next) => {
   // Match the hashes
 
   if (newCalculatedHash === hashValue) {
-    // console.log("matched");
+    // //console.log("matched");
 
     const salt = bcrypt.genSaltSync(10);
 
@@ -196,7 +196,7 @@ exports.changePassword = (req, res, next) => {
 
     userServices.changePassword(req.body, (error, results) => {
       if (error) {
-        // console.log(error);
+        // //console.log(error);
         return next(error);
       }
       return res.status(200).send({
@@ -219,7 +219,7 @@ exports.reset_password = (req, res, next) => {
   req.body.newPassword = bcrypt.hashSync(newPassword, salt);
   userServices.reset_password(req.body, (error, results) => {
     if (error) {
-      // console.log(error);
+      // //console.log(error);
       return next(error);
     }
     return res.status(200).send({

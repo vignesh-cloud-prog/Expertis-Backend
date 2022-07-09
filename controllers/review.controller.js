@@ -21,7 +21,7 @@ exports.addReview = (req, res, next) => {
         comment: req.body.comment,
         reviewPhotos: path != "" ? url + "/" + path : "",
       };
-      console.log(model);
+      //console.log(model);
 
 
       reviewServices.addReview(model, (error, results) => {
@@ -38,7 +38,7 @@ exports.addReview = (req, res, next) => {
 };
 
 exports.updateReview = (req, res, next) => {
-  console.log(req.body);
+  //console.log(req.body);
   reviewServices.updateReview(req.body, (error, results) => {
     if (error) {
       return next(error);

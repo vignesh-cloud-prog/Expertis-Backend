@@ -24,7 +24,7 @@ async function login(params, callback) {
   if (user != null) {
     if (bcrypt.compareSync(password, user.password)) {
       if (user.verified == false) {
-        console.log("User not verified");
+        //console.log("User not verified");
         const otp = otpGenerator.generate(6, {
           alphabets: false,
           upperCase: false,
@@ -62,7 +62,7 @@ async function login(params, callback) {
     </div>`,
           })
           .then((response) => {
-            console.log(`Your OTP is ${otp} . it will expire in 5 minutes`);
+            //console.log(`Your OTP is ${otp} . it will expire in 5 minutes`);
             return callback({
               status: 300,
               data: {
@@ -78,7 +78,7 @@ async function login(params, callback) {
           });
       } else {
         const token = auth.generateAccessToken(user._id);
-        console.log(user, token);
+        //console.log(user, token);
         // call toJSON method applied during model instantiation
         return callback(null, {
           ...user.toJSON(),
@@ -115,7 +115,7 @@ async function verify({ token }, callback) {
       { verified: true },
       { new: true }
     );
-    console.log(user);
+    //console.log(user);
     if (!user) {
       return callback({
         message: "User does not  exists",
@@ -132,7 +132,7 @@ async function verify({ token }, callback) {
 
 async function register(params, callback) {
   const { email } = params;
-  console.log("email", email);
+  //console.log("email", email);
   const user = await User.findOne({ email }).exec();
   if (user != null) {
     return callback({
@@ -170,15 +170,15 @@ async function register(params, callback) {
     </div>`,
     })
     .then((response) => {
-      console.log("OTP response", response);
-      console.log(`Your OTP is ${otp} . it will expire in 5 minutes`);
+      //console.log("OTP response", response);
+      //console.log(`Your OTP is ${otp} . it will expire in 5 minutes`);
 
       const user = new User(params);
       user
         .save()
         .then((response) => {
-          console.log(response);
-          console.log(user._id);
+          //console.log(response);
+          //console.log(user._id);
 
           const ttl = 5 * 60 * 1000; //5 Minutes in miliseconds
           const expires = Date.now() + ttl; //timestamp to 5 minutes in the future
@@ -195,19 +195,19 @@ async function register(params, callback) {
           });
         })
         .catch((error) => {
-          console.log(error);
+          //console.log(error);
           return callback(error);
         });
     })
     .catch((err) => {
-      console.log(err);
+      //console.log(err);
       return callback({ status: 400, message: "Email can't be sent" });
     });
 }
 
 async function updateUser(body, callback) {
   const userId = body.id;
-  console.log(userId);
+  //console.log(userId);
 
   let userData= await User.findByIdAndUpdate(userId, body, { useFindAndModify: true, new: true })
   if (!userData) {
@@ -217,7 +217,7 @@ async function updateUser(body, callback) {
     });
   }
   if (userData.shop.length > 0) {
-    console.log("No shops");
+    //console.log("No shops");
     await userData.populate('shop');
   }
   return callback(null, { ...userData.toJSON() });
@@ -260,12 +260,12 @@ async function forgetPassword(email, callback) {
     </div>`,
       })
       .then((par) => {
-        console.log("Email sent", par);
-        console.log(`Your OTP is ${otp}. it will expire in 5 minutes`);
+        //console.log("Email sent", par);
+        //console.log(`Your OTP is ${otp}. it will expire in 5 minutes`);
         return callback(null, { hash: fullHash, email: user.email });
       })
       .catch((e) => {
-        console.log("Unable to send email", e);
+        //console.log("Unable to send email", e);
         return callback("Email Not Sent");
       });
   } else {
@@ -291,13 +291,13 @@ async function verifyOTP(id, otp, hash, callback) {
   // Match the hashes
 
   if (newCalculatedHash === hashValue) {
-    console.log("matched");
+    //console.log("matched");
     let doc = await User.findByIdAndUpdate(
       id,
       { verified: true },
       { useFindAndModify: true, new: true }
     );
-    console.log(doc);
+    //console.log(doc);
     if (!doc)
       callback(
         `Cannot update Profile with id=${id}. Maybe user was not found!`
@@ -354,11 +354,11 @@ async function reset_password(params, callback) {
 }
 
 function sendVerificationMail(email, token, host) {
-  console.log("sending email to ", email);
+  //console.log("sending email to ", email);
 
   // Step 3 - Email the user a unique verification link
   const url = `http://${host}/users/verify/${token}`;
-  console.log(url);
+  //console.log(url);
   transporter.sendMail({
     to: email,
     subject: "Verify Your Expertis Account",
@@ -632,10 +632,10 @@ function sendVerificationMail(email, token, host) {
 }
 
 async function deleteUser(req,res, callback) {
-  console.log(req.id);
-  console.log("deleteUser");
+  //console.log(req.id);
+  //console.log("deleteUser");
   const { id } = req.params;
-  console.log(id);
+  //console.log(id);
   const user = await User.findById(id);
   if (!user) {
     return res.status(404).send({ message: 'User not found' });

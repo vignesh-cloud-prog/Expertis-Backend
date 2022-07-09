@@ -24,13 +24,13 @@ async function create(params, callback) {
   }
 
   const shop = await Shop.findOne({ phone }).exec();
-  console.log(shop);
+  //console.log(shop);
   if (shop == null) {
     const shop = new Shop(params);
     shop
       .save()
       .then((response) => {
-        console.log(response._id);
+        //console.log(response._id);
         User.findByIdAndUpdate(
           owner,
           {
@@ -44,7 +44,7 @@ async function create(params, callback) {
             if (res == null) {
               return callback("Document not found");
             } else {
-              // console.log("res ser", res);
+              // //console.log("res ser", res);
               return callback(null, response);
             }
           })
@@ -53,7 +53,7 @@ async function create(params, callback) {
           });
       })
       .catch((error) => {
-        console.log(error);
+        //console.log(error);
         return callback(error);
       });
   } else {
@@ -80,7 +80,7 @@ async function addservice(params, callback) {
           if (res == null) {
             return callback("Document not found");
           } else {
-            console.log("res ser", res);
+            //console.log("res ser", res);
             return callback(null, res);
           }
         })
@@ -89,7 +89,7 @@ async function addservice(params, callback) {
         });
     })
     .catch((e) => {
-      console.log(e);
+      //console.log(e);
       return callback(err);
     });
 }
@@ -127,9 +127,9 @@ async function verifyOTP(email, otp, hash, callback) {
   // Match the hashes
 
   if (newCalculatedHash === hashValue) {
-    console.log("matched");
+    //console.log("matched");
     let doc = await Shop.findOneAndUpdate({ email }, { verified: true });
-    console.log(doc);
+    //console.log(doc);
     if (!doc)
       callback(
         `Cannot update Profile with id=${email}. Maybe user was not found!`

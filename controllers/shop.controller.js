@@ -28,7 +28,7 @@ exports.create = (req, res, next) => {
         delete model.shopLogo;
       }
 
-      // console.log(model);
+      // //console.log(model);
 
       shopServices.create(model, (error, results) => {
         if (error) {
@@ -68,7 +68,7 @@ exports.addService = (req, res, next) => {
         delete model.service_data.photo;
       }
 
-      console.log(model);
+      //console.log(model);
 
       shopServices.addservice(model, (error, results) => {
         if (error) {
@@ -107,7 +107,7 @@ exports.updateService = (req, res, next) => {
         delete model.service_data.photo;
       }
 
-      console.log(model);
+      //console.log(model);
 
       shopServices.updateservice(model, (error, results) => {
         if (error) {
@@ -133,7 +133,7 @@ exports.login = (req, res, next) => {
           data: error,
         });
       }
-      console.log(error);
+      //console.log(error);
       return next(error);
     }
 
@@ -150,7 +150,7 @@ exports.verify_otp = (req, res, next) => {
   const hash = req.body.hash;
   shopServices.verifyOTP(email, otp, hash, (error, results) => {
     if (error) {
-      console.log(error);
+      //console.log(error);
       return next(error);
     }
     return res.status(200).send({
@@ -199,7 +199,7 @@ exports.updateShop = (req, res, next) => {
         delete model.shoplogo;
       }
 
-      console.log(model);
+      //console.log(model);
 
       shopServices.updateShop(model, (error, results) => {
         if (error) {

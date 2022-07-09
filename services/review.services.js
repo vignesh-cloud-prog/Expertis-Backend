@@ -4,16 +4,16 @@ const Reviews = require("../models/review.model");
 
 async function addReview(params, callback) {
   const { from, to, model_type, comment, rating } = params;
-  // console.log(params);
+  // //console.log(params);
   Reviews.findOneAndUpdate({ from, to, model_type }, params, { new: true, upsert: true }).then(res => {
    
     Shop.findById(to).then(res=>{
       //to get the old details of the review
-      console.log(res.rating,res,"fun")
+      //console.log(res.rating,res,"fun")
     })
     return callback(null, res);
   }).catch(e => {
-    console.log(e)
+    //console.log(e)
     return callback(e)
 
   })
@@ -22,10 +22,10 @@ async function addReview(params, callback) {
 async function updateReview(params, callback) {
   const { id } = params;
   Reviews.findByIdAndUpdate(id, params, { useFindAndModify: true, new: true, }).then(res => {
-    console.log(res);
+    //console.log(res);
     return callback(null, res);
   }).catch(e => {
-    console.log(e)
+    //console.log(e)
     return callback(e)
 
   })
@@ -34,10 +34,10 @@ async function updateReview(params, callback) {
 async function deleteReview(params, callback) {
   const { id } = params;
   Reviews.findByIdAndDelete(id).then(res => {
-    console.log(res);
+    //console.log(res);
     return callback(null, res);
   }).catch(e => {
-    console.log(e)
+    //console.log(e)
     return callback(e)
 
   })
@@ -46,11 +46,11 @@ async function deleteReview(params, callback) {
 async function getReviews(params, callback) {
   const { id } = params;
   Reviews.find({ to: id }).then(res => {
-    console.log(res);
+    //console.log(res);
     return callback(null, res);
   }
   ).catch(e => {
-    console.log(e)
+    //console.log(e)
     return callback(e)
 
   }

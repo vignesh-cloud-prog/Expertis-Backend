@@ -1,7 +1,7 @@
 const appointmentServices = require("../services/appointment.services");
 
 exports.bookAppointment = (req, res, next) => {
-  console.log(req.body);
+  //console.log(req.body);
 
   appointmentServices.bookAppointment(req.body, (error, results) => {
     if (error) {

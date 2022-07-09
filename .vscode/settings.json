@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/dbfc6aab-0d93-4172-879b-24ca5c371ab0/microsoft.web/sites/subscriptions/dbfc6aab-0d93-4172-879b-24ca5c371ab0/resourceGroups/expertis-resource/providers/Microsoft.Web/sites/expertis-api",
+    "appService.deploySubpath": "."
+}

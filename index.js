@@ -1,5 +1,5 @@
 require("dotenv").config();
-// console.log(process.env) // remove this after you've confirmed it working
+// //console.log(process.env) // remove this after you've confirmed it working
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -33,10 +33,10 @@ mongoose
   })
   .then(
     () => {
-      console.log("Database connected");
+      //console.log("Database connected");
     },
     (error) => {
-      console.log("Database can't be connected: " + error);
+      //console.log("Database can't be connected: " + error);
     }
   );
 
@@ -76,8 +76,8 @@ app.use(errors.errorHandler);
 const PORT = process.env.PORT || 4000;
 // listen for requests
 app.listen(PORT, function () {
-  console.log("Now listening for requests 🚀");
-  console.log(`http://localhost:${PORT}`);
+  //console.log("Now listening for requests 🚀");
+  //console.log(`http://localhost:${PORT}`);
 });
 
 module.exports = app;

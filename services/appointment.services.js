@@ -69,7 +69,7 @@ async function bookAppointment(params, callback) {
       date: bookingDate,
       slots: { $in: slots },
     });
-    // console.log("preBookedSlots ", preBookedSlots);
+    // //console.log("preBookedSlots ", preBookedSlots);
     if (preBookedSlots.length > 0) {
       return callback("Slots are already booked");
     }
@@ -153,7 +153,7 @@ async function getUserAppointments(req, res, callback) {
       });
     }
 
-    console.log("userId ", id);
+    //console.log("userId ", id);
     if (!(await isAuthorizedUser(id, req.headers.authorization))) {
       return callback({
         status: 401,
@@ -205,7 +205,7 @@ async function getAppointment(req, callback) {
         message: "Invalid appointment id",
       });
     }
-    console.log("appointmentId ", id);
+    //console.log("appointmentId ", id);
     const appointment = await Appointment.findById(id)
       .populate("shopId")
       .populate("userId");
@@ -219,12 +219,12 @@ async function getAppointment(req, callback) {
 async function cancelAppointment(req, res, callback) {
   try {
     const { id } = req.params;
-    console.log("appointmentId ", id);
+    //console.log("appointmentId ", id);
     const appointment = await Appointment.findById(id);
-    console.log("appointment ", appointment);
+    //console.log("appointment ", appointment);
     if (!appointment) return callback("Appointment not found");
 
-    console.log(
+    //console.log(
       "access ",
       Boolean(
         await isAuthorizedUser(appointment.userId, req.headers.authorization)
@@ -248,7 +248,7 @@ async function cancelAppointment(req, res, callback) {
       },
       { new: true }
     );
-    console.log("updateSlotsBooked ", updateSlotsBooked);
+    //console.log("updateSlotsBooked ", updateSlotsBooked);
     if (!updateSlotsBooked) return callback("Slots not found");
 
     const updatedAppointment = await Appointment.findByIdAndUpdate(
@@ -268,9 +268,9 @@ async function cancelAppointment(req, res, callback) {
 async function rejectAppointment(req, res, callback) {
   try {
     const { id } = req.params;
-    console.log("appointmentId ", id);
+    //console.log("appointmentId ", id);
     const appointment = await Appointment.findById(id);
-    console.log("appointment ", appointment);
+    //console.log("appointment ", appointment);
     if (!appointment) return callback("Appointment not found");
 
     if (
@@ -291,7 +291,7 @@ async function rejectAppointment(req, res, callback) {
       },
       { new: true }
     );
-    console.log("updateSlotsBooked ", updateSlotsBooked);
+    //console.log("updateSlotsBooked ", updateSlotsBooked);
 
     const updatedAppointment = await Appointment.findByIdAndUpdate(
       { _id: id },
@@ -310,9 +310,9 @@ async function rejectAppointment(req, res, callback) {
 async function acceptAppointment(req, res, callback) {
   try {
     const { id } = req.params;
-    console.log("appointmentId ", id);
+    //console.log("appointmentId ", id);
     const appointment = await Appointment.findById(id);
-    console.log("appointment ", appointment);
+    //console.log("appointment ", appointment);
     if (!appointment) return callback("Appointment not found");
 
     if (
@@ -338,9 +338,9 @@ async function acceptAppointment(req, res, callback) {
 async function completeAppointment(req, res, callback) {
   try {
     const { id } = req.params;
-    console.log("appointmentId ", id);
+    //console.log("appointmentId ", id);
     const appointment = await Appointment.findById(id);
-    console.log("appointment ", appointment);
+    //console.log("appointment ", appointment);
     if (!appointment) return callback("Appointment not found");
 
     if (

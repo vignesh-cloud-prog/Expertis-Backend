@@ -1,14 +1,14 @@
 const Tags = require("../models/tags.model");
 
 async function createTag(params, callback) {
-  console.log(params);
+  //console.log(params);
   Tags.create(params)
     .then((res) => {
-      console.log(res);
+      //console.log(res);
       return callback(null, res);
     })
     .catch((e) => {
-      console.log(e);
+      //console.log(e);
       return callback(e);
     });
 }
@@ -20,7 +20,7 @@ async function getTags(params, callback) {
 
 async function updateTag(params, callback) {
   const { id } = params;
-  console.log(id);
+  //console.log(id);
   
   await Tags.findByIdAndUpdate(id, params, {
     useFindAndModify: true,
@@ -33,7 +33,7 @@ async function updateTag(params, callback) {
       return callback(null, res);
     })
     .catch((e) => {
-      console.log(e);
+      //console.log(e);
       return callback(e);
     });
 }
