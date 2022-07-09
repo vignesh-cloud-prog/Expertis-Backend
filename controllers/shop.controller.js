@@ -16,11 +16,11 @@ exports.create = (req, res, next) => {
         req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
 
       var model = {
-        owner: req.body.owner_id,
+        owner: req.body.ownerId,
         shopName: req.body.shopName,
         phone: req.body.phone,
         address: req.body.address,
-        pincode: req.body.pincode,
+        pinCode: req.body.pinCode,
         shopLogo: path != "" ? url + "/" + path : "",
       };
 

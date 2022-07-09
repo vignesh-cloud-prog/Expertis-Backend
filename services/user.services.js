@@ -208,17 +208,18 @@ async function updateUser(body, callback) {
   const userId = body.id;
   console.log(userId);
 
-  User.findByIdAndUpdate(userId, body, { useFindAndModify: true, new: true })
-    .then((response) => {
-      if (!response)
-        callback(
-          `Cannot update Profile with id=${userId}. Maybe user was not found!`
-        );
-      else callback(null, response);
-    })
-    .catch((error) => {
-      return callback(error);
+  let userData= await User.findByIdAndUpdate(userId, body, { useFindAndModify: true, new: true })
+  if (!userData) {
+    return callback({
+      status: 400,
+      message: "User does not exists",
     });
+  }
+  if (userData.shop.length > 0) {
+    console.log("No shops");
+    await userData.populate('shop');
+  }
+  return callback(null, { ...userData.toJSON() });
 }
 
 async function forgetPassword(email, callback) {

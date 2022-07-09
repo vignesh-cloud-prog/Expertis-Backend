@@ -3,6 +3,7 @@ const userServices = require("../services/user.services");
 const { uploadUserPic } = require("../middleware/upload.js");
 
 const crypto = require("crypto");
+const { log } = require("console");
 const key = "verysecretkey";
 
 /**
@@ -11,11 +12,14 @@ const key = "verysecretkey";
  * 3. In the SignIn API, we set the JWT token expiration time. Token will be expired within the defined duration.
  */
 exports.updateUser = (req, res, next) => {
-  const { id, name, phone, dob, gender, role, address, pinCode } = req.body;
+  console.log("updateUser");
   uploadUserPic(req, res, function (err) {
     if (err) {
       next(err);
     } else {
+      const { id, name, phone, dob, gender, role, address, pinCode } = req.body;
+
+      console.log("Inside update user")
       const url = req.protocol + "://" + req.get("host");
 
       const path =
@@ -51,7 +55,7 @@ exports.updateUser = (req, res, next) => {
         model.pinCode = pinCode;
       }
 
-      console.log(model);
+      console.log("model: ", model);
 
       userServices.updateUser(model, (error, results) => {
         if (error) {
