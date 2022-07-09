@@ -3,7 +3,6 @@ const userServices = require("../services/user.services");
 const { uploadUserPic } = require("../middleware/upload.js");
 
 const crypto = require("crypto");
-const { log } = require("//console");
 const key = "verysecretkey";
 
 /**

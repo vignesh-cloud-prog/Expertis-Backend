@@ -82,10 +82,9 @@ const UserSchema = new Schema(
 UserSchema.methods.generateVerificationToken = function () {
   const user = this;
   //console.log("user ", user._id);
-  //console.log(
-    "process.env.USER_VERIFICATION_TOKEN_SECRET ",
-    process.env.USER_VERIFICATION_TOKEN_SECRET || "secret"
-  );
+  //console.log("process.env.USER_VERIFICATION_TOKEN_SECRET",
+    // process.env.USER_VERIFICATION_TOKEN_SECRET || "secret"
+  // );
   //console.log("TOKEN_EXPIRATION_TIME ", TOKEN_EXPIRATION_TIME);
   const verificationToken = jwt.sign(
     { ID: user._id },

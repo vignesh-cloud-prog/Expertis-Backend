@@ -224,12 +224,11 @@ async function cancelAppointment(req, res, callback) {
     //console.log("appointment ", appointment);
     if (!appointment) return callback("Appointment not found");
 
-    //console.log(
-      "access ",
-      Boolean(
-        await isAuthorizedUser(appointment.userId, req.headers.authorization)
-      )
-    );
+    // console.log( "access ",
+    //   Boolean(
+    //     await isAuthorizedUser(appointment.userId, req.headers.authorization)
+    //   )
+    // );
     if (
       !(await isAuthorizedUser(appointment.userId, req.headers.authorization))
     ) {
