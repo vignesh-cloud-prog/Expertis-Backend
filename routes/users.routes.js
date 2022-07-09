@@ -27,7 +27,7 @@ router.get("/verify-token", usersController.verifyToken);
 router.post("/forget-password", usersController.forgetPassword);
 router.post("/change-password", usersController.changePassword);
 router.post("/reset-password", usersController.reset_password);
-router.post("/delete", usersController.deleteUser);
+router.post("/delete/:id", usersController.deleteUser);
 // router.get("/verify/:token", usersController.verify);
 
 module.exports = router;

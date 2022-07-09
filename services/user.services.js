@@ -7,6 +7,7 @@ const crypto = require("crypto");
 const key = "verysecretkey"; // Key for cryptograpy. Keep it secret
 const nodemailer = require("nodemailer");
 const { strict } = require("assert");
+const { isAuthorizedUser } = require("../utils/utils");
 
 const transporter = nodemailer.createTransport({
   service: "Gmail",
@@ -630,19 +631,25 @@ function sendVerificationMail(email, token, host) {
   });
 }
 
-async function deleteUser(userId) {
-  const user = await User.findById(userId);
+async function deleteUser(req,res, callback) {
+  console.log(req.id);
+  console.log("deleteUser");
+  const { id } = req.params;
+  console.log(id);
+  const user = await User.findById(id);
   if (!user) {
-    return {
-      status: 404,
-      message: "User not found",
-    };
+    return res.status(404).send({ message: 'User not found' });
   }
-  await user.remove().exec();
-  return {
+  if (
+    !(await isAuthorizedUser(id, req.headers.authorization))
+  ) {
+    return callback("User not authorized");
+  }
+  await user.remove();
+  return callback(null, {
     status: 200,
-    message: "User deleted",
-  };
+    message: "User deleted successfully",
+  });
 }
 
 module.exports = {

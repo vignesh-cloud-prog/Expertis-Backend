@@ -30,7 +30,7 @@ exports.updateUser = (req, res, next) => {
         id: req.body.id,
       };
 
-      if (picURL != "" || picURL !== undefined) {
+      if (picURL != "" && picURL !== undefined) {
         model.userPic = picURL;
       }
       if (name != "" && name !== undefined && name !== null) {
@@ -230,8 +230,8 @@ exports.reset_password = (req, res, next) => {
 };
 
 exports.deleteUser = (req, res, next) => {
-  const { id } = req.params;
-  userServices.deleteUser(id, (error, results) => {
+  
+  userServices.deleteUser(req, res, (error, results) => {
     if (error) {
       return next(error);
     }
