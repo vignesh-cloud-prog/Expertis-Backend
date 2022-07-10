@@ -10,6 +10,15 @@ exports.create = (req, res, next) => {
     if (err) {
       next(err);
     } else {
+      let contactJson;
+
+      try {
+        contactJson = JSON.parse(req.body.contact);
+        console.log(contactJson);
+      } catch (e) {
+        console.log(e);
+        return next(e);
+      }
       const url = req.protocol + "://" + req.get("host");
 
       const path =
@@ -18,9 +27,9 @@ exports.create = (req, res, next) => {
       var model = {
         owner: req.body.ownerId,
         shopName: req.body.shopName,
-        phone: req.body.phone,
-        address: req.body.address,
-        pinCode: req.body.pinCode,
+        contact: contactJson,
+        // workingHours: JSON.parse( req.body.workingHours),
+        tags: req.body.tags,
         shopLogo: path != "" ? url + "/" + path : "",
       };
 
@@ -161,11 +170,20 @@ exports.verify_otp = (req, res, next) => {
 };
 
 exports.getShop = (req, res, next) => {
-  var model = {
-    shopId: req.params.id,
-  };
+  shopId = req.params.id;
+  shopServices.getShopById(shopId, (error, results) => {
+    if (error) {
+      return next(error);
+    }
+    return res.status(200).send({
+      message: "Success",
+      data: results,
+    });
+  });
+};
 
-  shopServices.getShopById(model, (error, results) => {
+exports.getShops = (req, res, next) => {
+  shopServices.getShops(req, (error, results) => {
     if (error) {
       return next(error);
     }

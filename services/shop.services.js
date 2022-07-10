@@ -4,13 +4,17 @@ const bcrypt = require("bcryptjs");
 const auth = require("../middleware/auth.js");
 const jwt = require("jsonwebtoken");
 const otpGenerator = require("otp-generator");
+const Tags = require("../models/tags.model");
+
 const crypto = require("crypto");
 // const key = "verysecretkey"; // Key for cryptograpy. Keep it secret
 const nodemailer = require("nodemailer");
 const { Services } = require("../models/service.model");
 
 async function create(params, callback) {
-  const { owner, phone } = params;
+  const { owner } = params;
+  const { email, phone } = params.contact;
+  console.log(email, phone);
   const user = await User.findById(owner).exec();
   if (user == null) {
     return callback({
@@ -23,8 +27,8 @@ async function create(params, callback) {
     });
   }
 
-  const shop = await Shop.findOne({ phone }).exec();
-  //console.log(shop);
+  const shop = await Shop.findOne({ "contact.phone": phone }).exec();
+  console.log(shop);
   if (shop == null) {
     const shop = new Shop(params);
     shop
@@ -90,7 +94,7 @@ async function addservice(params, callback) {
     })
     .catch((e) => {
       //console.log(e);
-      return callback(err);
+      return callback(e);
     });
 }
 
@@ -143,9 +147,8 @@ async function verifyOTP(email, otp, hash, callback) {
   }
 }
 
-async function getShopById(params, callback) {
-  const shopId = params.shopId;
-
+async function getShopById(shopId, callback) {
+  console.log(shopId);
   Shop.findById(shopId)
     .populate("services")
     .then((response) => {
@@ -189,6 +192,37 @@ async function deleteShop(params, callback) {
     });
 }
 
+async function getShops(req, callback) {
+  const pinCode = req.query.pinCode;
+  let city = req.query.city;
+  // console.log(pinCode, city);
+  let pattern = [];
+  if (pinCode !== undefined && pinCode !== null) {
+    pattern.push({ "contact.pinCode": pinCode });
+ 
+  }
+  if (city !== undefined && city !== null) {
+    city= new RegExp(city, "i");
+    pattern.push({ "contact.address": city });
+
+  }
+  // console.log(pattern);
+
+  const topShops = await Shop.find({})
+    .sort({ "rating.totalMembers": -1, "rating.avg": -1 })
+    .limit(10)
+    .populate("services");
+  const nearbyShops = await Shop.find({$or: pattern}).sort({ "rating.totalMembers": -1, "rating.avg": -1 })
+  .limit(10)
+  .populate("services");
+  const categories = await Tags.find({});
+
+  if (topShops.length == 0) {
+    return callback("No shops found");
+  }
+  return callback(null, {categories, nearbyShops, topShops });
+}
+
 module.exports = {
   create,
   updateservice,
@@ -197,4 +231,5 @@ module.exports = {
   getShopById,
   updateShop,
   deleteShop,
+  getShops,
 };
