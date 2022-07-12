@@ -39,5 +39,12 @@ const ServiceSchema = new Schema({
   },
   
 });
+ServiceSchema.set("toJSON", {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
+  },
+});
 const Services = mongoose.model("Service", ServiceSchema);
 module.exports = {Services,ServiceSchema};

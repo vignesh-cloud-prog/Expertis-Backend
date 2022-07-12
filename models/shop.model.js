@@ -44,6 +44,14 @@ const ShopMemberSchema = new Schema({
   },
 });
 
+ShopMemberSchema.set("toJSON", {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
+  },
+});
+
 const ContactSchema = new Schema({
   email: {
     type: String,
@@ -69,6 +77,13 @@ const ContactSchema = new Schema({
     // max: [6, "Maximum 6 digit Pin Code"],
   },
 });
+ContactSchema.set("toJSON", {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
+  },
+});
 
 const WorkingHoursSchema = new Schema({
   isOpen: {
@@ -92,6 +107,13 @@ const WorkingHoursSchema = new Schema({
     },
   },
 });
+WorkingHoursSchema.set("toJSON", {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
+  },
+});
 
 const WeeklyWorkingHours = new Schema({
   sunday: WorkingHoursSchema,
@@ -101,6 +123,14 @@ const WeeklyWorkingHours = new Schema({
   thursday: WorkingHoursSchema,
   friday: WorkingHoursSchema,
   saturday: WorkingHoursSchema,
+});
+
+WeeklyWorkingHours.set("toJSON", {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
+  },
 });
 
 const ShopSchema = new Schema(

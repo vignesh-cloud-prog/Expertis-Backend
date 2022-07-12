@@ -36,5 +36,13 @@ const ReviewSchema = new Schema(
   { timestamps: true }
 );
 
+ReviewSchema.set("toJSON", {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
+  },
+});
+
 const Reviews = mongoose.model("Reviews", ReviewSchema);
 module.exports = Reviews;
