@@ -193,6 +193,8 @@ async function deleteShop(params, callback) {
 }
 
 async function getShops(req, callback) {
+  try{
+    let query;
   const pinCode = req.query.pinCode;
   let city = req.query.city;
   // console.log(pinCode, city);
@@ -206,13 +208,16 @@ async function getShops(req, callback) {
     pattern.push({ "contact.address": city });
 
   }
+  if(pattern.length>0){
+    query = { $or: pattern };
+  }
   // console.log(pattern);
 
   const topShops = await Shop.find({})
     .sort({ "rating.totalMembers": -1, "rating.avg": -1 })
     .limit(10)
     .populate("services");
-  const nearbyShops = await Shop.find({$or: pattern}).sort({ "rating.totalMembers": -1, "rating.avg": -1 })
+  const nearbyShops = await Shop.find(query).sort({ "rating.totalMembers": -1, "rating.avg": -1 })
   .limit(10)
   .populate("services");
   const categories = await Tags.find({});
@@ -221,6 +226,10 @@ async function getShops(req, callback) {
     return callback("No shops found");
   }
   return callback(null, {categories, nearbyShops, topShops });
+}
+catch(e){
+  return callback(e);
+}
 }
 
 module.exports = {
