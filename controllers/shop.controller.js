@@ -40,7 +40,7 @@ exports.createShop = (req, res, next) => {
 
       // //console.log(model);
 
-      shopServices.create(model, (error, results) => {
+      shopServices.createShop(model, (error, results) => {
         if (error) {
           return next(error);
         }

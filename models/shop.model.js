@@ -41,8 +41,16 @@ const ShopMemberSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "user",
   },
+  name: {
+    type: String,
+    required: true,
+  },
+  pic: {
+    type: String,
+  },
   role: {
-    type: Schema.Types.String,
+    type: String,
+    required: true,
   },
 });
 

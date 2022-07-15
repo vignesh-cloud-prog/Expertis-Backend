@@ -1,9 +1,6 @@
 const Shop = require("../models/shop.model");
 const User = require("../models/user.model");
-const bcrypt = require("bcryptjs");
 const auth = require("../middleware/auth.js");
-const jwt = require("jsonwebtoken");
-const otpGenerator = require("otp-generator");
 const Tags = require("../models/tags.model");
 
 const crypto = require("crypto");
@@ -11,7 +8,7 @@ const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const { Services } = require("../models/service.model");
 
-async function create(params, callback) {
+async function createShop(params, callback) {
   const { owner } = params;
   const { email, phone } = params.contact;
   console.log(email, phone);
@@ -21,6 +18,14 @@ async function create(params, callback) {
       message: "Invalid User",
     });
   }
+  member={
+    member:user._id,
+    role:"owner",
+    name:user.name,
+    pic:user.userPic,
+  }
+  params.members = [member];
+    console.log(params);
   const shop = new Shop(params);
   shop
     .save()
@@ -220,7 +225,7 @@ async function getShops(req, callback) {
 }
 
 module.exports = {
-  create,
+  createShop,
   updateservice,
   verifyOTP,
   addservice,
