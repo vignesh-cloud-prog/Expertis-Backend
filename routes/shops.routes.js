@@ -3,7 +3,7 @@ const router = express.Router();
 const shopsController = require("../controllers/shop.controller");
 
 router.get("/", shopsController.getShops);
-router.post("/create", shopsController.create);
+router.post("/shop", shopsController.createShop);
 router.post("/services", shopsController.addService);
 router.put("/services", shopsController.updateService);
 router.get("/shop/:id", shopsController.getShop);

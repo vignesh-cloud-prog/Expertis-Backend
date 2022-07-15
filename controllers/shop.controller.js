@@ -5,7 +5,7 @@ const {
   uploadServicePhoto,
 } = require("../middleware/upload.js");
 
-exports.create = (req, res, next) => {
+exports.createShop = (req, res, next) => {
   uploadShopLogo(req, res, function (err) {
     if (err) {
       next(err);
@@ -25,6 +25,7 @@ exports.create = (req, res, next) => {
         req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
 
       var model = {
+        shopId: req.body.shopId,
         owner: req.body.ownerId,
         shopName: req.body.shopName,
         contact: contactJson,

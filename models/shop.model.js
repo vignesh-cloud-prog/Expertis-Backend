@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const uniqueValidator = require("mongoose-unique-validator");
 const jwt = require("jsonwebtoken");
+const { workingHours } = require("../utils/defaults.js");
+
 
 const ShopRatingSchema = new Schema({
   avg: {
@@ -95,7 +97,7 @@ const WorkingHoursSchema = new Schema({
   closingTime: {
     type: Schema.Types.String,
   },
-  breaks: {
+  breaks: [{
     from: {
       type: Schema.Types.String,
     },
@@ -105,7 +107,7 @@ const WorkingHoursSchema = new Schema({
     reason: {
       type: Schema.Types.String,
     },
-  },
+  }],
 });
 WorkingHoursSchema.set("toJSON", {
   transform: (document, returnedObject) => {
@@ -140,6 +142,11 @@ const ShopSchema = new Schema(
       ref: "user",
       required: true,
     },
+    shopId: {
+      type: Schema.Types.String,
+      unique: [true, "Shop ID should be unique"],
+      required: [true, "Shop ID is required"],
+    },
     shopName: {
       type: String,
       required: true,
@@ -149,7 +156,9 @@ const ShopSchema = new Schema(
       required: false,
     },
     contact: ContactSchema,
-    workingHours: { type: WeeklyWorkingHours, required: false },
+    workingHours: { type: WeeklyWorkingHours, 
+    default: workingHours
+     },
     tags: {
       type: [
         {
@@ -245,7 +254,7 @@ ShopSchema.set("toJSON", {
  * 1. The userSchema.plugin(uniqueValidator) method won’t let duplicate email id to be stored in the database.
  * 2. The unique: true property in email schema does the internal optimization to enhance the performance.
  */
-// ShopSchema.plugin(uniqueValidator, { message: "Email already in use." });
+ShopSchema.plugin(uniqueValidator, { message: "Shop already exist." });
 
 const Shop = mongoose.model("Shop", ShopSchema);
 module.exports = Shop;

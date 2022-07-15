@@ -8,7 +8,7 @@ function authenticateToken(req, res, next) {
   // //console.log("token ",token);
 
   if (token == null)
-    return res.status(401).json({ message: "No token provided" });
+    return res.status(400).json({ message: "No token provided" });
 
   try {
     jwt.verify(token, process.env.TOKEN_SECRET || "secretKey", (err, user) => {
@@ -17,7 +17,7 @@ function authenticateToken(req, res, next) {
         if (err.name == "TokenExpiredError") {
           return res.status(401).json({ message: "Token expired" });
         }
-        return res.status(403).json({ message: "Invalid token" });
+        return res.status(401).json({ message: "Invalid token" });
       }
       req.user = user;
       next();

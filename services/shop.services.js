@@ -21,50 +21,47 @@ async function create(params, callback) {
       message: "Invalid User",
     });
   }
-  if (user.verified == false) {
-    return callback({
-      message: "User not veryfied",
-    });
-  }
-
-  const shop = await Shop.findOne({ "contact.phone": phone }).exec();
-  console.log(shop);
-  if (shop == null) {
-    const shop = new Shop(params);
-    shop
-      .save()
-      .then((response) => {
-        //console.log(response._id);
-        User.findByIdAndUpdate(
-          owner,
-          {
-            $push: {
-              shop: response._id,
-            },
+  const shop = new Shop(params);
+  shop
+    .save()
+    .then((response) => {
+      //console.log(response._id);
+      User.findByIdAndUpdate(
+        owner,
+        {
+          $push: {
+            shop: response._id,
           },
-          { new: true }
-        )
-          .then((res) => {
-            if (res == null) {
-              return callback("Document not found");
-            } else {
-              // //console.log("res ser", res);
-              return callback(null, response);
-            }
-          })
-          .catch((err) => {
-            return callback(err);
-          });
-      })
-      .catch((error) => {
-        //console.log(error);
-        return callback(error);
-      });
-  } else {
-    return callback({
-      message: "Shop with phone already exist.",
+        },
+        { new: true }
+      )
+        .then((res) => {
+          if (res == null) {
+            return callback("Document not found");
+          } else {
+            // //console.log("res ser", res);
+            return callback(null, response);
+          }
+        })
+        .catch((err) => {
+          return callback(err);
+        });
+    })
+    .catch((error) => {
+      if ("contact.phone" in error.errors) {
+        return callback({
+          status: 400,
+          message: "Shop with phone number already exists",
+        });
+      }
+      if ("shopId" in error.errors) {
+        return callback({
+          status: 400,
+          message: "Shop id already in use",
+        });
+      }
+      return callback(error);
     });
-  }
 }
 
 async function addservice(params, callback) {
@@ -193,43 +190,33 @@ async function deleteShop(params, callback) {
 }
 
 async function getShops(req, callback) {
-  try{
+  try {
     let query;
-  const pinCode = req.query.pinCode;
-  let city = req.query.city;
-  // console.log(pinCode, city);
-  let pattern = [];
-  if (pinCode !== undefined && pinCode !== null) {
-    pattern.push({ "contact.pinCode": pinCode });
- 
-  }
-  if (city !== undefined && city !== null) {
-    city= new RegExp(city, "i");
-    pattern.push({ "contact.address": city });
+    const pinCode = req.query.pinCode;
+    let city = req.query.city;
+    // console.log(pinCode, city);
+    let pattern = [];
+    if (pinCode !== undefined && pinCode !== null) {
+      pattern.push({ "contact.pinCode": pinCode });
+    }
+    if (city !== undefined && city !== null) {
+      city = new RegExp(city, "i");
+      pattern.push({ "contact.address": city });
+    }
+    if (pattern.length > 0) {
+      query = { $or: pattern };
+    }
+    // console.log(pattern);
 
-  }
-  if(pattern.length>0){
-    query = { $or: pattern };
-  }
-  // console.log(pattern);
+    const shops = await Shop.find(query)
+      .sort({ "rating.totalMembers": -1, "rating.avg": -1 })
+      .limit(10)
+      .populate("services");
 
-  const topShops = await Shop.find({})
-    .sort({ "rating.totalMembers": -1, "rating.avg": -1 })
-    .limit(10)
-    .populate("services");
-  const nearbyShops = await Shop.find(query).sort({ "rating.totalMembers": -1, "rating.avg": -1 })
-  .limit(10)
-  .populate("services");
-  const categories = await Tags.find({});
-
-  if (topShops.length == 0) {
-    return callback("No shops found");
+    return callback(null, shops);
+  } catch (e) {
+    return callback(e);
   }
-  return callback(null, {categories, nearbyShops, topShops });
-}
-catch(e){
-  return callback(e);
-}
 }
 
 module.exports = {
