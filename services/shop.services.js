@@ -151,7 +151,7 @@ async function verifyOTP(email, otp, hash, callback) {
 
 async function getShopById(shopId, callback) {
   console.log(shopId);
-  Shop.findById(shopId)
+  Shop.findOne({shopId})
     .populate("services")
     .then((response) => {
       if (!response) callback("Not found Shop with id " + shopId);
