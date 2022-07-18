@@ -58,6 +58,15 @@ const UserSchema = new Schema(
       required: true,
       default: false,
     },
+    favoriteShops: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "Shop",
+        },
+      ],
+      required: false,
+    },
     shop: {
       type: [
         {

@@ -163,10 +163,27 @@ const ShopSchema = new Schema(
       type: String,
       required: false,
     },
+    about: {
+      type: String,
+      required: false,
+    },
+    gender: {
+      type: String,
+      enum: ["MALE", "FEMALE", "UNISEX"],
+    },
     contact: ContactSchema,
     workingHours: { type: WeeklyWorkingHours, 
     default: workingHours
      },
+    likes: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "user",
+        },
+      ],
+      required: false,
+    },
     tags: {
       type: [
         {

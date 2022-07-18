@@ -28,6 +28,8 @@ exports.createShop = (req, res, next) => {
         shopId: req.body.shopId,
         owner: req.body.ownerId,
         shopName: req.body.shopName,
+        gender:req.body.gender,
+        about:req.body.about,
         contact: contactJson,
         // workingHours: JSON.parse( req.body.workingHours),
         tags: req.body.tags,
