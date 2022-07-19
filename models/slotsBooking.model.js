@@ -7,6 +7,10 @@ const SlotsBookedSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Shop",
   },
+  memberId: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
   date: {
     type: String,
     unique: true,

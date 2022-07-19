@@ -25,21 +25,46 @@ function getSlots(startTime, endTime) {
 
 const isAuthorizedUser = async (id, token) => {
   try {
-  //console.log("token ", token, "id ", id);
-  if (token == null) return 0;
-  decoded = jwt.verify(token, process.env.TOKEN_SECRET || "secret");
-  //console.log("decoded ", decoded);
-  if (decoded.data == id) return 1;
-  }
-  catch (err) {
+    //console.log("token ", token, "id ", id);
+    if (token == null) return 0;
+    decoded = jwt.verify(token, process.env.TOKEN_SECRET || "secret");
+    //console.log("decoded ", decoded);
+    if (decoded.data == id) return 1;
+  } catch (err) {
     //console.log("err ", err);
     return 0;
   }
-
 };
+
+function getDDMMMYYYYDate(date) {
+  var monthNames = [
+    "JAN",
+    "FEB",
+    "MAR",
+    "APR",
+    "MAY",
+    "JUN",
+    "JUL",
+    "AUG",
+    "SEP",
+    "OCT",
+    "NOV",
+    "DEC",
+  ];
+
+  return (
+    date.getDate() +
+    "-" +
+    monthNames[date.getMonth()] +
+    "-" +
+    date.getFullYear()
+  );
+}
+console.log(getDDMMMYYYYDate(new Date()));
 
 module.exports = {
   getSlot,
   getSlots,
   isAuthorizedUser,
+  getDDMMMYYYYDate,
 };

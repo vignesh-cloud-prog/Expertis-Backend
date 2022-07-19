@@ -4,12 +4,13 @@ const Shop = require("../models/shop.model");
 const SlotsBooked = require("../models/slotsBooking.model");
 const { Services } = require("../models/service.model");
 const moment = require("moment");
-const { getSlots, getSlot, isAuthorizedUser } = require("../utils/utils");
+const { getSlots, getSlot, isAuthorizedUser, getDDMMMYYYYDate } = require("../utils/utils");
 const ObjectId = require("mongoose").Types.ObjectId;
 
 async function bookAppointment(params, callback) {
+  
   try {
-    const { shopId, userId } = params;
+    const { shopId, userId, memberId } = params;
     let startTime = new Date(params.startTime);
     if (startTime < new Date()) {
       return callback({
@@ -17,11 +18,25 @@ async function bookAppointment(params, callback) {
         message: "Start time should be greater than current time",
       });
     }
+    // let member = await User.findById(memberId);
     let user = await User.findById(userId);
     let shop = await Shop.findById(shopId);
 
     if (!shop) return callback("Shop not found");
     if (!user) return callback("User not found");
+    
+      console.log("members", shop.members);
+    let   memberFound = false;
+    shop.members.forEach((member) => {
+      if (member._id.toString() === memberId) {
+        memberFound = true;
+        console.log(`member found ${memberId}`);
+      }
+    }
+    );
+    if (!memberFound) return callback("Member not found");
+
+
     servicesIds = params.services;
 
     let services = [];
@@ -61,11 +76,12 @@ async function bookAppointment(params, callback) {
     }
     //console.log("slots ", slots);
 
-    let bookingDate = startTime.toLocaleDateString();
+    let bookingDate = getDDMMMYYYYDate(startTime);
     ////console.log("bookingDate ", bookingDate);
 
     const preBookedSlots = await SlotsBooked.find({
       shopId: shopId,
+      memberId: memberId,
       date: bookingDate,
       slots: { $in: slots },
     });
@@ -77,6 +93,7 @@ async function bookAppointment(params, callback) {
     const appointment = await Appointment.create({
       shopId: shopId,
       userId: userId,
+      memberId: memberId,
       totalPrice: totalPrice,
       totalTime: totalTime,
       services: services,
@@ -102,6 +119,7 @@ async function bookAppointment(params, callback) {
       { date: bookingDate, shopId: shopId },
       {
         shopId: shopId,
+        memberId: memberId,
         date: bookingDate,
         $addToSet: { slots: slots },
       },
@@ -237,8 +255,9 @@ async function cancelAppointment(req, res, callback) {
 
     const updateSlotsBooked = await SlotsBooked.findOneAndUpdate(
       {
-        date: appointment.startTime.toLocaleDateString(),
+        date: getDDMMMYYYYDate(appointment.startTime),
         shopId: appointment.shopId,
+        memberId: appointment.memberId,
       },
       {
         $pullAll: {
@@ -280,8 +299,9 @@ async function rejectAppointment(req, res, callback) {
 
     const updateSlotsBooked = await SlotsBooked.findOneAndUpdate(
       {
-        date: appointment.startTime.toLocaleDateString(),
+        date: getDDMMMYYYYDate(appointment.startTime),
         shopId: appointment.shopId,
+        memberId: appointment.memberId,
       },
       {
         $pullAll: {

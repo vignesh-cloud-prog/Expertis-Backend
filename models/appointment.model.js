@@ -8,6 +8,10 @@ const AppointmentSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Shop",
     },
+    memberId: {
+      type: Schema.Types.ObjectId,
+      
+    },
     userId: {
       type: Schema.Types.ObjectId,
       ref: "user",

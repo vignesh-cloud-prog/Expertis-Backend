@@ -15,7 +15,14 @@ async function createShop(params, callback) {
   const user = await User.findById(owner).exec();
   if (user == null) {
     return callback({
+      status:400,
       message: "Invalid User",
+    });
+  }
+  if(user.role !== "OWNER"){
+    return callback({
+      status:400,
+      message: "User should have OWNER role",
     });
   }
   member={
