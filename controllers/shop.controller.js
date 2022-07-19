@@ -4,6 +4,7 @@ const {
   uploadShopLogo,
   uploadServicePhoto,
 } = require("../middleware/upload.js");
+const { getDDMMMYYYYDate } = require("../utils/utils");
 
 exports.createShop = (req, res, next) => {
   uploadShopLogo(req, res, function (err) {
@@ -28,8 +29,8 @@ exports.createShop = (req, res, next) => {
         shopId: req.body.shopId,
         owner: req.body.ownerId,
         shopName: req.body.shopName,
-        gender:req.body.gender,
-        about:req.body.about,
+        gender: req.body.gender,
+        about: req.body.about,
         contact: contactJson,
         // workingHours: JSON.parse( req.body.workingHours),
         tags: req.body.tags,
@@ -241,6 +242,52 @@ exports.deleteShop = (req, res, next) => {
   };
 
   shopServices.deleteShop(model, (error, results) => {
+    if (error) {
+      return next(error);
+    }
+    return res.status(200).send({
+      message: "Success",
+      data: results,
+    });
+  });
+};
+
+exports.getSlot = (req, res, next) => {
+  let { shopId, memberId, date } = req.params;
+  if (
+    memberId == undefined ||
+    memberId == null ||
+    memberId == "" ||
+    shopId == undefined ||
+    shopId == null ||
+    shopId == "" ||
+    date == undefined ||
+    date == null ||
+    date == ""
+  ) {
+    return res.status(400).send({
+      message: "Bad Request",
+      data: "",
+    });
+  }
+  try {
+    date = new Date(date);
+    date = getDDMMMYYYYDate(date);
+  } catch (e) {
+    return res.status(400).send({
+      message: `Bad Request: ${e}`,
+      data: "",
+    });
+  }
+  
+  console.log(date);
+  const query = {
+    shopId: shopId,
+    memberId: memberId,
+    date: date,
+  };
+
+  shopServices.getSlot(query, (error, results) => {
     if (error) {
       return next(error);
     }

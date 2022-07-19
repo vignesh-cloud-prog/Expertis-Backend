@@ -7,6 +7,8 @@ const crypto = require("crypto");
 // const key = "verysecretkey"; // Key for cryptograpy. Keep it secret
 const nodemailer = require("nodemailer");
 const { Services } = require("../models/service.model");
+const slotBooking = require("../models/slotsBooking.model");
+const SlotBooking = require("../models/slotsBooking.model");
 
 async function createShop(params, callback) {
   const { owner } = params;
@@ -231,6 +233,19 @@ async function getShops(req, callback) {
   }
 }
 
+function getSlot(query, callback) {
+SlotBooking.findOne(query).then
+  ((response) => {
+    if (!response) callback({message:"Slot not found", status:404});
+    else callback(null, response);
+  }
+  ).catch((error) => {
+    return callback(error);
+  }
+  );
+}
+
+
 module.exports = {
   createShop,
   updateservice,
@@ -240,4 +255,5 @@ module.exports = {
   updateShop,
   deleteShop,
   getShops,
+  getSlot,
 };

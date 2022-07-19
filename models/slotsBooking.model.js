@@ -27,6 +27,6 @@ SlotsBookedSchema.set("toJSON", {
   },
 });
 
-var slotBooking = mongoose.model("SlotBooking", SlotsBookedSchema);
+var SlotBooking = mongoose.model("SlotBooking", SlotsBookedSchema);
 
-module.exports = slotBooking;
+module.exports = SlotBooking;
