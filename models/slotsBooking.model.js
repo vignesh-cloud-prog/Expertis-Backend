@@ -13,7 +13,6 @@ const SlotsBookedSchema = new Schema({
   },
   date: {
     type: String,
-    unique: true,
     required: true,
   },
   slots: [Number],

@@ -28,7 +28,7 @@ async function bookAppointment(params, callback) {
       console.log("members", shop.members);
     let   memberFound = false;
     shop.members.forEach((member) => {
-      if (member._id.toString() === memberId) {
+      if (member.member.toString() == memberId) {
         memberFound = true;
         console.log(`member found ${memberId}`);
       }
@@ -333,9 +333,9 @@ async function acceptAppointment(req, res, callback) {
     const appointment = await Appointment.findById(id);
     //console.log("appointment ", appointment);
     if (!appointment) return callback("Appointment not found");
-
+    console.log("appointment.memberId ", appointment.memberId);
     if (
-      !(await isAuthorizedUser(appointment.shopId, req.headers.authorization))
+      !(await isAuthorizedUser(appointment.memberId, req.headers.authorization))
     ) {
       return callback("User not authorized");
     }
