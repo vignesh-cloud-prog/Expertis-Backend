@@ -236,7 +236,7 @@ async function getShops(req, callback) {
 function getSlot(query, callback) {
 SlotBooking.findOne(query).then
   ((response) => {
-    if (!response) callback({message:"Slot not found", status:404});
+    if (!response) callback(null,[]);
     else callback(null, response);
   }
   ).catch((error) => {
