@@ -6,6 +6,16 @@ const { Services } = require("../models/service.model");
 const moment = require("moment");
 const { getSlots, getSlot, isAuthorizedUser } = require("../utils/utils");
 const ObjectId = require("mongoose").Types.ObjectId;
+const nodemailer = require("nodemailer");
+const { convertTimeFormate } = require("../utils/convertTime");
+
+const transporter = nodemailer.createTransport({
+  service: "Gmail",
+  auth: {
+    user: process.env.EMAIL_USERNAME,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
 
 async function bookAppointment(params, callback) {
   try {
@@ -308,15 +318,17 @@ async function rejectAppointment(req, res, callback) {
 }
 
 async function acceptAppointment(req, res, callback) {
+  console.log("")
   try {
     const { id } = req.params;
     console.log("appointmentId ", id);
     const appointment = await Appointment.findById(id);
+    const user = await User.findById(id);
     console.log("appointment ", appointment);
     if (!appointment) return callback("Appointment not found");
 
     if (
-      !(await isAuthorizedUser(appointment.shopId, req.headers.authorization))
+      !(await isAuthorizedUser(appointment.ownerId, req.headers.authorization))
     ) {
       return callback("User not authorized");
     }
@@ -327,8 +339,41 @@ async function acceptAppointment(req, res, callback) {
         appointmentStatus: "ACCEPTED",
       },
       { new: true }
-    );
+    )
     if (!updatedAppointment) return callback("Operation failed");
+
+
+    const { email } = user;
+    const { startTime, endTime } = updatedAppointment;
+    startTime = convertTimeFormate(startTime);
+    endTime = convertTimeFormate(endTime);
+    let calLink = `href="http://www.google.com/calendar/event?action=TEMPLATE&text=Appointment%20Time&dates=${startTime}/${endTime}&details=Event%20Details%20Here&location=ryuy ghh`
+    await transporter
+      .sendMail({
+        to: email,
+        subject: "Your appointment confiromation ",
+        html: `<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
+        <div style="margin:50px auto;width:70%;padding:20px 0">
+          <div style="border-bottom:1px solid #eee">
+            <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">Expertis Inc</a>
+          </div>
+          <p style="font-size:1.1em">Your appointment is confirmed,</p>
+          <p>Thank you for choosing Expertis. your appointment is confirm by the shop time is</p>
+          <h2 style="background: #00466a;margin: 0 auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">${startTime} To ${endTime}</h2>
+          <a href="${calLink}">Add to calender</a>
+          <p style="font-size:0.9em;">Regards,<br />Expertis</p>
+          <hr style="border:none;border-top:1px solid #eee" />
+          <div style="float:right;padding:8px 0;color:#aaa;font-size:0.8em;line-height:1;font-weight:300">
+            <p>Expertis Inc</p>
+            <p>Find your best</p>
+            <p>India</p>
+          </div>
+        </div>
+      </div>`,
+      })
+
+
+
     return callback(null, updatedAppointment);
   } catch (error) {
     return callback(error);

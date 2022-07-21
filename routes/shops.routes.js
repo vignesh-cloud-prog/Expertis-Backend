@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const shopsController = require("../controllers/shop.controller");
 
-router.post("/create", shopsController.create);
+router.post("/shop", shopsController.create);
 router.post("/services", shopsController.addService);
 router.put("/services", shopsController.updateService);
 router.get("/shop/:id", shopsController.getShop);

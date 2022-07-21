@@ -26,7 +26,7 @@ function getSlots(startTime, endTime) {
 const isAuthorizedUser = async (id, token) => {
   console.log("token ", token, "id ", id);
   if (token == null) return 0;
-  decoded = jwt.verify(token, "process.env.TOKEN_SECRET");
+ decoded  = jwt.verify(token, "process.env.TOKEN_SECRET");
   console.log("decoded ", decoded);
   if (decoded.data == id) return 1;
   return 0;

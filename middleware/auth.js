@@ -11,15 +11,18 @@ function authenticateToken(req, res, next) {
 
   try {
     jwt.verify(token, "process.env.TOKEN_SECRET", (err, user) => {
-      console.log(err);
+      console.log(user);
       if (err) {
         if (err.name == "TokenExpiredError") {
           return res.status(401).json({ message: "Token expired" });
         }
         return res.status(403).json({ message: "Invalid token" });
       }
-      req.user = user;
-      next();
+      // req.user = user;
+      // if (user.data == req.body.id)
+        next();
+      //   else
+      //   return res.status(403).json({ message: "Invalid token" });
     });
   } catch (err) {
     console.log(err);

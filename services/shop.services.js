@@ -24,7 +24,7 @@ async function create(params, callback) {
   }
 
   const shop = await Shop.findOne({ phone }).exec();
-  console.log(shop);
+  console.log(shop, "shop");
   if (shop == null) {
     const shop = new Shop(params);
     shop

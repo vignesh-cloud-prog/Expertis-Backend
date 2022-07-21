@@ -22,7 +22,6 @@ const ShopSchema = new Schema(
     },
     email: {
       type: String,
-      required: false,
     },
     phone: {
       type: Number,
