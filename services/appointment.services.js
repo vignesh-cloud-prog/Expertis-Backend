@@ -4,11 +4,15 @@ const Shop = require("../models/shop.model");
 const SlotsBooked = require("../models/slotsBooking.model");
 const { Services } = require("../models/service.model");
 const moment = require("moment");
-const { getSlots, getSlot, isAuthorizedUser, getDDMMMYYYYDate } = require("../utils/utils");
+const {
+  getSlots,
+  getSlot,
+  isAuthorizedUser,
+  getDDMMMYYYYDate,
+} = require("../utils/utils");
 const ObjectId = require("mongoose").Types.ObjectId;
 
 async function bookAppointment(params, callback) {
-  
   try {
     const { shopId, userId, memberId } = params;
     let startTime = new Date(params.startTime);
@@ -24,18 +28,16 @@ async function bookAppointment(params, callback) {
 
     if (!shop) return callback("Shop not found");
     if (!user) return callback("User not found");
-    
-      console.log("members", shop.members);
-    let   memberFound = false;
+
+    console.log("members", shop.members);
+    let memberFound = false;
     shop.members.forEach((member) => {
       if (member.member.toString() == memberId) {
         memberFound = true;
         console.log(`member found ${memberId}`);
       }
-    }
-    );
+    });
     if (!memberFound) return callback("Member not found");
-
 
     servicesIds = params.services;
 
@@ -153,6 +155,7 @@ async function bookAppointment(params, callback) {
 async function getUserAppointments(req, res, callback) {
   try {
     const { id } = req.params;
+    const { past } = req.query;
     let appointmentStatus = [
       "PENDING",
       "CONFIRMED",
@@ -163,7 +166,12 @@ async function getUserAppointments(req, res, callback) {
     let filter = {
       userId: id,
       appointmentStatus: { $in: appointmentStatus },
+      endTime: { $gt: new Date() },
     };
+    if (past) {
+      filter.endTime = { $lt: new Date() };
+    }
+
     if (!ObjectId.isValid(id)) {
       return callback({
         status: 400,
@@ -179,9 +187,8 @@ async function getUserAppointments(req, res, callback) {
       });
     }
 
-    const appointments = await Appointment.find(filter)
-      .populate("shopId")
-      .populate("userId");
+    const appointments = await Appointment.find(filter).populate("shopId");
+    // .populate("userId");
     return callback(null, appointments);
   } catch (error) {
     return callback(error);
