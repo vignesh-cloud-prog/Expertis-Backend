@@ -168,7 +168,7 @@ async function getUserAppointments(req, res, callback) {
       appointmentStatus: { $in: appointmentStatus },
       endTime: { $gt: new Date() },
     };
-    if (past) {
+    if (past !== undefined && past == true) {
       filter.endTime = { $lt: new Date() };
     }
 
