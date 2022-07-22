@@ -187,8 +187,8 @@ async function getUserAppointments(req, res, callback) {
       });
     }
 
-    const appointments = await Appointment.find(filter).populate("shopId")
-    .populate("userId");
+    const appointments = await Appointment.find(filter).populate("shopId", "owner shopId shopName shopLogo contact members")
+    .populate("userId", 'name gender role userPic favoriteShops address');
     return callback(null, appointments);
   } catch (error) {
     return callback(error);
