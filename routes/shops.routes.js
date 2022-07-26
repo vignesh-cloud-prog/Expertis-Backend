@@ -4,6 +4,7 @@ const shopsController = require("../controllers/shop.controller");
 
 router.get("/", shopsController.getShops);
 router.post("/shop", shopsController.createShop);
+router.get("/shop/services/:id", shopsController.getServices);
 router.get("/shop/slot/:shopId/:memberId/:date", shopsController.getSlot);
 router.post("/services", shopsController.addService);
 router.put("/services", shopsController.updateService);

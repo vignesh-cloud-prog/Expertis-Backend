@@ -11,30 +11,31 @@ const slotBooking = require("../models/slotsBooking.model");
 const SlotBooking = require("../models/slotsBooking.model");
 
 async function createShop(params, callback) {
+  try{
   const { owner } = params;
   const { email, phone } = params.contact;
   console.log(email, phone);
   const user = await User.findById(owner).exec();
   if (user == null) {
     return callback({
-      status:400,
+      status: 400,
       message: "Invalid User",
     });
   }
-  if(user.role !== "OWNER"){
+  if (user.role !== "OWNER") {
     return callback({
-      status:400,
+      status: 400,
       message: "User should have OWNER role",
     });
   }
-  member={
-    member:user._id,
-    role:"owner",
-    name:user.name,
-    pic:user.userPic,
-  }
+  member = {
+    member: user._id,
+    role: "owner",
+    name: user.name,
+    pic: user.userPic,
+  };
   params.members = [member];
-    console.log(params);
+  console.log(params);
   const shop = new Shop(params);
   shop
     .save()
@@ -76,6 +77,9 @@ async function createShop(params, callback) {
       }
       return callback(error);
     });
+  }catch(error){
+    return callback(error);
+  }
 }
 
 async function addservice(params, callback) {
@@ -160,7 +164,7 @@ async function verifyOTP(email, otp, hash, callback) {
 
 async function getShopById(shopId, callback) {
   console.log(shopId);
-  Shop.findOne({shopId})
+  Shop.findOne({ shopId })
     .populate("services")
     .then((response) => {
       if (!response) callback("Not found Shop with id " + shopId);
@@ -234,17 +238,29 @@ async function getShops(req, callback) {
 }
 
 function getSlot(query, callback) {
-SlotBooking.findOne(query).then
-  ((response) => {
-    if (!response) callback(null,[]);
-    else callback(null, response);
-  }
-  ).catch((error) => {
-    return callback(error);
-  }
-  );
+  SlotBooking.findOne(query)
+    .then((response) => {
+      if (!response) callback(null, []);
+      else callback(null, response);
+    })
+    .catch((error) => {
+      return callback(error);
+    });
 }
 
+async function getServices(id, callback) {
+  try{
+    let shop = await Shop.findById(id).populate("services");
+    console.log(shop);
+    if (!shop) return callback({ message: "Shop not found", status: 404 });
+  
+    return callback(null, shop.services);
+  }
+  catch(e){
+    return callback(e);
+  }
+ 
+}
 
 module.exports = {
   createShop,
@@ -256,4 +272,5 @@ module.exports = {
   deleteShop,
   getShops,
   getSlot,
+  getServices,
 };

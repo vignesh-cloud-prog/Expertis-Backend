@@ -14,6 +14,7 @@ exports.createShop = (req, res, next) => {
       let contactJson;
 
       try {
+        
         contactJson = JSON.parse(req.body.contact);
         console.log(contactJson);
       } catch (e) {
@@ -297,3 +298,16 @@ exports.getSlot = (req, res, next) => {
     });
   });
 };
+
+exports.getServices = (req, res, next) => {
+  let id = req.params.id;
+  shopServices.getServices(id, (error, results) => {
+    if (error) {
+      return next(error);
+    }
+    return res.status(200).send({
+      message: "Success",
+      data: results,
+    });
+  });
+}
