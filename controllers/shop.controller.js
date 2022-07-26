@@ -27,7 +27,7 @@ exports.createShop = (req, res, next) => {
 
       var model = {
         shopId: req.body.shopId,
-        owner: req.body.ownerId,
+        owner: req.body.owner,
         shopName: req.body.shopName,
         gender: req.body.gender,
         about: req.body.about,
