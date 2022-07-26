@@ -1,5 +1,4 @@
 const shopServices = require("../services/shop.services");
-const bcrypt = require("bcryptjs");
 const {
   uploadShopLogo,
   uploadServicePhoto,
@@ -11,16 +10,7 @@ exports.createShop = (req, res, next) => {
     if (err) {
       next(err);
     } else {
-      let contactJson;
 
-      try {
-        
-        contactJson = JSON.parse(req.body.contact);
-        console.log(contactJson);
-      } catch (e) {
-        console.log(e);
-        return next(e);
-      }
       const url = req.protocol + "://" + req.get("host");
 
       const path =
@@ -32,7 +22,11 @@ exports.createShop = (req, res, next) => {
         shopName: req.body.shopName,
         gender: req.body.gender,
         about: req.body.about,
-        contact: contactJson,
+        contact:{
+
+          email: req.body.email,
+          phone: req.body.phone,
+        },
         // workingHours: JSON.parse( req.body.workingHours),
         tags: req.body.tags,
         shopLogo: path != "" ? url + "/" + path : "",
