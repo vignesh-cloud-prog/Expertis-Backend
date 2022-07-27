@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post("", tagController.createTag);
 router.get("", tagController.getTags);
-router.put("", tagController.updateTag);
+router.patch("", tagController.updateTag);
 router.delete("/:id", tagController.deleteTag);
 
 

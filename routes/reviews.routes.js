@@ -4,7 +4,7 @@ const router = express.Router();
 const reviewController = require("../controllers/review.controller");
 
 router.post("/", reviewController.addReview);
-router.put("/", reviewController.updateReview);
+router.patch("/", reviewController.updateReview);
 router.get("/:id", reviewController.getReviews);
 router.delete("/:id", reviewController.deleteReview);
 

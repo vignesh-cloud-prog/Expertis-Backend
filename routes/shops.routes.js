@@ -7,9 +7,9 @@ router.post("/shop", shopsController.createShop);
 router.get("/shop/services/:id", shopsController.getServices);
 router.get("/shop/slot/:shopId/:memberId/:date", shopsController.getSlot);
 router.post("/services", shopsController.addService);
-router.put("/services", shopsController.updateService);
+router.patch("/services", shopsController.updateService);
 router.get("/shop/:id", shopsController.getShop);
-router.put("/shop/:id", shopsController.updateShop);
+router.patch("/shop/:id", shopsController.updateShop);
 router.delete("/shop/:id", shopsController.deleteShop);
 
 module.exports = router;
