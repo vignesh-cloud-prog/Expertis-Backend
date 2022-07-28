@@ -60,12 +60,13 @@ exports.addService = (req, res, next) => {
         req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
 
       var model = {
-        id: req.body.shop_id,
+        id: req.body.shop,
         service_data: {
           serviceName: req.body.serviceName,
           price: req.body.price,
           time: req.body.time,
-          discription: req.body.discription,
+          tags: req.body.tags,
+          description: req.body.description,
           photo: path != "" ? url + "/" + path : "",
         },
       };
@@ -99,12 +100,13 @@ exports.updateService = (req, res, next) => {
         req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
 
       var model = {
-        id: req.body.service_id,
+        id: req.body.id,
         service_data: {
           serviceName: req.body.serviceName,
           price: req.body.price,
           time: req.body.time,
-          discription: req.body.discription,
+          tags: req.body.tags,
+          description: req.body.description,
           photo: path != "" ? url + "/" + path : "",
         },
       };
