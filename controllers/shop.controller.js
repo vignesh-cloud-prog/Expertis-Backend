@@ -279,7 +279,7 @@ exports.getSlot = (req, res, next) => {
       data: "",
     });
   }
-  
+
   console.log(date);
   const query = {
     shopId: shopId,

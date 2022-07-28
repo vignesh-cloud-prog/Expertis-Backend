@@ -17,24 +17,24 @@ async function createShop(params, callback) {
   const user = await User.findById(owner).exec();
   if (user == null) {
     return callback({
-      status:400,
+      status: 400,
       message: "Invalid User",
     });
   }
-  if(user.role !== "OWNER"){
+  if (user.role !== "OWNER") {
     return callback({
-      status:400,
+      status: 400,
       message: "User should have OWNER role",
     });
   }
-  member={
-    member:user._id,
-    role:"owner",
-    name:user.name,
-    pic:user.userPic,
+  member = {
+    member: user._id,
+    role: "owner",
+    name: user.name,
+    pic: user.userPic,
   }
   params.members = [member];
-    console.log(params);
+  console.log(params);
   const shop = new Shop(params);
   shop
     .save()
@@ -54,7 +54,7 @@ async function createShop(params, callback) {
             return callback("Document not found");
           } else {
             // //console.log("res ser", res);
-            return callback(null, response);
+            return callback(null, res);
           }
         })
         .catch((err) => {
@@ -62,17 +62,21 @@ async function createShop(params, callback) {
         });
     })
     .catch((error) => {
-      if ("contact.phone" in error.errors) {
-        return callback({
-          status: 400,
-          message: "Shop with phone number already exists",
-        });
-      }
-      if ("shopId" in error.errors) {
-        return callback({
-          status: 400,
-          message: "Shop id already in use",
-        });
+      console.log(error._message, error, "errpr");
+      if (error.hasOwnProperty("_message")) {
+        if ("contact.phone" in error.errors) {
+          return callback({
+            status: 400,
+            message: "Shop with phone number already exists",
+          });
+        }
+        if ("shopId" in error.errors) {
+          return callback({
+            status: 400,
+            message: "Shop id already in use",
+          });
+        }
+        
       }
       return callback(error);
     });
@@ -160,7 +164,7 @@ async function verifyOTP(email, otp, hash, callback) {
 
 async function getShopById(shopId, callback) {
   console.log(shopId);
-  Shop.findOne({shopId})
+  Shop.findOne({ shopId })
     .populate("services")
     .then((response) => {
       if (!response) callback("Not found Shop with id " + shopId);
@@ -234,15 +238,15 @@ async function getShops(req, callback) {
 }
 
 function getSlot(query, callback) {
-SlotBooking.findOne(query).then
-  ((response) => {
-    if (!response) callback({message:"Slot not found", status:404});
-    else callback(null, response);
-  }
-  ).catch((error) => {
-    return callback(error);
-  }
-  );
+  SlotBooking.findOne(query).then
+    ((response) => {
+      if (!response) callback({ message: "Slot not found", status: 404 });
+      else callback(null, response);
+    }
+    ).catch((error) => {
+      return callback(error);
+    }
+    );
 }
 
 

@@ -33,7 +33,7 @@ mongoose
   })
   .then(
     () => {
-      //console.log("Database connected");
+      // console.log("Database connected");
     },
     (error) => {
       //console.log("Database can't be connected: " + error);
@@ -76,8 +76,8 @@ app.use(errors.errorHandler);
 const PORT = process.env.PORT || 4000;
 // listen for requests
 app.listen(PORT, function () {
-  //console.log("Now listening for requests 🚀");
-  //console.log(`http://localhost:${PORT}`);
+  console.log("Now listening for requests 🚀");
+  console.log(`http://localhost:${PORT}`);
 });
 
 module.exports = app;

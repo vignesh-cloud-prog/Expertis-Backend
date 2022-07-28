@@ -62,7 +62,7 @@ async function login(params, callback) {
     </div>`,
           })
           .then((response) => {
-            //console.log(`Your OTP is ${otp} . it will expire in 5 minutes`);
+            console.log(`Your OTP is ${otp} . it will expire in 5 minutes`);
             return callback({
               status: 300,
               data: {
@@ -171,7 +171,7 @@ async function register(params, callback) {
     })
     .then((response) => {
       //console.log("OTP response", response);
-      //console.log(`Your OTP is ${otp} . it will expire in 5 minutes`);
+      console.log(`Your OTP is ${otp} . it will expire in 5 minutes`);
 
       const user = new User(params);
       user
@@ -209,7 +209,7 @@ async function updateUser(body, callback) {
   const userId = body.id;
   //console.log(userId);
 
-  let userData= await User.findByIdAndUpdate(userId, body, { useFindAndModify: true, new: true })
+  let userData = await User.findByIdAndUpdate(userId, body, { useFindAndModify: true, new: true })
   if (!userData) {
     return callback({
       status: 400,
@@ -631,7 +631,7 @@ function sendVerificationMail(email, token, host) {
   });
 }
 
-async function deleteUser(req,res, callback) {
+async function deleteUser(req, res, callback) {
   //console.log(req.id);
   //console.log("deleteUser");
   const { id } = req.params;

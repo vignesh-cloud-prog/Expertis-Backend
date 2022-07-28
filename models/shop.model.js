@@ -172,9 +172,10 @@ const ShopSchema = new Schema(
       enum: ["MALE", "FEMALE", "UNISEX"],
     },
     contact: ContactSchema,
-    workingHours: { type: WeeklyWorkingHours, 
-    default: workingHours
-     },
+    workingHours: {
+      type: WeeklyWorkingHours,
+      default: workingHours
+    },
     likes: {
       type: [
         {
