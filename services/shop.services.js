@@ -2,13 +2,14 @@ const Shop = require("../models/shop.model");
 const User = require("../models/user.model");
 const auth = require("../middleware/auth.js");
 const Tags = require("../models/tags.model");
-
+var ObjectId = require('mongoose').Types.ObjectId;
 const crypto = require("crypto");
 // const key = "verysecretkey"; // Key for cryptograpy. Keep it secret
 const nodemailer = require("nodemailer");
 const { Services } = require("../models/service.model");
 const slotBooking = require("../models/slotsBooking.model");
 const SlotBooking = require("../models/slotsBooking.model");
+const { query } = require("express");
 
 async function createShop(params, callback) {
   try{
@@ -163,8 +164,21 @@ async function verifyOTP(email, otp, hash, callback) {
 }
 
 async function getShopById(shopId, callback) {
+ let  pattern=[]
+ let query;
+  if (shopId !== undefined && shopId !== null) {
+   
+    pattern.push({ "shopId": shopId });
+  }
+  if(ObjectId.isValid(shopId)){
+    pattern.push({ "_id": ObjectId(shopId) });
+  }
+  if (pattern.length > 0) {
+    query = { $or: pattern };
+  }
+ 
   console.log(shopId);
-  Shop.findOne({ shopId })
+  Shop.findOne(query)
     .populate("services")
     .then((response) => {
       if (!response) callback("Not found Shop with id " + shopId);
