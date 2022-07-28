@@ -19,7 +19,8 @@ function authenticateToken(req, res, next) {
         }
         return res.status(401).json({ message: "Invalid token" });
       }
-      req.user = user;
+      console.log("user ", user);
+      req.user = user.data;
       next();
     });
   } catch (err) {

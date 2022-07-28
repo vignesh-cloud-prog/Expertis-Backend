@@ -3,14 +3,13 @@ const {
   uploadShopLogo,
   uploadServicePhoto,
 } = require("../middleware/upload.js");
-const { getDDMMMYYYYDate } = require("../utils/utils");
+const { getDDMMMYYYYDate, checkVariable } = require("../utils/utils");
 
 exports.createShop = (req, res, next) => {
   uploadShopLogo(req, res, function (err) {
     if (err) {
       next(err);
     } else {
-
       const url = req.protocol + "://" + req.get("host");
 
       const path =
@@ -22,8 +21,7 @@ exports.createShop = (req, res, next) => {
         shopName: req.body.shopName,
         gender: req.body.gender,
         about: req.body.about,
-        contact:{
-
+        contact: {
           email: req.body.email,
           phone: req.body.phone,
         },
@@ -198,25 +196,108 @@ exports.updateShop = (req, res, next) => {
     if (err) {
       next(err);
     } else {
+      const {
+        owner,
+        shopId,
+        shopName,
+        about,
+        gender,
+        email,
+        website,
+        phone,
+        address,
+        pinCode,
+        whatsapp,
+        facebook,
+        instagram,
+        twitter,
+        tags,
+        isActive,
+        isOpen,
+      } = req.body;
+      if (checkVariable(owner)) {
+        console.log("owner ", owner);
+        console.log("user ", req.user);
+        if (owner != req.user) {
+          return res.status(401).send({
+            message: "Unauthorized",
+            data: "",
+          });
+        }
+      } else {
+        return res.status(400).send({
+          message: "Owner Id is required",
+          data: "",
+        });
+      }
+      // TODO: Working Hours
+
       const url = req.protocol + "://" + req.get("host");
 
       const path =
         req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
 
+      let shopLogoUrl = path != "" ? url + "/" + path : "";
       var model = {
-        shopId: req.params.id,
-        shopName: req.body.shopName,
-        phone: req.body.phone,
-        address: req.body.address,
-        pincode: req.body.pincode,
-        shoplogo: path != "" ? url + "/" + path : "",
+        id: req.body.id,
       };
-
-      if (model.shoplogo == "") {
-        delete model.shoplogo;
+      if (checkVariable(shopId)) {
+        model.shopId = shopId;
+      }
+      if (checkVariable(shopName)) {
+        model.shopName = shopName;
+      }
+      if (checkVariable(about)) {
+        model.about = about;
+      }
+      if (checkVariable(tags)) {
+        model.tags = tags;
+      }
+      if (checkVariable(isActive)) {
+        model.isActive = isActive;
+      }
+      if (checkVariable(isOpen)) {
+        model.isOpen = isOpen;
+      }
+      if (checkVariable(shopLogoUrl)) {
+        model.shopLogo = shopLogoUrl;
+      }
+      let contact = {};
+      if (checkVariable(email)) {
+        contact.email = email;
+      }
+      if (checkVariable(website)) {
+        contact.website = website;
+      }
+      if (checkVariable(phone)) {
+        contact.phone = phone;
+      }
+      if (checkVariable(gender)) {
+        model.gender = gender;
+      }
+      if (checkVariable(address)) {
+        contact.address = address;
+      }
+      if (checkVariable(pinCode)) {
+        contact.pinCode = pinCode;
+      }
+      if (checkVariable(whatsapp)) {
+        contact.whatsapp = whatsapp;
+      }
+      if (checkVariable(facebook)) {
+        contact.facebook = facebook;
+      }
+      if (checkVariable(instagram)) {
+        contact.instagram = instagram;
+      }
+      if (checkVariable(twitter)) {
+        contact.twitter = twitter;
+      }
+      if (Object.keys(contact).length > 0) {
+        model.contact = contact;
       }
 
-      //console.log(model);
+      console.log("model ", model);
 
       shopServices.updateShop(model, (error, results) => {
         if (error) {
@@ -274,7 +355,7 @@ exports.getSlot = (req, res, next) => {
       data: "",
     });
   }
-  
+
   console.log(date);
   const query = {
     shopId: shopId,
@@ -304,4 +385,4 @@ exports.getServices = (req, res, next) => {
       data: results,
     });
   });
-}
+};

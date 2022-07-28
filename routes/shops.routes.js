@@ -9,7 +9,7 @@ router.get("/shop/slot/:shopId/:memberId/:date", shopsController.getSlot);
 router.post("/services", shopsController.addService);
 router.patch("/services", shopsController.updateService);
 router.get("/shop/:id", shopsController.getShop);
-router.patch("/shop/:id", shopsController.updateShop);
+router.patch("/shop/", shopsController.updateShop);
 router.delete("/shop/:id", shopsController.deleteShop);
 
 module.exports = router;

@@ -83,9 +83,28 @@ const ContactSchema = new Schema({
   pinCode: {
     type: Number,
     required: false,
-    // min: [6, "Minimum 6 digit Pin Code"],
-    // max: [6, "Maximum 6 digit Pin Code"],
+    min: [6, "Minimum 6 digit Pin Code"],
+    max: [6, "Maximum 6 digit Pin Code"],
   },
+  whatsapp: {
+    type: String,
+    required: false,
+    min: [10, "Minimum 10 digit whatsapp number"],
+    max: [13, "Whatsapp number should be 10 to 13 digit"],
+  },
+  facebook: {
+    type: String,
+    required: false,
+  },
+  instagram: {
+    type: String,
+    required: false,
+  },
+  twitter: {
+    type: String,
+    required: false,
+  },
+  
 });
 ContactSchema.set("toJSON", {
   transform: (document, returnedObject) => {
@@ -169,7 +188,7 @@ const ShopSchema = new Schema(
     },
     gender: {
       type: String,
-      enum: ["MALE", "FEMALE", "UNISEX"],
+      enum: ["MEN", "WOMEN", "UNISEX"],
     },
     contact: ContactSchema,
     workingHours: { type: WeeklyWorkingHours, 

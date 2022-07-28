@@ -176,7 +176,9 @@ async function getShopById(shopId, callback) {
 }
 
 async function updateShop(params, callback) {
-  const shopId = params.shopId;
+  const shopId = params.id;
+
+  // WARNING: Contact will be completely replace
 
   Shop.findByIdAndUpdate(shopId, params, { useFindAndModify: false, new: true })
     .then((response) => {

@@ -36,6 +36,26 @@ const isAuthorizedUser = async (id, token) => {
   }
 };
 
+const checkVariable=(variable)=>{
+
+  if(variable==null || variable==undefined ){
+    
+    return false;
+  }
+  else{
+    if (typeof variable === "string") {
+
+    variable=variable.trim();
+    if(variable==""){
+      return false;
+    }
+  }
+    
+
+  }
+  return true;
+}
+
 function getDDMMMYYYYDate(date) {
   var monthNames = [
     "JAN",
@@ -67,4 +87,5 @@ module.exports = {
   getSlots,
   isAuthorizedUser,
   getDDMMMYYYYDate,
+  checkVariable,
 };
