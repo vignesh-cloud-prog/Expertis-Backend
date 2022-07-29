@@ -251,3 +251,16 @@ exports.deleteUser = (req, res, next) => {
     });
   });
 };
+
+exports.getAllUser = (req, res, next) => {
+  
+  userServices.getAllUser(req, res, (error, results) => {
+    if (error) {
+      return next(error);
+    }
+    return res.status(200).send({
+      message: "Success",
+      data: results,
+    });
+  });
+};

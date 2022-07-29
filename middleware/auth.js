@@ -12,7 +12,7 @@ function authenticateToken(req, res, next) {
 
   try {
     jwt.verify(token, process.env.TOKEN_SECRET || "secretKey", (err, user) => {
-      //console.log(err);
+      console.log(err);
       if (err) {
         if (err.name == "TokenExpiredError") {
           return res.status(401).json({ message: "Token expired" });
