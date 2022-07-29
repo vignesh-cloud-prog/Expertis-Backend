@@ -23,12 +23,7 @@ async function createShop(params, callback) {
       message: "Invalid User",
     });
   }
-  if (user.role !== "OWNER") {
-    return callback({
-      status: 400,
-      message: "User should have OWNER role",
-    });
-  }
+
   member = {
     member: user._id,
     role: "owner",
@@ -45,6 +40,10 @@ async function createShop(params, callback) {
       User.findByIdAndUpdate(
         owner,
         {
+          $set: {
+            'roles.isShopOwner': true,
+            'roles.isShopMember': true,
+          },
           $push: {
             shop: response._id,
           },

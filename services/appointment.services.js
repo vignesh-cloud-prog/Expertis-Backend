@@ -188,7 +188,7 @@ async function getUserAppointments(req, res, callback) {
     }
 
     const appointments = await Appointment.find(filter).populate("shopId", "owner shopId shopName shopLogo contact members")
-    .populate("userId", 'name gender role userPic favoriteShops address');
+    .populate("userId", 'name gender roles userPic favoriteShops address');
     return callback(null, appointments);
   } catch (error) {
     return callback(error);
@@ -233,7 +233,7 @@ async function getAppointment(req, callback) {
     //console.log("appointmentId ", id);
     const appointment = await Appointment.findById(id)
     .populate("shopId", "owner shopId shopName shopLogo contact members")
-    .populate("userId", 'name gender role userPic favoriteShops address');
+    .populate("userId", 'name gender roles userPic favoriteShops address');
     if (!appointment) return callback("Appointment not found");
     return callback(null, appointment);
   } catch (error) {

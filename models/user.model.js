@@ -3,6 +3,35 @@ const { Schema } = mongoose;
 const uniqueValidator = require("mongoose-unique-validator");
 const jwt = require("jsonwebtoken");
 const { TOKEN_EXPIRATION_TIME } = require("../utils/constants.js");
+const { defaultRoles } = require("../utils/defaults.js");
+
+
+const RolesSchema = new Schema({
+  isAdmin: {
+     type: Boolean,
+     default: false,
+   },
+   isUser: {
+     type: Boolean,
+     default: true,
+   },
+   isShopOwner: {
+     type: Boolean,
+     default: false,
+   },
+   isShopMember: {
+     type: Boolean,
+     default: false,
+   }
+ });
+ 
+ RolesSchema.set("toJSON", {
+   transform: (document, returnedObject) => {
+     returnedObject.id = returnedObject._id.toString();
+     delete returnedObject._id;
+     delete returnedObject.__v;
+   },
+ });
 
 const UserSchema = new Schema(
   {
@@ -29,12 +58,7 @@ const UserSchema = new Schema(
       required: false,
     },
 
-    role: {
-      type: String,
-      enum: ["CUSTOMER", "OWNER", "MEMBER", "ADMIN"],
-      default: "CUSTOMER",
-      required: false,
-    },
+    roles: {type:RolesSchema, default: defaultRoles},
     address: {
       type: String,
       required: false,

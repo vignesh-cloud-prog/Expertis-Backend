@@ -36,7 +36,7 @@ const isAuthorizedUser = async (id, token) => {
   }
 };
 
-const checkVariable=(variable)=>{
+const isValidVariable=(variable)=>{
 
   if(variable==null || variable==undefined ){
     
@@ -87,5 +87,5 @@ module.exports = {
   getSlots,
   isAuthorizedUser,
   getDDMMMYYYYDate,
-  checkVariable,
+  isValidInput: isValidVariable,
 };

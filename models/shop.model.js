@@ -62,6 +62,7 @@ ShopMemberSchema.set("toJSON", {
   },
 });
 
+
 const ContactSchema = new Schema({
   email: {
     type: String,

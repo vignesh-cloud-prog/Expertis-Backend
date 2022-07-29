@@ -3,6 +3,7 @@ const userServices = require("../services/user.services");
 const { uploadUserPic } = require("../middleware/upload.js");
 
 const crypto = require("crypto");
+const { isValidInput } = require("../utils/utils");
 const key = "verysecretkey";
 
 /**
@@ -16,7 +17,7 @@ exports.updateUser = (req, res, next) => {
     if (err) {
       next(err);
     } else {
-      const { id, name, phone, dob, gender, role, address, pinCode } = req.body;
+      const { id, name, phone, dob, gender, isShopOwner, isShopMember, isAdmin, address, pinCode } = req.body;
 
       //console.log("Inside update user")
       const url = req.protocol + "://" + req.get("host");
@@ -44,16 +45,26 @@ exports.updateUser = (req, res, next) => {
       if (gender != "" && gender !== undefined && gender !== null) {
         model.gender = gender;
       }
-      if (role != "" && role !== undefined && role !== null) {
-        model.role = role;
-      }
       if (address != "" && address !== undefined && address !== null) {
         model.address = address;
       }
       if (pinCode != "" && pinCode !== undefined && pinCode !== null) {
         model.pinCode = pinCode;
       }
+      let roles={}
 
+      if(isValidInput(isShopOwner)){
+        roles.isShopOwner = true
+      }
+      if(isValidInput(isShopMember)){
+        roles.isShopMember = true
+      }
+      if(isValidInput(isAdmin)){
+        roles.isAdmin = true
+      }
+      if (Object.keys(roles).length > 0) {
+        model.roles = roles;
+      }
       //console.log("model: ", model);
 
       userServices.updateUser(model, (error, results) => {
