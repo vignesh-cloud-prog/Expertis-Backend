@@ -3,7 +3,7 @@ const userServices = require("../services/user.services");
 const { uploadUserPic } = require("../middleware/upload.js");
 
 const crypto = require("crypto");
-const { isValidInput } = require("../utils/utils");
+const { isValidVariable } = require("../utils/utils");
 const key = "verysecretkey";
 
 /**
@@ -53,13 +53,13 @@ exports.updateUser = (req, res, next) => {
       }
       let roles={}
 
-      if(isValidInput(isShopOwner)){
+      if(isValidVariable(isShopOwner)){
         roles.isShopOwner = isShopOwner
       }
-      if(isValidInput(isShopMember)){
+      if(isValidVariable(isShopMember)){
         roles.isShopMember = isShopMember
       }
-      if(isValidInput(isAdmin)){
+      if(isValidVariable(isAdmin)){
         roles.isAdmin = isAdmin
       }
       if (Object.keys(roles).length > 0) {

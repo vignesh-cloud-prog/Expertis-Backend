@@ -3,7 +3,7 @@ const {
   uploadShopLogo,
   uploadServicePhoto,
 } = require("../middleware/upload.js");
-const { getDDMMMYYYYDate, checkVariable } = require("../utils/utils");
+const { getDDMMMYYYYDate, isValidVariable } = require("../utils/utils");
 
 exports.createShop = (req, res, next) => {
   uploadShopLogo(req, res, function (err) {
@@ -217,7 +217,7 @@ exports.updateShop = (req, res, next) => {
         isActive,
         isOpen,
       } = req.body;
-      if (checkVariable(owner)) {
+      if (isValidVariable(owner)) {
         console.log("owner ", owner);
         console.log("user ", req.user);
         if (owner != req.user) {
@@ -243,56 +243,56 @@ exports.updateShop = (req, res, next) => {
       var model = {
         id: req.body.id,
       };
-      if (checkVariable(shopId)) {
+      if (isValidVariable(shopId)) {
         model.shopId = shopId;
       }
-      if (checkVariable(shopName)) {
+      if (isValidVariable(shopName)) {
         model.shopName = shopName;
       }
-      if (checkVariable(about)) {
+      if (isValidVariable(about)) {
         model.about = about;
       }
-      if (checkVariable(tags)) {
+      if (isValidVariable(tags)) {
         model.tags = tags;
       }
-      if (checkVariable(isActive)) {
+      if (isValidVariable(isActive)) {
         model.isActive = isActive;
       }
-      if (checkVariable(isOpen)) {
+      if (isValidVariable(isOpen)) {
         model.isOpen = isOpen;
       }
-      if (checkVariable(shopLogoUrl)) {
+      if (isValidVariable(shopLogoUrl)) {
         model.shopLogo = shopLogoUrl;
       }
       let contact = {};
-      if (checkVariable(email)) {
+      if (isValidVariable(email)) {
         contact.email = email;
       }
-      if (checkVariable(website)) {
+      if (isValidVariable(website)) {
         contact.website = website;
       }
-      if (checkVariable(phone)) {
+      if (isValidVariable(phone)) {
         contact.phone = phone;
       }
-      if (checkVariable(gender)) {
+      if (isValidVariable(gender)) {
         model.gender = gender;
       }
-      if (checkVariable(address)) {
+      if (isValidVariable(address)) {
         contact.address = address;
       }
-      if (checkVariable(pinCode)) {
+      if (isValidVariable(pinCode)) {
         contact.pinCode = pinCode;
       }
-      if (checkVariable(whatsapp)) {
+      if (isValidVariable(whatsapp)) {
         contact.whatsapp = whatsapp;
       }
-      if (checkVariable(facebook)) {
+      if (isValidVariable(facebook)) {
         contact.facebook = facebook;
       }
-      if (checkVariable(instagram)) {
+      if (isValidVariable(instagram)) {
         contact.instagram = instagram;
       }
-      if (checkVariable(twitter)) {
+      if (isValidVariable(twitter)) {
         contact.twitter = twitter;
       }
       if (Object.keys(contact).length > 0) {

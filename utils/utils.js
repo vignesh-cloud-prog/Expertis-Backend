@@ -87,5 +87,5 @@ module.exports = {
   getSlots,
   isAuthorizedUser,
   getDDMMMYYYYDate,
-  isValidInput: isValidVariable,
+  isValidVariable,
 };
