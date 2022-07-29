@@ -168,9 +168,21 @@ exports.verify_otp = (req, res, next) => {
   });
 };
 
-exports.getShop = (req, res, next) => {
+exports.getShopById = (req, res, next) => {
   shopId = req.params.id;
   shopServices.getShopById(shopId, (error, results) => {
+    if (error) {
+      return next(error);
+    }
+    return res.status(200).send({
+      message: "Success",
+      data: results,
+    });
+  });
+};
+exports.getShopByShopId = (req, res, next) => {
+  shopId = req.params.shopId;
+  shopServices.getShopByShopId(shopId, (error, results) => {
     if (error) {
       return next(error);
     }
