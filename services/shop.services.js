@@ -2,7 +2,7 @@ const Shop = require("../models/shop.model");
 const User = require("../models/user.model");
 const auth = require("../middleware/auth.js");
 const Tags = require("../models/tags.model");
-const ObjectId = require('mongoose').Types.ObjectId;
+const mongoose = require("mongoose");
 const crypto = require("crypto");
 // const key = "verysecretkey"; // Key for cryptograpy. Keep it secret
 const nodemailer = require("nodemailer");
@@ -169,8 +169,8 @@ async function getShopById(shopId, callback) {
    
     pattern.push({ "shopId": shopId });
   }
-  if(ObjectId.isValid(shopId)){
-    pattern.push({ "_id": ObjectId(shopId) });
+  if(mongoose.Types.ObjectId.isValid(shopId)){
+    pattern.push({ "_id": shopId });
   }
   if (pattern.length > 0) {
     query = { $or: pattern };
