@@ -54,13 +54,13 @@ exports.updateUser = (req, res, next) => {
       let roles={}
 
       if(isValidInput(isShopOwner)){
-        roles.isShopOwner = true
+        roles.isShopOwner = isShopOwner
       }
       if(isValidInput(isShopMember)){
-        roles.isShopMember = true
+        roles.isShopMember = isShopMember
       }
       if(isValidInput(isAdmin)){
-        roles.isAdmin = true
+        roles.isAdmin = isAdmin
       }
       if (Object.keys(roles).length > 0) {
         model.roles = roles;

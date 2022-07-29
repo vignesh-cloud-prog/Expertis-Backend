@@ -216,10 +216,10 @@ async function updateUser(body, callback) {
       message: "User does not exists",
     });
   }
-  if (userData.shop.length > 0) {
-    //console.log("No shops");
-    await userData.populate('shop');
-  }
+  // if (userData.shop.length > 0) {
+  //   //console.log("No shops");
+  //   await userData.populate('shop');
+  // }
   return callback(null, { ...userData.toJSON() });
 }
 
