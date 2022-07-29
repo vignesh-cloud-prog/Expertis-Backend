@@ -177,15 +177,17 @@ const ShopSchema = new Schema(
     },
     shopName: {
       type: String,
-      required: true,
+      required: false,
+    
     },
     shopLogo: {
       type: String,
       required: false,
+     
     },
     about: {
       type: String,
-      required: false,
+      
     },
     gender: {
       type: String,

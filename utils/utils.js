@@ -37,9 +37,8 @@ const isAuthorizedUser = async (id, token) => {
 };
 
 const isValidVariable=(variable)=>{
-
   if(variable==null || variable==undefined ){
-    
+     
     return false;
   }
   else{
