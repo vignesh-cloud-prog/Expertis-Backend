@@ -6,8 +6,7 @@ const { Services } = require("../models/service.model");
 const moment = require("moment");
 const {
   getSlots,
-  getSlot,
-  isAuthorizedUser,
+  
   getDDMMMYYYYDate,
 } = require("../utils/utils");
 const ObjectId = require("mongoose").Types.ObjectId;
@@ -158,6 +157,7 @@ async function getUserAppointments(req, res, callback) {
     const { past } = req.query;
     let appointmentStatus = [
       "PENDING",
+      "ACCEPTED",
       "CONFIRMED",
       "CANCELLED",
       "COMPLETED",
@@ -211,7 +211,7 @@ async function getShopAppointments(req, res, callback) {
     let appointmentStatus = [
       "PENDING",
       "CONFIRMED",
-
+      "ACCEPTED",
     ];
     let filter = {
       shopId: id,      
@@ -260,7 +260,7 @@ async function cancelAppointment(req, res, callback) {
     //console.log("appointment ", appointment);
     if (!appointment) return callback("Appointment not found");
     console.log("req.user.id ", req.user);
-    if (req.user.id !== appointment.userId && req.user.isAdmin == false) {
+    if (req.user.id !== appointment.userId.toString() && req.user.isAdmin == false) {
       return callback("User not authorized");
     }
 
@@ -305,7 +305,7 @@ async function rejectAppointment(req, res, callback) {
     if (!appointment) return callback("Appointment not found");
 
     if (
-      !(await isAuthorizedUser(appointment.memberId, req.headers.authorization))
+      appointment.memberId.toString() !== req.user.id && req.user.isAdmin == false
     ) {
       return callback("User not authorized");
     }
@@ -349,8 +349,10 @@ async function acceptAppointment(req, res, callback) {
     //console.log("appointment ", appointment);
     if (!appointment) return callback("Appointment not found");
     console.log("appointment.memberId ", appointment.memberId);
+    console.log("req.user.id ", req.user.id);
+    console.log("appointment userId ", appointment.userId);
     if (
-      !(await isAuthorizedUser(appointment.memberId, req.headers.authorization))
+      appointment.memberId.toString() !== req.user.id && req.user.isAdmin == false
     ) {
       return callback("User not authorized");
     }
@@ -380,7 +382,7 @@ async function completeAppointment(req, res, callback) {
     if (!appointment) return callback("Appointment not found");
 
     if (
-      !(await isAuthorizedUser(appointment.userId, req.headers.authorization))
+      req.user.id !== appointment.userId.toString() && req.user.isAdmin == false
     ) {
       return callback("User not authorized");
     }

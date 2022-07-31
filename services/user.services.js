@@ -7,7 +7,6 @@ const crypto = require("crypto");
 const key = "verysecretkey"; // Key for cryptograpy. Keep it secret
 const nodemailer = require("nodemailer");
 const { strict } = require("assert");
-const { isAuthorizedUser } = require("../utils/utils");
 
 const transporter = nodemailer.createTransport({
   service: "Gmail",
@@ -303,6 +302,7 @@ async function verifyOTP(id, otp, hash, callback) {
         `Cannot update Profile with id=${id}. Maybe user was not found!`
       );
     else {
+      const user = await User.findById(id);
       const token = auth.generateAccessToken({id: user._id, email: user.email, name: user.name, isAdmin: user.roles.isAdmin, isShopMember: user.roles.isShopMember, isShopOwner: user.roles.isShopOwner, isVerified: user.verified,dob: user.dob, phone:user.phone, gender:user.gender});
       return callback(null, { ...doc.toJSON(), token });
     }
@@ -641,7 +641,7 @@ async function deleteUser(req, res, callback) {
     return res.status(404).send({ message: 'User not found' });
   }
   if (
-    !(await isAuthorizedUser(id, req.headers.authorization))
+   user.id.toString() !== req.user.id && req.user.isAdmin===false
   ) {
     return callback("User not authorized");
   }
