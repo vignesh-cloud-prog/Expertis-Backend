@@ -209,7 +209,7 @@ async function updateUser(body, callback) {
   const userId = body.id;
   //console.log(userId);
 
-  let userData= await User.findByIdAndUpdate(userId, body, { useFindAndModify: true, new: true })
+  let userData = await User.findByIdAndUpdate(userId, body, { useFindAndModify: true, new: true })
   if (!userData) {
     return callback({
       status: 400,
@@ -631,7 +631,7 @@ function sendVerificationMail(email, token, host) {
   });
 }
 
-async function deleteUser(req,res, callback) {
+async function deleteUser(req, res, callback) {
   //console.log(req.id);
   //console.log("deleteUser");
   const { id } = req.params;
@@ -652,6 +652,24 @@ async function deleteUser(req,res, callback) {
   });
 }
 
+async function getAllUser(req, res, callback) {
+  //console.log(req.id);
+  //console.log("deleteUser");
+  const { id } = req.params;
+  //console.log(id);
+  await User.find().then((response) => {
+    if (!response)
+      callback(
+        `Cannot cant get users`
+      );
+    else callback(null, response);
+  })
+    .catch((error) => {
+      return callback(error);
+    });
+
+}
+
 module.exports = {
   login,
   register,
@@ -662,4 +680,5 @@ module.exports = {
   changePassword,
   reset_password,
   deleteUser,
+  getAllUser,
 };
