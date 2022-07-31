@@ -144,8 +144,8 @@ async function bookAppointment(params, callback) {
     );
     if (!updatedShop) return callback("Shop not found");
     const bookingData = await Appointment.findById(appointment._id)
-      .populate("shopId")
-      .populate("userId");
+    .populate("shopId", "owner shopId shopName shopLogo contact members")
+    .populate("userId", "name gender roles userPic favoriteShops address");
     return callback(null, bookingData);
   } catch (error) {
     return callback(error);
@@ -214,8 +214,8 @@ async function getShopAppointments(req, res, callback) {
     }
 
     const appointments = await Appointment.find({ shopId: id })
-      .populate("shopId")
-      .populate("userId");
+    .populate("shopId", "owner shopId shopName shopLogo contact members")
+    .populate("userId", "name gender roles userPic favoriteShops address");
     return callback(null, appointments);
   } catch (error) {
     return callback(error);
@@ -284,8 +284,8 @@ async function cancelAppointment(req, res, callback) {
       },
       { new: true }
     )
-      .populate("shopId")
-      .populate("userId");
+    .populate("shopId", "owner shopId shopName shopLogo contact members")
+    .populate("userId", "name gender roles userPic favoriteShops address");
     if (!updatedAppointment) return callback("Operation failed");
     return callback(null, updatedAppointment);
   } catch (error) {
@@ -329,8 +329,8 @@ async function rejectAppointment(req, res, callback) {
       },
       { new: true }
     )
-      .populate("shopId")
-      .populate("userId");
+    .populate("shopId", "owner shopId shopName shopLogo contact members")
+    .populate("userId", "name gender roles userPic favoriteShops address");
     if (!updatedAppointment) return callback("Operation failed");
     return callback(null, updatedAppointment);
   } catch (error) {
@@ -359,8 +359,8 @@ async function acceptAppointment(req, res, callback) {
       },
       { new: true }
     )
-      .populate("shopId")
-      .populate("userId");
+    .populate("shopId", "owner shopId shopName shopLogo contact members")
+      .populate("userId", "name gender roles userPic favoriteShops address");
     if (!updatedAppointment) return callback("Operation failed");
     return callback(null, updatedAppointment);
   } catch (error) {
@@ -389,8 +389,8 @@ async function completeAppointment(req, res, callback) {
       },
       { new: true }
     )
-      .populate("shopId")
-      .populate("userId");
+    .populate("shopId", "owner shopId shopName shopLogo contact members")
+    .populate("userId", "name gender roles userPic favoriteShops address");
     if (!updatedAppointment) return callback("Operation failed");
     return callback(null, updatedAppointment);
   } catch (error) {
