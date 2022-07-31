@@ -232,9 +232,9 @@ exports.updateShop = (req, res, next) => {
       if (isValidVariable(owner)) {
         console.log("owner ", owner);
         console.log("user ", req.user);
-        if (owner != req.user) {
+        if (owner != req.user.id) {
           return res.status(401).send({
-            message: "Unauthorized",
+            message: "You are not authorized to update this shop",
             data: "",
           });
         }

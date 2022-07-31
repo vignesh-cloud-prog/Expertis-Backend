@@ -77,7 +77,7 @@ async function login(params, callback) {
             return callback({ status: 400, message: "Email can't be sent" });
           });
       } else {
-        const token = auth.generateAccessToken(user._id);
+        const token = auth.generateAccessToken({id: user._id, email: user.email, name: user.name, isAdmin: user.roles.isAdmin, isShopMember: user.roles.isShopMember, isShopOwner: user.roles.isShopOwner, isVerified: user.verified,dob: user.dob, phone:user.phone, gender:user.gender});
         //console.log(user, token);
         // call toJSON method applied during model instantiation
         return callback(null, {
@@ -303,7 +303,7 @@ async function verifyOTP(id, otp, hash, callback) {
         `Cannot update Profile with id=${id}. Maybe user was not found!`
       );
     else {
-      const token = auth.generateAccessToken(doc._id);
+      const token = auth.generateAccessToken({id: user._id, email: user.email, name: user.name, isAdmin: user.roles.isAdmin, isShopMember: user.roles.isShopMember, isShopOwner: user.roles.isShopOwner, isVerified: user.verified,dob: user.dob, phone:user.phone, gender:user.gender});
       return callback(null, { ...doc.toJSON(), token });
     }
   } else {
