@@ -282,7 +282,8 @@ async function cancelAppointment(req, res, callback) {
         appointmentStatus: "CANCELLED",
       },
       { new: true }
-    );
+    ).populate("shopId")
+    .populate("userId");
     if (!updatedAppointment) return callback("Operation failed");
     return callback(null, updatedAppointment);
   } catch (error) {
@@ -299,7 +300,7 @@ async function rejectAppointment(req, res, callback) {
     if (!appointment) return callback("Appointment not found");
 
     if (
-      !(await isAuthorizedUser(appointment.shopId, req.headers.authorization))
+      !(await isAuthorizedUser(appointment.memberId, req.headers.authorization))
     ) {
       return callback("User not authorized");
     }
@@ -325,7 +326,8 @@ async function rejectAppointment(req, res, callback) {
         appointmentStatus: "REJECTED",
       },
       { new: true }
-    );
+    ).populate("shopId")
+    .populate("userId");
     if (!updatedAppointment) return callback("Operation failed");
     return callback(null, updatedAppointment);
   } catch (error) {
@@ -353,7 +355,8 @@ async function acceptAppointment(req, res, callback) {
         appointmentStatus: "ACCEPTED",
       },
       { new: true }
-    );
+    ).populate("shopId")
+    .populate("userId");
     if (!updatedAppointment) return callback("Operation failed");
     return callback(null, updatedAppointment);
   } catch (error) {
@@ -381,7 +384,8 @@ async function completeAppointment(req, res, callback) {
         appointmentStatus: "COMPLETED",
       },
       { new: true }
-    );
+    ).populate("shopId")
+    .populate("userId");
     if (!updatedAppointment) return callback("Operation failed");
     return callback(null, updatedAppointment);
   } catch (error) {

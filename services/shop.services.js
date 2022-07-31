@@ -4,7 +4,6 @@ const auth = require("../middleware/auth.js");
 const Tags = require("../models/tags.model");
 const mongoose = require("mongoose");
 const crypto = require("crypto");
-// const key = "verysecretkey"; // Key for cryptograpy. Keep it secret
 const nodemailer = require("nodemailer");
 const { Services } = require("../models/service.model");
 const slotBooking = require("../models/slotsBooking.model");
