@@ -23,6 +23,7 @@ function getSlots(startTime, endTime) {
   return slots;
 }
 
+
 const isValidVariable=(variable)=>{
   if(variable==null || variable==undefined ){
      

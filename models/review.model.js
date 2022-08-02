@@ -32,6 +32,10 @@ const ReviewSchema = new Schema(
       required: false,
       default: 0,
     },
+    title: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );
