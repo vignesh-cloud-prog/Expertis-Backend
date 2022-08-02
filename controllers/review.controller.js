@@ -1,5 +1,7 @@
 const reviewServices = require("../services/review.services");
 const { uploadReviewPhoto } = require("../middleware/upload.js");
+const jwt = require("jsonwebtoken");
+
 
 
 exports.addReview = (req, res, next) => {
@@ -12,14 +14,18 @@ exports.addReview = (req, res, next) => {
 
       const path =
         req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
+      token = req.headers.authorization
+      decoded = jwt.verify(token, process.env.TOKEN_SECRET || "secretKey");
+
 
       var model = {
-        from: req.body.from,
+        from: decoded.data,
         to: req.body.to,
         rating: req.body.rating,
         model_type: req.body.model_type,
         comment: req.body.comment,
         reviewPhotos: path != "" ? url + "/" + path : "",
+        title: req.body.title
       };
       //console.log(model);
 
@@ -51,7 +57,8 @@ exports.updateReview = (req, res, next) => {
 };
 
 exports.deleteReview = (req, res, next) => {
-  reviewServices.deleteReview(req.body, (error, results) => {
+
+  reviewServices.deleteReview(req, (error, results) => {
     if (error) {
       return next(error);
     }
