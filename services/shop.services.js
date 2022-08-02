@@ -4,7 +4,6 @@ const auth = require("../middleware/auth.js");
 const Tags = require("../models/tags.model");
 const mongoose = require("mongoose");
 const crypto = require("crypto");
-// const key = "verysecretkey"; // Key for cryptograpy. Keep it secret
 const nodemailer = require("nodemailer");
 const { Services } = require("../models/service.model");
 const slotBooking = require("../models/slotsBooking.model");
@@ -163,21 +162,24 @@ async function verifyOTP(email, otp, hash, callback) {
 }
 
 async function getShopById(shopId, callback) {
- let  pattern=[]
- let query;
-  if (shopId !== undefined && shopId !== null) {
-   
-    pattern.push({ "shopId": shopId });
-  }
-  if(mongoose.Types.ObjectId.isValid(shopId)){
-    pattern.push({ "_id": shopId });
-  }
-  if (pattern.length > 0) {
-    query = { $or: pattern };
-  }
+ 
  
   console.log(shopId);
-  Shop.findOne(query)
+  Shop.findById(shopId)
+    .populate("services")
+    .then((response) => {
+      if (!response) callback("Not found Shop with id " + shopId);
+      else callback(null, response);
+    })
+    .catch((error) => {
+      return callback(error);
+    });
+}
+async function getShopByShopId(shopId, callback) {
+ 
+ 
+  console.log(shopId);
+  Shop.findOne({ shopId })
     .populate("services")
     .then((response) => {
       if (!response) callback("Not found Shop with id " + shopId);
@@ -283,6 +285,7 @@ module.exports = {
   verifyOTP,
   addservice,
   getShopById,
+  getShopByShopId,
   updateShop,
   deleteShop,
   getShops,

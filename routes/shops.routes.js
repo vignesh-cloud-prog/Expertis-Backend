@@ -8,7 +8,8 @@ router.get("/shop/services/:id", shopsController.getServices);
 router.get("/shop/slot/:shopId/:memberId/:date", shopsController.getSlot);
 router.post("/services", shopsController.addService);
 router.patch("/services", shopsController.updateService);
-router.get("/shop/:id", shopsController.getShop);
+router.get("/shop/:id", shopsController.getShopById);
+router.get("/shops/:shopId", shopsController.getShopByShopId);
 router.patch("/shop/", shopsController.updateShop);
 router.delete("/shop/:id", shopsController.deleteShop);
 
