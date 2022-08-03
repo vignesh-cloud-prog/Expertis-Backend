@@ -19,7 +19,7 @@ exports.addReview = (req, res, next) => {
 
 
       var model = {
-        from: req.user,
+        from: req.user.id,
         to: req.body.to,
         rating: req.body.rating,
         model_type: req.body.model_type,
