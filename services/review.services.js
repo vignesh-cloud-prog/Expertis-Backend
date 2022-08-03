@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 async function addReview(params, callback) {
   const { from, to, model_type, comment, rating } = params;
   // //console.log(params);
-  Reviews.findOneAndUpdate({ from, to, model_type }, params, { new: true, upsert: true }).then(res => {
+  Reviews.findOneAndUpdate({ from, to, model_type }, params, { new: true, upsert: true }).populate('to').then(res => {
     return callback(null, res);
   }).catch(e => {
     //console.log(e)
