@@ -21,6 +21,7 @@ function authenticateToken(req, res, next) {
       }
       console.log("user ", user);
       req.user = user.data;
+      console.log("user in req ", req.user);
       next();
     });
   } catch (err) {
@@ -29,11 +30,11 @@ function authenticateToken(req, res, next) {
   }
 }
 
-function generateAccessToken(id) {
+function generateAccessToken(data) {
   //console.log("id ", id);
   //console.log("process.env.TOKEN_SECRET ", process.env.TOKEN_SECRET);
   //console.log("TOKEN_EXPIRATION_TIME ", TOKEN_EXPIRATION_TIME);
-  return jwt.sign({ data: id }, process.env.TOKEN_SECRET || "secretKey", {
+  return jwt.sign({data}, process.env.TOKEN_SECRET || "secretKey", {
     expiresIn: TOKEN_EXPIRATION_TIME,
   });
 }

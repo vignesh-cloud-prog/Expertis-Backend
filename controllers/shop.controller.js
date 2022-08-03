@@ -168,10 +168,22 @@ exports.verify_otp = (req, res, next) => {
   });
 };
 
-exports.getShop = (req, res, next) => {
+exports.getShopById = (req, res, next) => {
   shopId = req.params.id;
 
   shopServices.getShopById(shopId, (error, results) => {
+    if (error) {
+      return next(error);
+    }
+    return res.status(200).send({
+      message: "Success",
+      data: results,
+    });
+  });
+};
+exports.getShopByShopId = (req, res, next) => {
+  shopId = req.params.shopId;
+  shopServices.getShopByShopId(shopId, (error, results) => {
     if (error) {
       return next(error);
     }
@@ -221,9 +233,9 @@ exports.updateShop = (req, res, next) => {
       if (isValidVariable(owner)) {
         console.log("owner ", owner);
         console.log("user ", req.user);
-        if (owner != req.user) {
+        if (owner != req.user.id) {
           return res.status(401).send({
-            message: "Unauthorized",
+            message: "You are not authorized to update this shop",
             data: "",
           });
         }

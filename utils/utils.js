@@ -23,23 +23,10 @@ function getSlots(startTime, endTime) {
   return slots;
 }
 
-const isAuthorizedUser = async (id, token) => {
-  try {
-    //console.log("token ", token, "id ", id);
-    if (token == null) return 0;
-    decoded = jwt.verify(token, process.env.TOKEN_SECRET || "secretKey");
-    // console.log("decoded ", decoded);
-    if (decoded.data == id) return 1;
-  } catch (err) {
-    //console.log("err ", err);
-    return 0;
-  }
-};
 
 const isValidVariable=(variable)=>{
-
   if(variable==null || variable==undefined ){
-    
+     
     return false;
   }
   else{
@@ -85,7 +72,6 @@ console.log(getDDMMMYYYYDate(new Date()));
 module.exports = {
   getSlot,
   getSlots,
-  isAuthorizedUser,
   getDDMMMYYYYDate,
   isValidVariable,
 };

@@ -6,8 +6,7 @@ const { Services } = require("../models/service.model");
 const moment = require("moment");
 const {
   getSlots,
-  getSlot,
-  isAuthorizedUser,
+  
   getDDMMMYYYYDate,
 } = require("../utils/utils");
 const ObjectId = require("mongoose").Types.ObjectId;
@@ -144,8 +143,8 @@ async function bookAppointment(params, callback) {
     );
     if (!updatedShop) return callback("Shop not found");
     const bookingData = await Appointment.findById(appointment._id)
-      .populate("shopId")
-      .populate("userId");
+      .populate("shopId", "owner shopId shopName shopLogo contact members")
+      .populate("userId", "name gender roles userPic favoriteShops address");
     return callback(null, bookingData);
   } catch (error) {
     return callback(error);
@@ -158,6 +157,7 @@ async function getUserAppointments(req, res, callback) {
     const { past } = req.query;
     let appointmentStatus = [
       "PENDING",
+      "ACCEPTED",
       "CONFIRMED",
       "CANCELLED",
       "COMPLETED",
@@ -168,9 +168,10 @@ async function getUserAppointments(req, res, callback) {
       appointmentStatus: { $in: appointmentStatus },
       endTime: { $gt: new Date() },
     };
-    if (past !== undefined && past == true) {
+    if (past !== undefined && past == "true") {
       filter.endTime = { $lt: new Date() };
     }
+    console.log("filter ", filter);
 
     if (!ObjectId.isValid(id)) {
       return callback({
@@ -180,15 +181,16 @@ async function getUserAppointments(req, res, callback) {
     }
 
     //console.log("userId ", id);
-    if (!(await isAuthorizedUser(id, req.headers.authorization))) {
+    if (id!= req.user.id && req.user.isAdmin == false) {
       return callback({
         status: 401,
         message: "Unauthorized",
       });
     }
 
-    const appointments = await Appointment.find(filter).populate("shopId", "owner shopId shopName shopLogo contact members")
-    .populate("userId", 'name gender roles userPic favoriteShops address');
+    const appointments = await Appointment.find(filter)
+      .populate("shopId", "owner shopId shopName shopLogo contact members")
+      .populate("userId", "name gender roles userPic favoriteShops address");
     return callback(null, appointments);
   } catch (error) {
     return callback(error);
@@ -205,16 +207,25 @@ async function getShopAppointments(req, res, callback) {
       });
     }
 
-    if (!(await isAuthorizedUser(id, req.headers.authorization))) {
-      return callback({
-        status: 401,
-        message: "Unauthorized",
-      });
+    const { upcoming } = req.query;
+    let appointmentStatus = [
+      "PENDING",
+      "CONFIRMED",
+      "ACCEPTED",
+    ];
+    let filter = {
+      shopId: id,      
+    };
+    console.log("upcoming ", upcoming);
+    if (upcoming !== undefined && upcoming == "true") {
+      filter.endTime = { $gt: new Date() };
+      filter.appointmentStatus = { $in: appointmentStatus };
     }
+    console.log("filter ", filter);
 
-    const appointments = await Appointment.find({ shopId: id })
-      .populate("shopId")
-      .populate("userId");
+    const appointments = await Appointment.find(filter)
+      .populate("shopId", "owner shopId shopName shopLogo contact members")
+      .populate("userId", "name gender roles userPic favoriteShops address");
     return callback(null, appointments);
   } catch (error) {
     return callback(error);
@@ -232,8 +243,8 @@ async function getAppointment(req, callback) {
     }
     //console.log("appointmentId ", id);
     const appointment = await Appointment.findById(id)
-    .populate("shopId", "owner shopId shopName shopLogo contact members")
-    .populate("userId", 'name gender roles userPic favoriteShops address');
+      .populate("shopId", "owner shopId shopName shopLogo contact members")
+      .populate("userId", "name gender roles userPic favoriteShops address");
     if (!appointment) return callback("Appointment not found");
     return callback(null, appointment);
   } catch (error) {
@@ -248,15 +259,8 @@ async function cancelAppointment(req, res, callback) {
     const appointment = await Appointment.findById(id);
     //console.log("appointment ", appointment);
     if (!appointment) return callback("Appointment not found");
-
-    // console.log( "access ",
-    //   Boolean(
-    //     await isAuthorizedUser(appointment.userId, req.headers.authorization)
-    //   )
-    // );
-    if (
-      !(await isAuthorizedUser(appointment.userId, req.headers.authorization))
-    ) {
+    console.log("req.user.id ", req.user);
+    if (req.user.id !== appointment.userId.toString() && req.user.isAdmin == false) {
       return callback("User not authorized");
     }
 
@@ -282,7 +286,9 @@ async function cancelAppointment(req, res, callback) {
         appointmentStatus: "CANCELLED",
       },
       { new: true }
-    );
+    )
+      .populate("shopId", "owner shopId shopName shopLogo contact members")
+      .populate("userId", "name gender roles userPic favoriteShops address");
     if (!updatedAppointment) return callback("Operation failed");
     return callback(null, updatedAppointment);
   } catch (error) {
@@ -299,7 +305,7 @@ async function rejectAppointment(req, res, callback) {
     if (!appointment) return callback("Appointment not found");
 
     if (
-      !(await isAuthorizedUser(appointment.shopId, req.headers.authorization))
+      appointment.memberId.toString() !== req.user.id && req.user.isAdmin == false
     ) {
       return callback("User not authorized");
     }
@@ -325,7 +331,9 @@ async function rejectAppointment(req, res, callback) {
         appointmentStatus: "REJECTED",
       },
       { new: true }
-    );
+    )
+      .populate("shopId", "owner shopId shopName shopLogo contact members")
+      .populate("userId", "name gender roles userPic favoriteShops address");
     if (!updatedAppointment) return callback("Operation failed");
     return callback(null, updatedAppointment);
   } catch (error) {
@@ -341,8 +349,10 @@ async function acceptAppointment(req, res, callback) {
     //console.log("appointment ", appointment);
     if (!appointment) return callback("Appointment not found");
     console.log("appointment.memberId ", appointment.memberId);
+    console.log("req.user.id ", req.user.id);
+    console.log("appointment userId ", appointment.userId);
     if (
-      !(await isAuthorizedUser(appointment.memberId, req.headers.authorization))
+      appointment.memberId.toString() !== req.user.id && req.user.isAdmin == false
     ) {
       return callback("User not authorized");
     }
@@ -353,7 +363,9 @@ async function acceptAppointment(req, res, callback) {
         appointmentStatus: "ACCEPTED",
       },
       { new: true }
-    );
+    )
+      .populate("shopId", "owner shopId shopName shopLogo contact members")
+      .populate("userId", "name gender roles userPic favoriteShops address");
     if (!updatedAppointment) return callback("Operation failed");
     return callback(null, updatedAppointment);
   } catch (error) {
@@ -370,7 +382,7 @@ async function completeAppointment(req, res, callback) {
     if (!appointment) return callback("Appointment not found");
 
     if (
-      !(await isAuthorizedUser(appointment.userId, req.headers.authorization))
+      req.user.id !== appointment.userId.toString() && req.user.isAdmin == false
     ) {
       return callback("User not authorized");
     }
@@ -381,7 +393,9 @@ async function completeAppointment(req, res, callback) {
         appointmentStatus: "COMPLETED",
       },
       { new: true }
-    );
+    )
+      .populate("shopId", "owner shopId shopName shopLogo contact members")
+      .populate("userId", "name gender roles userPic favoriteShops address");
     if (!updatedAppointment) return callback("Operation failed");
     return callback(null, updatedAppointment);
   } catch (error) {
