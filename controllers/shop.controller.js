@@ -170,6 +170,7 @@ exports.verify_otp = (req, res, next) => {
 
 exports.getShopById = (req, res, next) => {
   shopId = req.params.id;
+
   shopServices.getShopById(shopId, (error, results) => {
     if (error) {
       return next(error);

@@ -14,12 +14,12 @@ exports.addReview = (req, res, next) => {
 
       const path =
         req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
-      token = req.headers.authorization
-      decoded = jwt.verify(token, process.env.TOKEN_SECRET || "secretKey");
+
+      console.log('add rev', req.user);
 
 
       var model = {
-        from: decoded.data,
+        from: req.user,
         to: req.body.to,
         rating: req.body.rating,
         model_type: req.body.model_type,
