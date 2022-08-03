@@ -30,9 +30,7 @@ async function updateReview(params, callback) {
 
 async function deleteReview(params, callback) {
   to = params.params.shopId
-  token = params.headers.authorization
-  decoded = jwt.verify(token, process.env.TOKEN_SECRET || "secretKey");
-  from = decoded.data
+  from = params.user.id
   let data = await Reviews.findOne({ from, to })
   console.log(data);
   if (!data) {
