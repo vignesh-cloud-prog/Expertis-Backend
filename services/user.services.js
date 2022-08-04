@@ -4,9 +4,9 @@ const auth = require("../middleware/auth.js");
 const jwt = require("jsonwebtoken");
 const otpGenerator = require("otp-generator");
 const crypto = require("crypto");
-const key = "verysecretkey"; // Key for cryptograpy. Keep it secret
+const key = process.env.CRYPTO_SECRET_KEY || "verySecretKey"; // Key for cryptography. Keep it secret
 const nodemailer = require("nodemailer");
-const { strict } = require("assert");
+
 
 const transporter = nodemailer.createTransport({
   service: "Gmail",
@@ -18,12 +18,15 @@ const transporter = nodemailer.createTransport({
 
 async function login(params, callback) {
   const { email, password } = params;
-  const user = await User.findOne({ email });
-
+  // Find user by email
+  const user = await User.findOne({ email }).populate("shop");
+  // If user not found
   if (user != null) {
+    // Check if password is correct
     if (bcrypt.compareSync(password, user.password)) {
       if (user.verified == false) {
         //console.log("User not verified");
+        
         const otp = otpGenerator.generate(6, {
           alphabets: false,
           upperCase: false,
@@ -37,28 +40,28 @@ async function login(params, callback) {
           .update(data)
           .digest("hex"); // creating SHA256 hash of the data
         const fullHash = `${hash}.${expires}`; // Hash.expires, format to send to the user
-        // you have to implement the function to send SMS yourself. For demo purpose. let's assume it's called sendSMS
+        // Send OTP to user
         await transporter
           .sendMail({
             to: email,
             subject: "Verify Account",
             html: `<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
-      <div style="margin:50px auto;width:70%;padding:20px 0">
-        <div style="border-bottom:1px solid #eee">
-          <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">Expertis Inc</a>
-        </div>
-        <p style="font-size:1.1em">Verify,</p>
-        <p>Thank you for choosing Expertis. Use the following OTP to reset password pocess. OTP is valid for 5 minutes</p>
-        <h2 style="background: #00466a;margin: 0 auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">${otp}</h2>
-        <p style="font-size:0.9em;">Regards,<br />Expertis</p>
-        <hr style="border:none;border-top:1px solid #eee" />
-        <div style="float:right;padding:8px 0;color:#aaa;font-size:0.8em;line-height:1;font-weight:300">
-          <p>Expertis Inc</p>
-          <p>Find your best</p>
-          <p>India</p>
-        </div>
-      </div>
-    </div>`,
+                    <div style="margin:50px auto;width:70%;padding:20px 0">
+                      <div style="border-bottom:1px solid #eee">
+                        <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">Expertis Inc</a>
+                      </div>
+                      <p style="font-size:1.1em">Verify,</p>
+                      <p>Thank you for choosing Expertis. Use the following OTP to reset password pocess. OTP is valid for 5 minutes</p>
+                      <h2 style="background: #00466a;margin: 0 auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">${otp}</h2>
+                      <p style="font-size:0.9em;">Regards,<br />Expertis</p>
+                      <hr style="border:none;border-top:1px solid #eee" />
+                      <div style="float:right;padding:8px 0;color:#aaa;font-size:0.8em;line-height:1;font-weight:300">
+                        <p>Expertis Inc</p>
+                        <p>Find your best</p>
+                        <p>India</p>
+                      </div>
+                    </div>
+                  </div>`,
           })
           .then((response) => {
             //console.log(`Your OTP is ${otp} . it will expire in 5 minutes`);
@@ -99,36 +102,6 @@ async function login(params, callback) {
   }
 }
 
-async function verify({ token }, callback) {
-  // Step 1 -  Verify the token from the URL
-  let payload = null;
-  try {
-    payload = jwt.verify(token, process.env.USER_VERIFICATION_TOKEN_SECRET);
-  } catch (err) {
-    return callback({ message: `Verification failed ${err}` });
-  }
-  try {
-    // Step 2 - Find user with matching ID
-    const user = await User.findOneAndUpdate(
-      { _id: payload.ID },
-      { verified: true },
-      { new: true }
-    );
-    //console.log(user);
-    if (!user) {
-      return callback({
-        message: "User does not  exists",
-      });
-    }
-    // Step 3 - Update user verification status to true
-    // user.verified = true;
-    // await user.save()
-    return callback(null, { ...user.toJSON() });
-  } catch (err) {
-    return callback({ message: err });
-  }
-}
-
 async function register(params, callback) {
   const { email } = params;
   //console.log("email", email);
@@ -144,8 +117,7 @@ async function register(params, callback) {
     upperCase: false,
     specialChars: false,
   });
-
-  // you have to implement the function to send SMS yourself. For demo purpose. let's assume it's called sendSMS
+// Send OTP to user
   transporter
     .sendMail({
       to: email,
@@ -235,7 +207,7 @@ async function forgetPassword(email, callback) {
     const data = `${email}.${otp}.${expires}`; // phone.otp.expiry_timestamp
     const hash = crypto.createHmac("sha256", key).update(data).digest("hex"); // creating SHA256 hash of the data
     const fullHash = `${hash}.${expires}`; // Hash.expires, format to send to the user
-    // you have to implement the function to send SMS yourself. For demo purpose. let's assume it's called sendSMS
+ 
     transporter
       .sendMail({
         to: email,
@@ -668,6 +640,36 @@ async function getAllUser(req, res, callback) {
       return callback(error);
     });
 
+}
+
+async function verify({ token }, callback) {
+  // Step 1 -  Verify the token from the URL
+  let payload = null;
+  try {
+    payload = jwt.verify(token, process.env.USER_VERIFICATION_TOKEN_SECRET);
+  } catch (err) {
+    return callback({ message: `Verification failed ${err}` });
+  }
+  try {
+    // Step 2 - Find user with matching ID
+    const user = await User.findOneAndUpdate(
+      { _id: payload.ID },
+      { verified: true },
+      { new: true }
+    ).populate("shop");
+    //console.log(user);
+    if (!user) {
+      return callback({
+        message: "User does not  exists",
+      });
+    }
+    // Step 3 - Update user verification status to true
+    // user.verified = true;
+    // await user.save()
+    return callback(null, { ...user.toJSON() });
+  } catch (err) {
+    return callback({ message: err });
+  }
 }
 
 module.exports = {

@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 async function addReview(params, callback) {
   const { from, to, model_type, comment, rating } = params;
   // //console.log(params);
-  Reviews.findOneAndUpdate({ from, to, model_type }, params, { new: true, upsert: true }).populate('to').then(res => {
+  Reviews.findOneAndUpdate({ from, to, model_type }, params, { new: true, upsert: true }).populate('from', 'name email roles userPic').then(res => {
     return callback(null, res);
   }).catch(e => {
     //console.log(e)
@@ -18,7 +18,7 @@ async function addReview(params, callback) {
 }
 async function updateReview(params, callback) {
   const { id } = params;
-  Reviews.findByIdAndUpdate(id, params, { useFindAndModify: true, new: true, }).then(res => {
+  Reviews.findByIdAndUpdate(id, params, { useFindAndModify: true, new: true, }).populate('from', 'name email roles userPic').then(res => {
     //console.log(res);
     return callback(null, res);
   }).catch(e => {
@@ -37,7 +37,7 @@ async function deleteReview(params, callback) {
     return callback({ message: "no data found with user and shop exits" })
 
   }
-  Reviews.findOneAndDelete({ from, to }).then(res => {
+  Reviews.findOneAndDelete({ from, to }).populate('from', 'name email roles userPic').then(res => {
     console.log(res, "res");
     return callback(null, res);
   }).catch(e => {
@@ -49,7 +49,7 @@ async function deleteReview(params, callback) {
 
 async function getReviews(params, callback) {
   const { id } = params;
-  Reviews.find({ to: id }).then(res => {
+  Reviews.find({ to: id }).populate('from', 'name email roles userPic').then(res => {
     //console.log(res);
     return callback(null, res);
   }
