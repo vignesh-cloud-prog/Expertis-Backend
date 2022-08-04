@@ -19,7 +19,7 @@ const transporter = nodemailer.createTransport({
 async function login(params, callback) {
   const { email, password } = params;
   // Find user by email
-  const user = await User.findOne({ email }).populate("shop");
+  const user = await User.findOne({ email }).populate({path: 'shop', populate: {path: 'services'}});
   // If user not found
   if (user != null) {
     // Check if password is correct
@@ -656,7 +656,7 @@ async function verify({ token }, callback) {
       { _id: payload.ID },
       { verified: true },
       { new: true }
-    ).populate("shop");
+    ).populate({path: 'shop', populate: {path: 'services'}});
     //console.log(user);
     if (!user) {
       return callback({
