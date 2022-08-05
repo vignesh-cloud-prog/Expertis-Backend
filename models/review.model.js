@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const uniqueValidator = require("mongoose-unique-validator");
 
+
 const ReviewSchema = new Schema(
   {
     from: {
@@ -28,7 +29,7 @@ const ReviewSchema = new Schema(
       required: false,
     },
     rating: {
-      type: Number,
+      type: String,
       required: false,
       default: 0,
     },

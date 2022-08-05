@@ -1,7 +1,6 @@
 const Shop = require("../models/shop.model");
 const User = require("../models/user.model");
 const Reviews = require("../models/review.model");
-const jwt = require("jsonwebtoken");
 
 
 async function addReview(params, callback) {
