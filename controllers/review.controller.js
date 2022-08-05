@@ -43,18 +43,6 @@ exports.addReview = (req, res, next) => {
   });
 };
 
-exports.updateReview = (req, res, next) => {
-  //console.log(req.body);
-  reviewServices.updateReview(req.body, (error, results) => {
-    if (error) {
-      return next(error);
-    }
-    return res.status(200).send({
-      message: "Success",
-      data: results,
-    });
-  });
-};
 
 exports.deleteReview = (req, res, next) => {
 

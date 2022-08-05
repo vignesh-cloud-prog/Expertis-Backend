@@ -262,7 +262,7 @@ const ShopSchema = new Schema(
         threeStar: 0,
         fourStar: 0,
         fiveStar: 0,
-        totalMembers: 0,
+      totalMembers: 0,
       },
     },
     reviews: [
@@ -270,6 +270,7 @@ const ShopSchema = new Schema(
         type: Schema.Types.ObjectId,
         ref: "Reviews",
       },
+      
     ],
     isDeleted: {
       type: Boolean,
