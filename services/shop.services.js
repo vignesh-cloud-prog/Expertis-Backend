@@ -207,7 +207,7 @@ async function updateShop(params, callback) {
 
   // WARNING: Contact will be completely replace
 
-  Shop.findByIdAndUpdate(shopId, params, { useFindAndModify: false, new: true })
+  Shop.findByIdAndUpdate(shopId, params, { useFindAndModify: false, new: true }).populate("services")
     .then((response) => {
       if (!response)
         callback(
