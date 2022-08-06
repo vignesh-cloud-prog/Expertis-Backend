@@ -629,7 +629,7 @@ async function getAllUser(req, res, callback) {
   //console.log("deleteUser");
   const { id } = req.params;
   //console.log(id);
-  await User.find().populate("shop").then((response) => {
+  await User.find().populate({ path: 'shop', populate: { path: 'services' } }).then((response) => {
     if (!response)
       callback(
         `Cannot cant get users`
