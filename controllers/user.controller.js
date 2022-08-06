@@ -51,15 +51,15 @@ exports.updateUser = (req, res, next) => {
       if (pinCode != "" && pinCode !== undefined && pinCode !== null) {
         model.pinCode = pinCode;
       }
-      let roles={}
+      let roles = {}
 
-      if(isValidVariable(isShopOwner)){
+      if (isValidVariable(isShopOwner)) {
         roles.isShopOwner = isShopOwner
       }
-      if(isValidVariable(isShopMember)){
+      if (isValidVariable(isShopMember)) {
         roles.isShopMember = isShopMember
       }
-      if(isValidVariable(isAdmin)){
+      if (isValidVariable(isAdmin)) {
         roles.isAdmin = isAdmin
       }
       if (Object.keys(roles).length > 0) {
@@ -240,7 +240,7 @@ exports.reset_password = (req, res, next) => {
 };
 
 exports.deleteUser = (req, res, next) => {
-  
+
   userServices.deleteUser(req, res, (error, results) => {
     if (error) {
       return next(error);
@@ -253,7 +253,13 @@ exports.deleteUser = (req, res, next) => {
 };
 
 exports.getAllUser = (req, res, next) => {
-  
+  if (!req.user.isAdmin)
+    return res.status(400).send({
+      message: "You are not authorized to get these data",
+      data: '',
+    });
+
+
   userServices.getAllUser(req, res, (error, results) => {
     if (error) {
       return next(error);
