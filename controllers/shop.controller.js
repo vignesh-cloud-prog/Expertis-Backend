@@ -234,10 +234,11 @@ exports.updateShop = (req, res, next) => {
         console.log("owner ", owner);
         console.log("user ", req.user);
         if (owner != req.user.id) {
-          return res.status(401).send({
-            message: "You are not authorized to update this shop",
-            data: "",
-          });
+          if (!body.user.isAdmin)
+            return res.status(401).send({
+              message: "You are not authorized to update this shop",
+              data: "",
+            });
         }
       } else {
         return res.status(400).send({
@@ -401,3 +402,5 @@ exports.getServices = (req, res, next) => {
     });
   });
 };
+
+
