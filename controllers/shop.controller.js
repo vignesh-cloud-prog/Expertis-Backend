@@ -130,6 +130,8 @@ exports.updateService = (req, res, next) => {
   });
 };
 
+
+
 exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
@@ -333,6 +335,18 @@ exports.deleteShop = (req, res, next) => {
   };
 
   shopServices.deleteShop(model, (error, results) => {
+    if (error) {
+      return next(error);
+    }
+    return res.status(200).send({
+      message: "Success",
+      data: results,
+    });
+  });
+};
+
+exports.deleteService = (req, res, next) => {
+  shopServices.deleteService(req.params.id, (error, results) => {
     if (error) {
       return next(error);
     }

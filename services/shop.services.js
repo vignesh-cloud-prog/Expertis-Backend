@@ -236,6 +236,28 @@ async function deleteShop(params, callback) {
     });
 }
 
+async function deleteService(id, callback) {
+ 
+
+  Services.findByIdAndRemove(id)
+    .then(async (response) => {
+      if (!response)
+        callback(
+          `Cannot delete Service with id=${id}. Maybe Service was not found!`
+        );
+      else {
+     let updatedShop = await  Shop.findByIdAndUpdate(response.shop, {
+          $pull: { services: id },
+        });
+        console.log(updatedShop);
+
+        callback(null, updatedShop);}
+    })
+    .catch((error) => {
+      return callback(error);
+    });
+}
+
 async function getShops(req, callback) {
   try {
     let query;
@@ -296,6 +318,7 @@ module.exports = {
   updateservice,
   verifyOTP,
   addservice,
+  deleteService,
   getShopById,
   getShopByShopId,
   updateShop,
