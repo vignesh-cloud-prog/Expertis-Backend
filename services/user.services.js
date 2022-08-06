@@ -180,7 +180,7 @@ async function updateUser(body, callback) {
   const userId = body.id;
   //console.log(userId);
 
-  let userData = await User.findByIdAndUpdate(userId, body, { useFindAndModify: true, new: true })
+  let userData = await User.findByIdAndUpdate(userId, body, { useFindAndModify: true, new: true }).populate({ path: 'shop', populate: { path: 'services' } });
   if (!userData) {
     return callback({
       status: 400,
