@@ -234,7 +234,7 @@ exports.updateShop = (req, res, next) => {
         console.log("owner ", owner);
         console.log("user ", req.user);
         if (owner != req.user.id) {
-          if (!body.user.isAdmin)
+          if (!req.user.isAdmin)
             return res.status(401).send({
               message: "You are not authorized to update this shop",
               data: "",
