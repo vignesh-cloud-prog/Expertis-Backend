@@ -1,4 +1,5 @@
 const Shop = require("../models/shop.model");
+const ShopAnalytics = require("../models/subModels/shopAnalytics.model");
 const User = require("../models/user.model");
 const auth = require("../middleware/auth.js");
 const Tags = require("../models/tags.model");
@@ -9,75 +10,75 @@ const { Services } = require("../models/service.model");
 const slotBooking = require("../models/slotsBooking.model");
 const SlotBooking = require("../models/slotsBooking.model");
 const { query } = require("express");
-var ObjectId = require('mongoose').Types.ObjectId;
+var ObjectId = require("mongoose").Types.ObjectId;
 
 async function createShop(params, callback) {
-  try{
-  const { owner } = params;
-  const { email, phone } = params.contact;
-  console.log(email, phone);
-  const user = await User.findById(owner).exec();
-  if (user == null) {
-    return callback({
-      status: 400,
-      message: "Invalid User",
-    });
-  }
+  try {
+    const { owner } = params;
+    const { email, phone } = params.contact;
+    console.log(email, phone);
+    const user = await User.findById(owner).exec();
+    if (user == null) {
+      return callback({
+        status: 400,
+        message: "Invalid User",
+      });
+    }
 
-  member = {
-    member: user._id,
-    role: "owner",
-    name: user.name,
-    pic: user.userPic,
-  };
-  params.members = [member];
-  console.log(params);
-  const shop = new Shop(params);
-  shop
-    .save()
-    .then((response) => {
-      //console.log(response._id);
-      User.findByIdAndUpdate(
-        owner,
-        {
-          $set: {
-            'roles.isShopOwner': true,
-            'roles.isShopMember': true,
+    member = {
+      member: user._id,
+      role: "owner",
+      name: user.name,
+      pic: user.userPic,
+    };
+    params.members = [member];
+    console.log(params);
+    const shop = new Shop(params);
+    shop
+      .save()
+      .then((response) => {
+        //console.log(response._id);
+        User.findByIdAndUpdate(
+          owner,
+          {
+            $set: {
+              "roles.isShopOwner": true,
+              "roles.isShopMember": true,
+            },
+            $push: {
+              shop: response._id,
+            },
           },
-          $push: {
-            shop: response._id,
-          },
-        },
-        { new: true }
-      )
-        .then((res) => {
-          if (res == null) {
-            return callback("Document not found");
-          } else {
-            // //console.log("res ser", res);
-            return callback(null, response);
-          }
-        })
-        .catch((err) => {
-          return callback(err);
-        });
-    })
-    .catch((error) => {
-      if ("contact.phone" in error.errors) {
-        return callback({
-          status: 400,
-          message: "Shop with phone number already exists",
-        });
-      }
-      if ("shopId" in error.errors) {
-        return callback({
-          status: 400,
-          message: "Shop id already in use",
-        });
-      }
-      return callback(error);
-    });
-  }catch(error){
+          { new: true }
+        )
+          .then((res) => {
+            if (res == null) {
+              return callback("Document not found");
+            } else {
+              // //console.log("res ser", res);
+              return callback(null, response);
+            }
+          })
+          .catch((err) => {
+            return callback(err);
+          });
+      })
+      .catch((error) => {
+        if ("contact.phone" in error.errors) {
+          return callback({
+            status: 400,
+            message: "Shop with phone number already exists",
+          });
+        }
+        if ("shopId" in error.errors) {
+          return callback({
+            status: 400,
+            message: "Shop id already in use",
+          });
+        }
+        return callback(error);
+      });
+  } catch (error) {
     return callback(error);
   }
 }
@@ -131,6 +132,57 @@ async function updateservice(params, callback) {
     });
 }
 
+async function addShopView(req, callback) {
+  ShopAnalytics.findOneAndUpdate(
+    { shop: req.params.id },
+    {
+      $push: {
+        views: {
+          from: req.user.id,
+        },
+      },
+    },
+    { new: true }
+  )
+
+    .then((response) => {
+      if (!response) {
+        ShopAnalytics.create({
+          shop: req.params.id,
+          views: {
+            from: req.user.id,
+          },
+        })
+          .then(async (response) => {
+            let updatedShop = await Shop.findByIdAndUpdate(req.params.id, {
+              analytics: response._id,
+            });
+            console.log(updatedShop);
+            callback(null, response);
+          })
+          .catch((error) => {
+            return callback(error);
+          });
+      } else {
+        callback(null, response);
+      }
+    })
+    .catch((error) => {
+      return callback(error);
+    });
+}
+
+async function getShopAnalyticsById(req, callback) {
+  ShopAnalytics.findOne({ shop: req.params.id })
+    .then((response) => {
+      if (!response) callback("Not found Shop with id " + req.params.id);
+      else callback(null, response);
+    })
+    .catch((error) => {
+      return callback(error);
+    });
+}
+
 async function verifyOTP(email, otp, hash, callback) {
   // Separate Hash value and expires from the hash returned from the user
   let [hashValue, expires] = hash.split(".");
@@ -163,8 +215,6 @@ async function verifyOTP(email, otp, hash, callback) {
 }
 
 async function getShopById(shopId, callback) {
- 
- 
   console.log(shopId);
   Shop.findById(shopId)
     .populate("services")
@@ -177,37 +227,37 @@ async function getShopById(shopId, callback) {
     });
 }
 async function getShopByShopId(shopId, callback) {
-  let  pattern=[]
+  let pattern = [];
   let query;
-   if (shopId !== undefined && shopId !== null) {
-    
-     pattern.push({ "shopId": shopId });
-   }
-   if(ObjectId.isValid(shopId)){
-     pattern.push({ "_id": ObjectId(shopId) });
-   }
-   if (pattern.length > 0) {
-     query = { $or: pattern };
-   }
-  
-   console.log(shopId);
-   Shop.findOne(query)
-     .populate("services")
-     .then((response) => {
-       if (!response) callback("Not found Shop with id " + shopId);
-       else callback(null, response);
-     })
-     .catch((error) => {
-       return callback(error);
-     });
- }
+  if (shopId !== undefined && shopId !== null) {
+    pattern.push({ shopId: shopId });
+  }
+  if (ObjectId.isValid(shopId)) {
+    pattern.push({ _id: ObjectId(shopId) });
+  }
+  if (pattern.length > 0) {
+    query = { $or: pattern };
+  }
+
+  console.log(shopId);
+  Shop.findOne(query)
+    .populate("services")
+    .then((response) => {
+      if (!response) callback("Not found Shop with id " + shopId);
+      else callback(null, response);
+    })
+    .catch((error) => {
+      return callback(error);
+    });
+}
 
 async function updateShop(params, callback) {
   const shopId = params.id;
 
   // WARNING: Contact will be completely replace
 
-  Shop.findByIdAndUpdate(shopId, params, { useFindAndModify: false, new: true }).populate("services")
+  Shop.findByIdAndUpdate(shopId, params, { useFindAndModify: false, new: true })
+    .populate("services")
     .then((response) => {
       if (!response)
         callback(
@@ -237,8 +287,6 @@ async function deleteShop(params, callback) {
 }
 
 async function deleteService(id, callback) {
- 
-
   Services.findByIdAndRemove(id)
     .then(async (response) => {
       if (!response)
@@ -246,12 +294,13 @@ async function deleteService(id, callback) {
           `Cannot delete Service with id=${id}. Maybe Service was not found!`
         );
       else {
-     let updatedShop = await  Shop.findByIdAndUpdate(response.shop, {
+        let updatedShop = await Shop.findByIdAndUpdate(response.shop, {
           $pull: { services: id },
         });
         console.log(updatedShop);
 
-        callback(null, updatedShop);}
+        callback(null, updatedShop);
+      }
     })
     .catch((error) => {
       return callback(error);
@@ -300,22 +349,22 @@ function getSlot(query, callback) {
 }
 
 async function getServices(id, callback) {
-  try{
+  try {
     let shop = await Shop.findById(id).populate("services");
     console.log(shop);
     if (!shop) return callback({ message: "Shop not found", status: 404 });
-  
+
     return callback(null, shop.services);
-  }
-  catch(e){
+  } catch (e) {
     return callback(e);
   }
- 
 }
 
 module.exports = {
   createShop,
   updateservice,
+  addShopView,
+  getShopAnalyticsById,
   verifyOTP,
   addservice,
   deleteService,
