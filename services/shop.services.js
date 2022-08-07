@@ -1,29 +1,30 @@
 const Shop = require("../models/shop.model");
 const ShopAnalytics = require("../models/subModels/shopAnalytics.model");
 const User = require("../models/user.model");
+const Reviews = require("../models/review.model");
+const Appointments = require("../models/appointment.model");
 const auth = require("../middleware/auth.js");
 const Tags = require("../models/tags.model");
 const mongoose = require("mongoose");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const { Services } = require("../models/service.model");
-const slotBooking = require("../models/slotsBooking.model");
 const SlotBooking = require("../models/slotsBooking.model");
 const { query } = require("express");
 var ObjectId = require("mongoose").Types.ObjectId;
 
 async function createShop(params, callback) {
-  try {
-    const { owner } = params;
-    const { email, phone } = params.contact;
-    console.log(email, phone);
-    const user = await User.findById(owner).exec();
-    if (user == null) {
-      return callback({
-        status: 400,
-        message: "Invalid User",
-      });
-    }
+  try  {
+      const { owner } = params;
+      const { email, phone } = params.contact;
+      console.log(email, phone);
+      const user = await User.findById(owner).exec();
+      if (user == null) {
+        return callback({
+          status: 400,
+          message: "Invalid User",
+        });
+      }
 
     member = {
       member: user._id,
@@ -215,6 +216,8 @@ async function verifyOTP(email, otp, hash, callback) {
 }
 
 async function getShopById(shopId, callback) {
+
+
   console.log(shopId);
   Shop.findById(shopId)
     .populate("services")
@@ -270,23 +273,55 @@ async function updateShop(params, callback) {
     });
 }
 
-async function deleteShop(params, callback) {
-  const shopId = params.shopId;
+async function deleteShop(req, callback) {
+  const id = req.params.id;
+  // console.log(id, "its a shop id")
+  let shop = await Shop.findById(id).exec();
 
-  Shop.findByIdAndRemove(shopId)
+  if (!shop) {
+    return callback({
+      status: 400,
+      message: "Shop id not exits",
+    });
+  }
+  if (req.user.id != shop.owner) {
+    if (!req.user.isAdmin)
+      return callback(
+        {
+          status: 401,
+          message: `Cannot delete Shop you are not authgorizes`,
+        }
+      );
+  }
+  //delete the shop services
+  await Services.deleteMany({ shop: id }).then(console.log("delete the services")).catch(e => { return callback(e) })
+  //delete the shop reviews
+  await Reviews.deleteMany({ to: id }).then(console.log("delete the shop review")).catch(e => { return callback(e) })
+  //delete the shop appointments
+  await Appointments.deleteMany({ shopId: id }).then(console.log("delete the appointments of the shop")).catch(e => { return callback(e) })
+  //delete the shop SlotBooking
+  await SlotBooking.deleteMany({ shopId: id }).then(console.log("delete the slot bookings of the shop")).catch(e => { return callback(e) })
+  //delete the shop
+  Shop.findByIdAndRemove(id)
     .then((response) => {
       if (!response)
-        callback(
-          `Cannot delete Shop with id=${shopId}. Maybe Product was not found!`
+        return callback(
+          `Cannot delete Shop with id=${id}. Maybe Product was not found!`
         );
-      else callback(null, response);
     })
     .catch((error) => {
       return callback(error);
     });
+  //delete the shop refference in user
+  let updatedUser = await User.findByIdAndUpdate(shop.owner, {
+    $pull: { shop: id },
+  });
+  return callback(null, updatedUser);
 }
 
 async function deleteService(id, callback) {
+ 
+
   Services.findByIdAndRemove(id)
     .then(async (response) => {
       if (!response)
@@ -296,7 +331,7 @@ async function deleteService(id, callback) {
       else {
         let updatedShop = await Shop.findByIdAndUpdate(response.shop, {
           $pull: { services: id },
-        });
+        }, { new: true });
         console.log(updatedShop);
 
         callback(null, updatedShop);
@@ -349,11 +384,11 @@ function getSlot(query, callback) {
 }
 
 async function getServices(id, callback) {
-  try {
+  try{
     let shop = await Shop.findById(id).populate("services");
     console.log(shop);
     if (!shop) return callback({ message: "Shop not found", status: 404 });
-
+  
     return callback(null, shop.services);
   } catch (e) {
     return callback(e);
