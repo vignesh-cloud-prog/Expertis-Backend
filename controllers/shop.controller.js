@@ -130,6 +130,42 @@ exports.updateService = (req, res, next) => {
   });
 };
 
+exports.addShopView=(req, res, next) => {
+  console.log(req.params.id);
+  if(!isValidVariable(req.params.id)){
+    return res.status(400).send({
+      message: "Invalid shop id",
+    });
+  }
+  shopServices.addShopView(req, (error, results) => {
+    if (error) {
+      return next(error);
+    }
+    return res.status(200).send({
+      message: "Success",
+      data: results,
+    });
+  });
+}
+
+exports.getShopAnalyticsById = (req, res, next) => {
+  if(!isValidVariable(req.params.id)){
+    return res.status(400).send({
+      message: "Invalid shop id",
+    });
+  }
+  shopServices.getShopAnalyticsById(req, (error, results) => {
+    if (error) {
+      return next(error);
+    }
+    return res.status(200).send({
+      message: "Success",
+      data: results,
+    });
+  });
+}
+
+
 
 
 exports.login = (req, res, next) => {

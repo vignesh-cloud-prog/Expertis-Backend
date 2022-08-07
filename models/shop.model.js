@@ -4,7 +4,6 @@ const uniqueValidator = require("mongoose-unique-validator");
 const jwt = require("jsonwebtoken");
 const { workingHours } = require("../utils/defaults.js");
 
-
 const ShopRatingSchema = new Schema({
   avg: {
     type: Number,
@@ -61,7 +60,6 @@ ShopMemberSchema.set("toJSON", {
     delete returnedObject.__v;
   },
 });
-
 
 const ContactSchema = new Schema({
   email: {
@@ -125,17 +123,19 @@ const WorkingHoursSchema = new Schema({
   closingTime: {
     type: Schema.Types.String,
   },
-  breaks: [{
-    from: {
-      type: Schema.Types.String,
+  breaks: [
+    {
+      from: {
+        type: Schema.Types.String,
+      },
+      to: {
+        type: Schema.Types.String,
+      },
+      reason: {
+        type: Schema.Types.String,
+      },
     },
-    to: {
-      type: Schema.Types.String,
-    },
-    reason: {
-      type: Schema.Types.String,
-    },
-  }],
+  ],
 });
 WorkingHoursSchema.set("toJSON", {
   transform: (document, returnedObject) => {
@@ -178,26 +178,28 @@ const ShopSchema = new Schema(
     shopName: {
       type: String,
       required: false,
-
     },
     shopLogo: {
       type: String,
       required: false,
-
     },
     about: {
       type: String,
-
+    },
+    about: {
+      type: String,
     },
     gender: {
       type: String,
       enum: ["MEN", "WOMEN", "UNISEX"],
     },
     contact: ContactSchema,
+
     workingHours: {
       type: WeeklyWorkingHours,
       default: workingHours
     },
+    workingHours: { type: WeeklyWorkingHours, default: workingHours },
     likes: {
       type: [
         {
@@ -271,7 +273,6 @@ const ShopSchema = new Schema(
         type: Schema.Types.ObjectId,
         ref: "Reviews",
       },
-
     ],
     isDeleted: {
       type: Boolean,
@@ -286,6 +287,10 @@ const ShopSchema = new Schema(
       type: Boolean,
       default: true,
       required: false,
+    },
+    analytics: {
+      type: Schema.Types.ObjectId,
+      ref: "ShopAnalytics",
     },
   },
   { timestamps: true }
@@ -302,10 +307,6 @@ ShopSchema.pre('remove', function (next) {
   this.model('user').remove({ shop: [this._id] }, next);
 })
 
-/**
- * 1. The userSchema.plugin(uniqueValidator) method won’t let duplicate email id to be stored in the database.
- * 2. The unique: true property in email schema does the internal optimization to enhance the performance.
- */
 ShopSchema.plugin(uniqueValidator, { message: "Shop already exist." });
 
 const Shop = mongoose.model("Shop", ShopSchema);
