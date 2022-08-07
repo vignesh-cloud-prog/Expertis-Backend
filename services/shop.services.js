@@ -1,12 +1,13 @@
 const Shop = require("../models/shop.model");
 const User = require("../models/user.model");
+const Reviews = require("../models/review.model");
+const Appointments = require("../models/appointment.model");
 const auth = require("../middleware/auth.js");
 const Tags = require("../models/tags.model");
 const mongoose = require("mongoose");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const { Services } = require("../models/service.model");
-const slotBooking = require("../models/slotsBooking.model");
 const SlotBooking = require("../models/slotsBooking.model");
 const { query } = require("express");
 var ObjectId = require('mongoose').Types.ObjectId;
@@ -222,7 +223,7 @@ async function updateShop(params, callback) {
 
 async function deleteShop(req, callback) {
   const id = req.params.id;
-  console.log(id, "its a shop id")
+  // console.log(id, "its a shop id")
   let shop = await Shop.findById(id).exec();
 
   if (!shop) {
@@ -234,10 +235,21 @@ async function deleteShop(req, callback) {
   if (req.user.id != shop.owner) {
     if (!req.user.isAdmin)
       return callback(
-        `Cannot delete Shop you are not authgorizes`
+        {
+          status: 401,
+          message: `Cannot delete Shop you are not authgorizes`,
+        }
       );
   }
-
+  //delete the shop services
+  await Services.deleteMany({ shop: id }).then(console.log("delete the services")).catch(e => { return callback(e) })
+  //delete the shop reviews
+  await Reviews.deleteMany({ to: id }).then(console.log("delete the shop review")).catch(e => { return callback(e) })
+  //delete the shop appointments
+  await Appointments.deleteMany({ shopId: id }).then(console.log("delete the appointments of the shop")).catch(e => { return callback(e) })
+  //delete the shop SlotBooking
+  await SlotBooking.deleteMany({ shopId: id }).then(console.log("delete the slot bookings of the shop")).catch(e => { return callback(e) })
+  //delete the shop
   Shop.findByIdAndRemove(id)
     .then((response) => {
       if (!response)
@@ -248,6 +260,7 @@ async function deleteShop(req, callback) {
     .catch((error) => {
       return callback(error);
     });
+  //delete the shop refference in user
   let updatedUser = await User.findByIdAndUpdate(shop.owner, {
     $pull: { shop: id },
   });
