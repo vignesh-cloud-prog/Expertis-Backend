@@ -331,11 +331,9 @@ exports.updateShop = (req, res, next) => {
 };
 
 exports.deleteShop = (req, res, next) => {
-  var model = {
-    shopId: req.params.id,
-  };
 
-  shopServices.deleteShop(model, (error, results) => {
+  console.log("params in controller", req.params.id)
+  shopServices.deleteShop(req, (error, results) => {
     if (error) {
       return next(error);
     }
@@ -415,6 +413,8 @@ exports.getServices = (req, res, next) => {
       data: results,
     });
   });
+
 };
+
 
 

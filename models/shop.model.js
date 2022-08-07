@@ -105,7 +105,7 @@ const ContactSchema = new Schema({
     type: String,
     required: false,
   },
-  
+
 });
 ContactSchema.set("toJSON", {
   transform: (document, returnedObject) => {
@@ -178,25 +178,26 @@ const ShopSchema = new Schema(
     shopName: {
       type: String,
       required: false,
-    
+
     },
     shopLogo: {
       type: String,
       required: false,
-     
+
     },
     about: {
       type: String,
-      
+
     },
     gender: {
       type: String,
       enum: ["MEN", "WOMEN", "UNISEX"],
     },
     contact: ContactSchema,
-    workingHours: { type: WeeklyWorkingHours, 
-    default: workingHours
-     },
+    workingHours: {
+      type: WeeklyWorkingHours,
+      default: workingHours
+    },
     likes: {
       type: [
         {
@@ -262,7 +263,7 @@ const ShopSchema = new Schema(
         threeStar: 0,
         fourStar: 0,
         fiveStar: 0,
-      totalMembers: 0,
+        totalMembers: 0,
       },
     },
     reviews: [
@@ -270,7 +271,7 @@ const ShopSchema = new Schema(
         type: Schema.Types.ObjectId,
         ref: "Reviews",
       },
-      
+
     ],
     isDeleted: {
       type: Boolean,
@@ -297,6 +298,9 @@ ShopSchema.set("toJSON", {
     delete returnedObject.__v;
   },
 });
+ShopSchema.pre('remove', function (next) {
+  this.model('user').remove({ shop: [this._id] }, next);
+})
 
 /**
  * 1. The userSchema.plugin(uniqueValidator) method won’t let duplicate email id to be stored in the database.
