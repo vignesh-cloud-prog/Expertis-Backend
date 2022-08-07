@@ -10,7 +10,6 @@ const AppointmentSchema = new Schema(
     },
     memberId: {
       type: Schema.Types.ObjectId,
-      
     },
     userId: {
       type: Schema.Types.ObjectId,

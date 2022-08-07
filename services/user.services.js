@@ -1,6 +1,6 @@
 const User = require("../models/user.model");
 const Shop = require("../models/shop.model");
-const {Services} = require("../models/service.model");
+const { Services } = require("../models/service.model");
 const Tags = require("../models/tags.model");
 const Appointment = require("../models/appointment.model");
 const bcrypt = require("bcryptjs");
@@ -10,7 +10,6 @@ const otpGenerator = require("otp-generator");
 const crypto = require("crypto");
 const key = process.env.CRYPTO_SECRET_KEY || "verySecretKey"; // Key for cryptography. Keep it secret
 const nodemailer = require("nodemailer");
-
 
 const transporter = nodemailer.createTransport({
   service: "Gmail",
@@ -23,7 +22,10 @@ const transporter = nodemailer.createTransport({
 async function login(params, callback) {
   const { email, password } = params;
   // Find user by email
-  const user = await User.findOne({ email }).populate({ path: 'shop', populate: { path: 'services' } });
+  const user = await User.findOne({ email }).populate({
+    path: "shop",
+    populate: { path: "services" },
+  });
   // If user not found
   if (user != null) {
     // Check if password is correct
@@ -83,7 +85,18 @@ async function login(params, callback) {
             return callback({ status: 400, message: "Email can't be sent" });
           });
       } else {
-        const token = auth.generateAccessToken({ id: user._id, email: user.email, name: user.name, isAdmin: user.roles.isAdmin, isShopMember: user.roles.isShopMember, isShopOwner: user.roles.isShopOwner, isVerified: user.verified, dob: user.dob, phone: user.phone, gender: user.gender });
+        const token = auth.generateAccessToken({
+          id: user._id,
+          email: user.email,
+          name: user.name,
+          isAdmin: user.roles.isAdmin,
+          isShopMember: user.roles.isShopMember,
+          isShopOwner: user.roles.isShopOwner,
+          isVerified: user.verified,
+          dob: user.dob,
+          phone: user.phone,
+          gender: user.gender,
+        });
         //console.log(user, token);
         // call toJSON method applied during model instantiation
         return callback(null, {
@@ -184,7 +197,10 @@ async function updateUser(body, callback) {
   const userId = body.id;
   //console.log(userId);
 
-  let userData = await User.findByIdAndUpdate(userId, body, { useFindAndModify: true, new: true }).populate({ path: 'shop', populate: { path: 'services' } });
+  let userData = await User.findByIdAndUpdate(userId, body, {
+    useFindAndModify: true,
+    new: true,
+  }).populate({ path: "shop", populate: { path: "services" } });
   if (!userData) {
     return callback({
       status: 400,
@@ -279,7 +295,18 @@ async function verifyOTP(id, otp, hash, callback) {
       );
     else {
       const user = await User.findById(id);
-      const token = auth.generateAccessToken({ id: user._id, email: user.email, name: user.name, isAdmin: user.roles.isAdmin, isShopMember: user.roles.isShopMember, isShopOwner: user.roles.isShopOwner, isVerified: user.verified, dob: user.dob, phone: user.phone, gender: user.gender });
+      const token = auth.generateAccessToken({
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        isAdmin: user.roles.isAdmin,
+        isShopMember: user.roles.isShopMember,
+        isShopOwner: user.roles.isShopOwner,
+        isVerified: user.verified,
+        dob: user.dob,
+        phone: user.phone,
+        gender: user.gender,
+      });
       return callback(null, { ...doc.toJSON(), token });
     }
   } else {
@@ -614,11 +641,9 @@ async function deleteUser(req, res, callback) {
   //console.log(id);
   const user = await User.findById(id);
   if (!user) {
-    return res.status(404).send({ message: 'User not found' });
+    return res.status(404).send({ message: "User not found" });
   }
-  if (
-    user.id.toString() !== req.user.id && req.user.isAdmin === false
-  ) {
+  if (user.id.toString() !== req.user.id && req.user.isAdmin === false) {
     return callback("User not authorized");
   }
   await user.remove();
@@ -633,17 +658,15 @@ async function getAllUser(req, res, callback) {
   //console.log("deleteUser");
   const { id } = req.params;
   //console.log(id);
-  await User.find().populate({ path: 'shop', populate: { path: 'services' } }).then((response) => {
-    if (!response)
-      callback(
-        `Cannot cant get users`
-      );
-    else callback(null, response);
-  })
+  await User.find()
+    .populate({ path: "shop", populate: { path: "services" } })
+    .then((response) => {
+      if (!response) callback(`Cannot cant get users`);
+      else callback(null, response);
+    })
     .catch((error) => {
       return callback(error);
     });
-
 }
 
 async function verify({ token }, callback) {
@@ -660,7 +683,7 @@ async function verify({ token }, callback) {
       { _id: payload.ID },
       { verified: true },
       { new: true }
-    ).populate({ path: 'shop', populate: { path: 'services' } });
+    ).populate({ path: "shop", populate: { path: "services" } });
     //console.log(user);
     if (!user) {
       return callback({
@@ -677,7 +700,6 @@ async function verify({ token }, callback) {
 }
 
 async function getAdminAnalytics(req, callback) {
-  
   const noOfUsers = await User.countDocuments();
   const noOfShops = await Shop.countDocuments();
   const noOfServices = await Services.countDocuments();
@@ -697,11 +719,6 @@ async function getAdminAnalytics(req, callback) {
     noOfAppointments,
   });
 }
-
-
-
-
-
 
 module.exports = {
   login,

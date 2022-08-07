@@ -10,12 +10,11 @@ const storage = multer.diskStorage({
       dir = "uploads/user/profile_pic";
     } else if (file.fieldname == "shopLogo") {
       dir = "uploads/shop/logo";
-    }
-    else if (file.fieldname == "tagPic") {
+    } else if (file.fieldname == "tagPic") {
       dir = "uploads/tags/tag_pic";
     } else if (file.fieldname == "reviewPhotos") {
       dir = "uploads/shop/review_pic";
-    }else if (file.fieldname == "servicePhoto") {
+    } else if (file.fieldname == "servicePhoto") {
       dir = "uploads/shop/service_pic";
     }
 
@@ -36,7 +35,7 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, callback) => {
-  const acceptableExtensions = [".png", ".jpg", ".mp4",".JPG"];
+  const acceptableExtensions = [".png", ".jpg", ".mp4", ".JPG"];
   if (!acceptableExtensions.includes(Path.extname(file.originalname))) {
     return callback(new Error("Only .png, .jpg and .jpeg format allowed!"));
   }
@@ -81,5 +80,4 @@ module.exports = {
   uploadTagPic: uploadTagPic.single("tagPic"),
   uploadReviewPhoto: uploadReviewPhoto.single("reviewPic"),
   uploadServicePhoto: uploadServicePhoto.single("servicePhoto"),
-
 };

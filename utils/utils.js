@@ -23,25 +23,19 @@ function getSlots(startTime, endTime) {
   return slots;
 }
 
-
-const isValidVariable=(variable)=>{
-  if(variable==null || variable==undefined ){
-     
+const isValidVariable = (variable) => {
+  if (variable == null || variable == undefined) {
     return false;
-  }
-  else{
+  } else {
     if (typeof variable === "string") {
-
-    variable=variable.trim();
-    if(variable==""){
-      return false;
+      variable = variable.trim();
+      if (variable == "") {
+        return false;
+      }
     }
   }
-    
-
-  }
   return true;
-}
+};
 
 function getDDMMMYYYYDate(date) {
   var monthNames = [
