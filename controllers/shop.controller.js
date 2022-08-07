@@ -130,9 +130,9 @@ exports.updateService = (req, res, next) => {
   });
 };
 
-exports.addShopView=(req, res, next) => {
+exports.addShopView = (req, res, next) => {
   console.log(req.params.id);
-  if(!isValidVariable(req.params.id)){
+  if (!isValidVariable(req.params.id)) {
     return res.status(400).send({
       message: "Invalid shop id",
     });
@@ -146,10 +146,10 @@ exports.addShopView=(req, res, next) => {
       data: results,
     });
   });
-}
+};
 
 exports.getShopAnalyticsById = (req, res, next) => {
-  if(!isValidVariable(req.params.id)){
+  if (!isValidVariable(req.params.id)) {
     return res.status(400).send({
       message: "Invalid shop id",
     });
@@ -163,10 +163,7 @@ exports.getShopAnalyticsById = (req, res, next) => {
       data: results,
     });
   });
-}
-
-
-
+};
 
 exports.login = (req, res, next) => {
   const { email, password } = req.body;
@@ -367,8 +364,7 @@ exports.updateShop = (req, res, next) => {
 };
 
 exports.deleteShop = (req, res, next) => {
-
-  console.log("params in controller", req.params.id)
+  console.log("params in controller", req.params.id);
   shopServices.deleteShop(req, (error, results) => {
     if (error) {
       return next(error);
@@ -449,8 +445,4 @@ exports.getServices = (req, res, next) => {
       data: results,
     });
   });
-
 };
-
-
-

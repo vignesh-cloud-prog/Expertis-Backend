@@ -21,13 +21,13 @@ async function getTags(params, callback) {
 async function updateTag(params, callback) {
   const { id } = params;
   //console.log(id);
-  
+
   await Tags.findByIdAndUpdate(id, params, {
     useFindAndModify: true,
     new: true,
   })
     .then((res) => {
-      if (res==null || res==undefined) {
+      if (res == null || res == undefined) {
         return callback({ status: 404, message: "Tag not found!" });
       }
       return callback(null, res);

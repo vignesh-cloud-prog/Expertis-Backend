@@ -5,7 +5,7 @@ const uniqueValidator = require("mongoose-unique-validator");
 const TagSchema = new Schema({
   tagName: {
     type: String,
-    required: [true,"tag name is required"],
+    required: [true, "tag name is required"],
   },
   tagPic: {
     type: String,
@@ -20,15 +20,18 @@ const TagSchema = new Schema({
     required: false,
     default: false,
   },
-  shops: [{
-    type: Schema.Types.ObjectId,
-    ref: "Shop",
-  }],
-  services: [{
-    type: Schema.Types.ObjectId,
-    ref: "Services",
-  }],
-
+  shops: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Shop",
+    },
+  ],
+  services: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Services",
+    },
+  ],
 });
 TagSchema.plugin(uniqueValidator, { message: "Tag already exist." });
 TagSchema.set("toJSON", {

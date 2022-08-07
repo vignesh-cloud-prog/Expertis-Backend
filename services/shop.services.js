@@ -14,17 +14,17 @@ const { query } = require("express");
 var ObjectId = require("mongoose").Types.ObjectId;
 
 async function createShop(params, callback) {
-  try  {
-      const { owner } = params;
-      const { email, phone } = params.contact;
-      console.log(email, phone);
-      const user = await User.findById(owner).exec();
-      if (user == null) {
-        return callback({
-          status: 400,
-          message: "Invalid User",
-        });
-      }
+  try {
+    const { owner } = params;
+    const { email, phone } = params.contact;
+    console.log(email, phone);
+    const user = await User.findById(owner).exec();
+    if (user == null) {
+      return callback({
+        status: 400,
+        message: "Invalid User",
+      });
+    }
 
     member = {
       member: user._id,
@@ -216,8 +216,6 @@ async function verifyOTP(email, otp, hash, callback) {
 }
 
 async function getShopById(shopId, callback) {
-
-
   console.log(shopId);
   Shop.findById(shopId)
     .populate("services")
@@ -286,21 +284,35 @@ async function deleteShop(req, callback) {
   }
   if (req.user.id != shop.owner) {
     if (!req.user.isAdmin)
-      return callback(
-        {
-          status: 401,
-          message: `Cannot delete Shop you are not authgorizes`,
-        }
-      );
+      return callback({
+        status: 401,
+        message: `Cannot delete Shop you are not authgorizes`,
+      });
   }
   //delete the shop services
-  await Services.deleteMany({ shop: id }).then(console.log("delete the services")).catch(e => { return callback(e) })
+  await Services.deleteMany({ shop: id })
+    .then(console.log("delete the services"))
+    .catch((e) => {
+      return callback(e);
+    });
   //delete the shop reviews
-  await Reviews.deleteMany({ to: id }).then(console.log("delete the shop review")).catch(e => { return callback(e) })
+  await Reviews.deleteMany({ to: id })
+    .then(console.log("delete the shop review"))
+    .catch((e) => {
+      return callback(e);
+    });
   //delete the shop appointments
-  await Appointments.deleteMany({ shopId: id }).then(console.log("delete the appointments of the shop")).catch(e => { return callback(e) })
+  await Appointments.deleteMany({ shopId: id })
+    .then(console.log("delete the appointments of the shop"))
+    .catch((e) => {
+      return callback(e);
+    });
   //delete the shop SlotBooking
-  await SlotBooking.deleteMany({ shopId: id }).then(console.log("delete the slot bookings of the shop")).catch(e => { return callback(e) })
+  await SlotBooking.deleteMany({ shopId: id })
+    .then(console.log("delete the slot bookings of the shop"))
+    .catch((e) => {
+      return callback(e);
+    });
   //delete the shop
   Shop.findByIdAndRemove(id)
     .then((response) => {
@@ -320,8 +332,6 @@ async function deleteShop(req, callback) {
 }
 
 async function deleteService(id, callback) {
- 
-
   Services.findByIdAndRemove(id)
     .then(async (response) => {
       if (!response)
@@ -329,9 +339,13 @@ async function deleteService(id, callback) {
           `Cannot delete Service with id=${id}. Maybe Service was not found!`
         );
       else {
-        let updatedShop = await Shop.findByIdAndUpdate(response.shop, {
-          $pull: { services: id },
-        }, { new: true });
+        let updatedShop = await Shop.findByIdAndUpdate(
+          response.shop,
+          {
+            $pull: { services: id },
+          },
+          { new: true }
+        );
         console.log(updatedShop);
 
         callback(null, updatedShop);
@@ -384,11 +398,11 @@ function getSlot(query, callback) {
 }
 
 async function getServices(id, callback) {
-  try{
+  try {
     let shop = await Shop.findById(id).populate("services");
     console.log(shop);
     if (!shop) return callback({ message: "Shop not found", status: 404 });
-  
+
     return callback(null, shop.services);
   } catch (e) {
     return callback(e);

@@ -8,6 +8,4 @@ router.get("", tagController.getTags);
 router.patch("", tagController.updateTag);
 router.delete("/:id", tagController.deleteTag);
 
-
-
 module.exports = router;

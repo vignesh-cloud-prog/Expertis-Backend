@@ -85,9 +85,9 @@ exports.workingHours = {
   },
 };
 
-exports.defaultRoles={
+exports.defaultRoles = {
   isAdmin: false,
   isShopMember: false,
   isUser: true,
   isShopOwner: false,
-}
+};

@@ -181,12 +181,9 @@ const ShopSchema = new Schema(
     shopLogo: {
       type: String,
       required: false,
-     
     },
     about: {
       type: String,
-
->>>>>>> 5ff614d4e022ffaf0756d52d56fe6ef784e4e648
     },
     gender: {
       type: String,
@@ -195,7 +192,7 @@ const ShopSchema = new Schema(
     contact: ContactSchema,
     workingHours: {
       type: WeeklyWorkingHours,
-      default: workingHours
+      default: workingHours,
     },
     likes: {
       type: [

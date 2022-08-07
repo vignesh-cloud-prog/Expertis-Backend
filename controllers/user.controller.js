@@ -17,7 +17,18 @@ exports.updateUser = (req, res, next) => {
     if (err) {
       next(err);
     } else {
-      const { id, name, phone, dob, gender, isShopOwner, isShopMember, isAdmin, address, pinCode } = req.body;
+      const {
+        id,
+        name,
+        phone,
+        dob,
+        gender,
+        isShopOwner,
+        isShopMember,
+        isAdmin,
+        address,
+        pinCode,
+      } = req.body;
 
       //console.log("Inside update user")
       const url = req.protocol + "://" + req.get("host");
@@ -51,16 +62,16 @@ exports.updateUser = (req, res, next) => {
       if (pinCode != "" && pinCode !== undefined && pinCode !== null) {
         model.pinCode = pinCode;
       }
-      let roles = {}
+      let roles = {};
 
       if (isValidVariable(isShopOwner)) {
-        roles.isShopOwner = isShopOwner
+        roles.isShopOwner = isShopOwner;
       }
       if (isValidVariable(isShopMember)) {
-        roles.isShopMember = isShopMember
+        roles.isShopMember = isShopMember;
       }
       if (isValidVariable(isAdmin)) {
-        roles.isAdmin = isAdmin
+        roles.isAdmin = isAdmin;
       }
       if (Object.keys(roles).length > 0) {
         model.roles = roles;
@@ -240,7 +251,6 @@ exports.reset_password = (req, res, next) => {
 };
 
 exports.deleteUser = (req, res, next) => {
-
   userServices.deleteUser(req, res, (error, results) => {
     if (error) {
       return next(error);
@@ -256,9 +266,8 @@ exports.getAllUser = (req, res, next) => {
   if (!req.user.isAdmin)
     return res.status(400).send({
       message: "You are not authorized to get these data",
-      data: '',
+      data: "",
     });
-
 
   userServices.getAllUser(req, res, (error, results) => {
     if (error) {
@@ -272,10 +281,9 @@ exports.getAllUser = (req, res, next) => {
 };
 
 exports.getAdminAnalytics = (req, res, next) => {
-  if(!req.user.isAdmin){
+  if (!req.user.isAdmin) {
     return res.status(400).send({
       message: "You are not authorized to access this data",
-      
     });
   }
   userServices.getAdminAnalytics(req, (error, results) => {
@@ -286,7 +294,5 @@ exports.getAdminAnalytics = (req, res, next) => {
       message: "Success",
       data: results,
     });
-  }
-  );
-}
-
+  });
+};

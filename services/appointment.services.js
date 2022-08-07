@@ -4,11 +4,7 @@ const Shop = require("../models/shop.model");
 const SlotsBooked = require("../models/slotsBooking.model");
 const { Services } = require("../models/service.model");
 const moment = require("moment");
-const {
-  getSlots,
-  
-  getDDMMMYYYYDate,
-} = require("../utils/utils");
+const { getSlots, getDDMMMYYYYDate } = require("../utils/utils");
 const ObjectId = require("mongoose").Types.ObjectId;
 
 async function bookAppointment(params, callback) {
@@ -181,7 +177,7 @@ async function getUserAppointments(req, res, callback) {
     }
 
     //console.log("userId ", id);
-    if (id!= req.user.id && req.user.isAdmin == false) {
+    if (id != req.user.id && req.user.isAdmin == false) {
       return callback({
         status: 401,
         message: "Unauthorized",
@@ -208,13 +204,9 @@ async function getShopAppointments(req, res, callback) {
     }
 
     const { upcoming } = req.query;
-    let appointmentStatus = [
-      "PENDING",
-      "CONFIRMED",
-      "ACCEPTED",
-    ];
+    let appointmentStatus = ["PENDING", "CONFIRMED", "ACCEPTED"];
     let filter = {
-      shopId: id,      
+      shopId: id,
     };
     console.log("upcoming ", upcoming);
     if (upcoming !== undefined && upcoming == "true") {
@@ -260,7 +252,10 @@ async function cancelAppointment(req, res, callback) {
     //console.log("appointment ", appointment);
     if (!appointment) return callback("Appointment not found");
     console.log("req.user.id ", req.user);
-    if (req.user.id !== appointment.userId.toString() && req.user.isAdmin == false) {
+    if (
+      req.user.id !== appointment.userId.toString() &&
+      req.user.isAdmin == false
+    ) {
       return callback("User not authorized");
     }
 
@@ -305,7 +300,8 @@ async function rejectAppointment(req, res, callback) {
     if (!appointment) return callback("Appointment not found");
 
     if (
-      appointment.memberId.toString() !== req.user.id && req.user.isAdmin == false
+      appointment.memberId.toString() !== req.user.id &&
+      req.user.isAdmin == false
     ) {
       return callback("User not authorized");
     }
@@ -352,7 +348,8 @@ async function acceptAppointment(req, res, callback) {
     console.log("req.user.id ", req.user.id);
     console.log("appointment userId ", appointment.userId);
     if (
-      appointment.memberId.toString() !== req.user.id && req.user.isAdmin == false
+      appointment.memberId.toString() !== req.user.id &&
+      req.user.isAdmin == false
     ) {
       return callback("User not authorized");
     }
@@ -382,7 +379,8 @@ async function completeAppointment(req, res, callback) {
     if (!appointment) return callback("Appointment not found");
 
     if (
-      req.user.id !== appointment.userId.toString() && req.user.isAdmin == false
+      req.user.id !== appointment.userId.toString() &&
+      req.user.isAdmin == false
     ) {
       return callback("User not authorized");
     }

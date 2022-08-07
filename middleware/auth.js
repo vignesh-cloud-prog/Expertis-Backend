@@ -20,7 +20,7 @@ function authenticateToken(req, res, next) {
         return res.status(401).json({ message: "Invalid token" });
       }
       console.log("user ", user);
-      
+
       req.user = user.data;
       console.log("user in req ", req.user);
       next();
@@ -35,7 +35,7 @@ function generateAccessToken(data) {
   //console.log("id ", id);
   //console.log("process.env.TOKEN_SECRET ", process.env.TOKEN_SECRET);
   //console.log("TOKEN_EXPIRATION_TIME ", TOKEN_EXPIRATION_TIME);
-  return jwt.sign({data}, process.env.TOKEN_SECRET || "secretKey", {
+  return jwt.sign({ data }, process.env.TOKEN_SECRET || "secretKey", {
     expiresIn: TOKEN_EXPIRATION_TIME,
   });
 }

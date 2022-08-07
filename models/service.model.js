@@ -37,7 +37,6 @@ const ServiceSchema = new Schema({
     ],
     required: false,
   },
-  
 });
 ServiceSchema.set("toJSON", {
   transform: (document, returnedObject) => {
@@ -47,4 +46,4 @@ ServiceSchema.set("toJSON", {
   },
 });
 const Services = mongoose.model("Service", ServiceSchema);
-module.exports = {Services,ServiceSchema};
+module.exports = { Services, ServiceSchema };

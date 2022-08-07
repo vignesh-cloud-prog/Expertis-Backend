@@ -5,33 +5,32 @@ const jwt = require("jsonwebtoken");
 const { TOKEN_EXPIRATION_TIME } = require("../utils/constants.js");
 const { defaultRoles } = require("../utils/defaults.js");
 
-
 const RolesSchema = new Schema({
   isAdmin: {
-     type: Boolean,
-     default: false,
-   },
-   isUser: {
-     type: Boolean,
-     default: true,
-   },
-   isShopOwner: {
-     type: Boolean,
-     default: false,
-   },
-   isShopMember: {
-     type: Boolean,
-     default: false,
-   }
- });
- 
- RolesSchema.set("toJSON", {
-   transform: (document, returnedObject) => {
-     returnedObject.id = returnedObject._id.toString();
-     delete returnedObject._id;
-     delete returnedObject.__v;
-   },
- });
+    type: Boolean,
+    default: false,
+  },
+  isUser: {
+    type: Boolean,
+    default: true,
+  },
+  isShopOwner: {
+    type: Boolean,
+    default: false,
+  },
+  isShopMember: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+RolesSchema.set("toJSON", {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
+  },
+});
 
 const UserSchema = new Schema(
   {
@@ -58,7 +57,7 @@ const UserSchema = new Schema(
       required: false,
     },
 
-    roles: {type:RolesSchema, default: defaultRoles},
+    roles: { type: RolesSchema, default: defaultRoles },
     address: {
       type: String,
       required: false,
@@ -116,7 +115,7 @@ UserSchema.methods.generateVerificationToken = function () {
   const user = this;
   //console.log("user ", user._id);
   //console.log("process.env.USER_VERIFICATION_TOKEN_SECRET",
-    // process.env.USER_VERIFICATION_TOKEN_SECRET || "secret"
+  // process.env.USER_VERIFICATION_TOKEN_SECRET || "secret"
   // );
   //console.log("TOKEN_EXPIRATION_TIME ", TOKEN_EXPIRATION_TIME);
   const verificationToken = jwt.sign(
