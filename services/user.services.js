@@ -1,4 +1,8 @@
 const User = require("../models/user.model");
+const Shop = require("../models/shop.model");
+const {Services} = require("../models/service.model");
+const Tags = require("../models/tags.model");
+const Appointment = require("../models/appointment.model");
 const bcrypt = require("bcryptjs");
 const auth = require("../middleware/auth.js");
 const jwt = require("jsonwebtoken");
@@ -672,6 +676,33 @@ async function verify({ token }, callback) {
   }
 }
 
+async function getAdminAnalytics(req, callback) {
+  
+  const noOfUsers = await User.countDocuments();
+  const noOfShops = await Shop.countDocuments();
+  const noOfServices = await Services.countDocuments();
+  const noOfTags = await Tags.countDocuments();
+  const noOfAppointments = await Appointment.countDocuments();
+
+  console.log(" noOfUsers ", noOfUsers);
+  console.log(" noOfShops ", noOfShops);
+  console.log(" noOfServices ", noOfServices);
+  console.log(" noOfTags ", noOfTags);
+  console.log(" noOfAppointments ", noOfAppointments);
+  return callback(null, {
+    noOfUsers,
+    noOfShops,
+    noOfServices,
+    noOfTags,
+    noOfAppointments,
+  });
+}
+
+
+
+
+
+
 module.exports = {
   login,
   register,
@@ -683,4 +714,5 @@ module.exports = {
   reset_password,
   deleteUser,
   getAllUser,
+  getAdminAnalytics,
 };

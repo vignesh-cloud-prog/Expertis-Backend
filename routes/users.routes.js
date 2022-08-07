@@ -29,6 +29,7 @@ router.post("/change-password", usersController.changePassword);
 router.post("/reset-password", usersController.reset_password);
 router.post("/delete/:id", usersController.deleteUser);
 router.get("/allUser", usersController.getAllUser);
+router.get("/admin/analytics", usersController.getAdminAnalytics);
 // router.get("/verify/:token", usersController.verify);
 
 module.exports = router;
