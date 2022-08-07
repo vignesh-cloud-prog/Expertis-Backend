@@ -19,14 +19,14 @@ const transporter = nodemailer.createTransport({
 async function login(params, callback) {
   const { email, password } = params;
   // Find user by email
-  const user = await User.findOne({ email }).populate({path: 'shop', populate: {path: 'services'}});
+  const user = await User.findOne({ email }).populate({ path: 'shop', populate: { path: 'services' } });
   // If user not found
   if (user != null) {
     // Check if password is correct
     if (bcrypt.compareSync(password, user.password)) {
       if (user.verified == false) {
         //console.log("User not verified");
-        
+
         const otp = otpGenerator.generate(6, {
           alphabets: false,
           upperCase: false,
@@ -79,7 +79,7 @@ async function login(params, callback) {
             return callback({ status: 400, message: "Email can't be sent" });
           });
       } else {
-        const token = auth.generateAccessToken({id: user._id, email: user.email, name: user.name, isAdmin: user.roles.isAdmin, isShopMember: user.roles.isShopMember, isShopOwner: user.roles.isShopOwner, isVerified: user.verified,dob: user.dob, phone:user.phone, gender:user.gender});
+        const token = auth.generateAccessToken({ id: user._id, email: user.email, name: user.name, isAdmin: user.roles.isAdmin, isShopMember: user.roles.isShopMember, isShopOwner: user.roles.isShopOwner, isVerified: user.verified, dob: user.dob, phone: user.phone, gender: user.gender });
         //console.log(user, token);
         // call toJSON method applied during model instantiation
         return callback(null, {
@@ -117,7 +117,7 @@ async function register(params, callback) {
     upperCase: false,
     specialChars: false,
   });
-// Send OTP to user
+  // Send OTP to user
   transporter
     .sendMail({
       to: email,
@@ -180,7 +180,7 @@ async function updateUser(body, callback) {
   const userId = body.id;
   //console.log(userId);
 
-  let userData = await User.findByIdAndUpdate(userId, body, { useFindAndModify: true, new: true })
+  let userData = await User.findByIdAndUpdate(userId, body, { useFindAndModify: true, new: true }).populate({ path: 'shop', populate: { path: 'services' } });
   if (!userData) {
     return callback({
       status: 400,
@@ -207,7 +207,7 @@ async function forgetPassword(email, callback) {
     const data = `${email}.${otp}.${expires}`; // phone.otp.expiry_timestamp
     const hash = crypto.createHmac("sha256", key).update(data).digest("hex"); // creating SHA256 hash of the data
     const fullHash = `${hash}.${expires}`; // Hash.expires, format to send to the user
- 
+
     transporter
       .sendMail({
         to: email,
@@ -275,7 +275,7 @@ async function verifyOTP(id, otp, hash, callback) {
       );
     else {
       const user = await User.findById(id);
-      const token = auth.generateAccessToken({id: user._id, email: user.email, name: user.name, isAdmin: user.roles.isAdmin, isShopMember: user.roles.isShopMember, isShopOwner: user.roles.isShopOwner, isVerified: user.verified,dob: user.dob, phone:user.phone, gender:user.gender});
+      const token = auth.generateAccessToken({ id: user._id, email: user.email, name: user.name, isAdmin: user.roles.isAdmin, isShopMember: user.roles.isShopMember, isShopOwner: user.roles.isShopOwner, isVerified: user.verified, dob: user.dob, phone: user.phone, gender: user.gender });
       return callback(null, { ...doc.toJSON(), token });
     }
   } else {
@@ -613,7 +613,7 @@ async function deleteUser(req, res, callback) {
     return res.status(404).send({ message: 'User not found' });
   }
   if (
-   user.id.toString() !== req.user.id && req.user.isAdmin===false
+    user.id.toString() !== req.user.id && req.user.isAdmin === false
   ) {
     return callback("User not authorized");
   }
@@ -629,7 +629,7 @@ async function getAllUser(req, res, callback) {
   //console.log("deleteUser");
   const { id } = req.params;
   //console.log(id);
-  await User.find().then((response) => {
+  await User.find().populate({ path: 'shop', populate: { path: 'services' } }).then((response) => {
     if (!response)
       callback(
         `Cannot cant get users`
@@ -656,7 +656,7 @@ async function verify({ token }, callback) {
       { _id: payload.ID },
       { verified: true },
       { new: true }
-    ).populate({path: 'shop', populate: {path: 'services'}});
+    ).populate({ path: 'shop', populate: { path: 'services' } });
     //console.log(user);
     if (!user) {
       return callback({
