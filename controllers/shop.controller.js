@@ -1,8 +1,5 @@
 const shopServices = require("../services/shop.services");
-const {
-  uploadShopLogo,
-  uploadServicePhoto,
-} = require("../middleware/upload.js");
+const {uploadShopLogo,uploadServicePhoto} = require("../middleware/upload.js");
 const { getDDMMMYYYYDate, isValidVariable } = require("../utils/utils");
 
 exports.createShop = (req, res, next) => {
