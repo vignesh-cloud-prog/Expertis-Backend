@@ -10,16 +10,9 @@ async function createTag(data, callback) {
     });
 }
 
-async function getTags(params, callback) {
-  const tags = await Tags.find({});
-  return callback(null, tags);
-}
-
-async function updateTag(params, callback) {
-  const { id } = params;
-  //console.log(id);
-
-  await Tags.findByIdAndUpdate(id, params, {
+async function updateTag(data, callback) {
+  const { id } = data;
+  await Tags.findByIdAndUpdate(id, data, {
     useFindAndModify: true,
     new: true,
   })
@@ -30,9 +23,13 @@ async function updateTag(params, callback) {
       return callback(null, res);
     })
     .catch((e) => {
-      //console.log(e);
       return callback(e);
     });
+}
+
+async function getTags(params, callback) {
+  const tags = await Tags.find({});
+  return callback(null, tags);
 }
 
 async function deleteTag(params, callback) {

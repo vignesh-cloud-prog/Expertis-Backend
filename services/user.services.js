@@ -3,6 +3,8 @@ const Shop = require("../models/shop.model");
 const { Services } = require("../models/service.model");
 const Tags = require("../models/tags.model");
 const Appointment = require("../models/appointment.model");
+const Reviews = require("../models/review.model");
+const SlotBooking = require("../models/slotsBooking.model");
 const bcrypt = require("bcryptjs");
 const auth = require("../middleware/auth.js");
 const jwt = require("jsonwebtoken");
@@ -274,15 +276,67 @@ async function resetPassword(params, callback) {
 }
 
 async function deleteUser(req, res, callback) {
-  const { id } = req.params;
+  let { id } = req.params;
   const user = await User.findById(id);
+  const req_user = await User.findById(req.user.id);
+  // Check user authorization
   if (!user) {
     return res.status(404).send({ message: "User not found" });
   }
-  // Check if user is not admin or his own account
-  if (user.id.toString() !== req.user.id && req.user.isAdmin === false) {
-    return callback("User not authorized");
+  if (user.id.toString() !== req.user.id) {
+    if (req_user.roles.isAdmin === false) {
+      return callback({ status: 400, message: "You are not authorized" });
+    }
   }
+
+  if (user.shop.length > 0) {
+    const id = user.shop[0].toString();
+    //delete the shop services
+    await Services.deleteMany({ shop: id })
+      .then(console.log("delete the services"))
+      .catch((e) => {
+        return callback(e);
+      });
+    //delete the shop reviews
+    await Reviews.deleteMany({ to: id })
+      .then(console.log("delete the shop review"))
+      .catch((e) => {
+        return callback(e);
+      });
+    //delete the shop appointments
+    await Appointment.deleteMany({ shopId: id })
+      .then(console.log("delete the appointments of the shop"))
+      .catch((e) => {
+        return callback(e);
+      });
+    //delete the shop SlotBooking
+    await SlotBooking.deleteMany({ shopId: id })
+      .then(console.log("delete the slot bookings of the shop"))
+      .catch((e) => {
+        return callback(e);
+      });
+    //delete the shop
+    Shop.findByIdAndRemove(id)
+      .then((response) => {
+        console.log("delete the shop");
+      })
+      .catch((error) => {
+        return callback(error);
+      });
+  }
+  //delete the appointments of the user
+  await Appointment.deleteMany({ userId: user.id.toString() })
+    .then(console.log("delete appointments of the user"))
+    .catch((error) => {
+      return callback(error);
+    });
+  //delete the reviews of the user
+  await Reviews.deleteMany({ from: user.id.toString() })
+    .then(console.log("delete reviews of the user"))
+    .catch((error) => {
+      console.log(error);
+    });
+  //delete the user
   await user.remove();
   return callback(null, {
     status: 200,
@@ -290,15 +344,20 @@ async function deleteUser(req, res, callback) {
   });
 }
 
-async function getAllUser(req, res, callback) {
-  //console.log(req.id);
-  //console.log("deleteUser");
-  const { id } = req.params;
-  //console.log(id);
+async function getAllUser(req, callback) {
+  let user = await User.findOne({ _id: req.user.id });
+
+  if (!user.roles.isAdmin) {
+    return callback({
+      status: 400,
+      message: "You are not authorized to get these data",
+    });
+  }
+
   await User.find()
     .populate({ path: "shop", populate: { path: "services" } })
     .then((response) => {
-      if (!response) callback(`Cannot cant get users`);
+      if (!response) callback(`User not found`);
       else callback(null, response);
     })
     .catch((error) => {
@@ -307,6 +366,12 @@ async function getAllUser(req, res, callback) {
 }
 
 async function getAdminAnalytics(req, callback) {
+  let user = await User.findOne({ _id: req.user._id });
+  if (!user.roles.isAdmin) {
+    return res.status(400).send({
+      message: "You are not authorized to get these data",
+    });
+  }
   const noOfUsers = await User.countDocuments();
   const noOfShops = await Shop.countDocuments();
   const noOfServices = await Services.countDocuments();

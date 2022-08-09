@@ -237,13 +237,7 @@ exports.deleteUser = (req, res, next) => {
 };
 
 exports.getAllUser = (req, res, next) => {
-  if (!req.user.isAdmin)
-    return res.status(400).send({
-      message: "You are not authorized to get these data",
-      data: "",
-    });
-
-  userServices.getAllUser(req, res, (error, results) => {
+  userServices.getAllUser(req, (error, results) => {
     if (error) {
       return next(error);
     }
@@ -255,11 +249,6 @@ exports.getAllUser = (req, res, next) => {
 };
 
 exports.getAdminAnalytics = (req, res, next) => {
-  if (!req.user.isAdmin) {
-    return res.status(400).send({
-      message: "You are not authorized to access this data",
-    });
-  }
   userServices.getAdminAnalytics(req, (error, results) => {
     if (error) {
       return next(error);
