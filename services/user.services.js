@@ -3,9 +3,11 @@ const Shop = require("../models/shop.model");
 const { Services } = require("../models/service.model");
 const Tags = require("../models/tags.model");
 const Appointment = require("../models/appointment.model");
+const Reviews = require("../models/review.model");
+const SlotBooking = require("../models/slotsBooking.model");
 const bcrypt = require("bcryptjs");
 const auth = require("../middleware/auth.js");
-const jwt = require("jsonwebtoken");
+// const jwt = require("jsonwebtoken");
 const otpGenerator = require("otp-generator");
 const crypto = require("crypto");
 const key = process.env.CRYPTO_SECRET_KEY || "verySecretKey"; // Key for cryptography. Keep it secret
@@ -635,17 +637,57 @@ function sendVerificationMail(email, token, host) {
 }
 
 async function deleteUser(req, res, callback) {
-  //console.log(req.id);
-  //console.log("deleteUser");
-  const { id } = req.params;
-  //console.log(id);
+  let { id } = req.params;
   const user = await User.findById(id);
   if (!user) {
     return res.status(404).send({ message: "User not found" });
   }
-  if (user.id.toString() !== req.user.id && req.user.isAdmin === false) {
-    return callback("User not authorized");
+  if (user.id.toString() !== req.user.id || req.user.isAdmin === false) {
+    return callback("You are not authorized");
   }
+
+  if (user.shop.length > 0) {
+    const id = user.shop[0].toString();
+    //delete the shop services
+    await Services.deleteMany({ shop: id })
+      .then(console.log("delete the services"))
+      .catch((e) => {
+        return callback(e);
+      });
+    //delete the shop reviews
+    await Reviews.deleteMany({ to: id })
+      .then(console.log("delete the shop review"))
+      .catch((e) => {
+        return callback(e);
+      });
+    //delete the shop appointments
+    await Appointment.deleteMany({ shopId: id })
+      .then(console.log("delete the appointments of the shop"))
+      .catch((e) => {
+        return callback(e);
+      });
+    //delete the shop SlotBooking
+    await SlotBooking.deleteMany({ shopId: id })
+      .then(console.log("delete the slot bookings of the shop"))
+      .catch((e) => {
+        return callback(e);
+      });
+    //delete the shop
+    Shop.findByIdAndRemove(id)
+      .then((response) => {
+        console.log("delete the shop");
+      })
+      .catch((error) => {
+        return callback(error);
+      });
+  }
+
+  //delete the appointments of the user
+  await Appointment.deleteMany({ userId: user.id.toString() }).then(console.log("delete appointments of the user")).catch(error => { return callback(error) });
+
+  //delete the reviews of the user
+  await Reviews.deleteMany({ from: user.id.toString() }).then(console.log("delete reviews of the user")).catch((error) => { console.log(error) });
+
   await user.remove();
   return callback(null, {
     status: 200,
