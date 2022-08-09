@@ -33,10 +33,10 @@ mongoose
   })
   .then(
     () => {
-      //console.log("Database connected");
+      console.log("Database connected");
     },
     (error) => {
-      //console.log("Database can't be connected: " + error);
+      console.log("Database can't be connected: " + error);
     }
   );
 

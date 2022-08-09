@@ -1,14 +1,11 @@
 const Tags = require("../models/tags.model");
 
-async function createTag(params, callback) {
-  //console.log(params);
-  Tags.create(params)
+async function createTag(data, callback) {
+  Tags.create(data)
     .then((res) => {
-      //console.log(res);
       return callback(null, res);
     })
     .catch((e) => {
-      //console.log(e);
       return callback(e);
     });
 }

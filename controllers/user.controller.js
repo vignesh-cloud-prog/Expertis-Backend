@@ -124,26 +124,6 @@ exports.login = (req, res, next) => {
   });
 };
 
-exports.verify = (req, res, next) => {
-  const { token } = req.params;
-  // //console.log("token ", token);
-  // Check we have an id
-  if (!token) {
-    return res.status(422).send({
-      message: "Missing Token",
-    });
-  }
-  userServices.verify({ token }, (error, results) => {
-    if (error) {
-      return next(error);
-    }
-    return res.status(200).send({
-      message: "Account Verified",
-      data: results,
-    });
-  });
-};
-
 exports.verifyToken = (req, res, next) => {
   return res.status(200).json({ message: "Authorized User!!" });
 };
@@ -184,14 +164,12 @@ exports.verifyOTP = (req, res, next) => {
 };
 
 exports.changePassword = (req, res, next) => {
-  // //console.log("changePassword");
   const email = req.body.email;
   const otp = req.body.otp;
   const hash = req.body.hash;
   const { password } = req.body;
 
   // Separate Hash value and expires from the hash returned from the user
-
   let [hashValue, expires] = hash.split(".");
   // Check if expiry time has passed
   let now = Date.now();
@@ -207,17 +185,13 @@ exports.changePassword = (req, res, next) => {
     .update(data)
     .digest("hex");
   // Match the hashes
-
   if (newCalculatedHash === hashValue) {
-    // //console.log("matched");
-
+    // Create new hash with new password
     const salt = bcrypt.genSaltSync(10);
-
     req.body.password = bcrypt.hashSync(password, salt);
-
+    // Update the password in the database
     userServices.changePassword(req.body, (error, results) => {
       if (error) {
-        // //console.log(error);
         return next(error);
       }
       return res.status(200).send({
