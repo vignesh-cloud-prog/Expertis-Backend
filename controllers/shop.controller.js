@@ -1,5 +1,5 @@
 const shopServices = require("../services/shop.services");
-const {uploadShopLogo,uploadServicePhoto} = require("../middleware/upload.js");
+const { uploadShopLogo, uploadServicePhoto } = require("../middleware/upload.js");
 const { getDDMMMYYYYDate, isValidVariable } = require("../utils/utils");
 
 exports.createShop = (req, res, next) => {
@@ -434,6 +434,19 @@ exports.getSlot = (req, res, next) => {
 exports.getServices = (req, res, next) => {
   let id = req.params.id;
   shopServices.getServices(id, (error, results) => {
+    if (error) {
+      return next(error);
+    }
+    return res.status(200).send({
+      message: "Success",
+      data: results,
+    });
+  });
+};
+
+exports.getAllShop = (req, res, next) => {
+
+  shopServices.getAllShopsWithPagination(req, (error, results) => {
     if (error) {
       return next(error);
     }
