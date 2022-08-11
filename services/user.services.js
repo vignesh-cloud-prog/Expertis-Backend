@@ -400,20 +400,20 @@ async function addOrRemoveFavList(req, callback) {
     let islike = req.query.islike.toLowerCase() === 'true';
     if (islike) {
       console.log("is true");
-      await Shop.findByIdAndUpdate(shopId, { $push: { likes: userId } }).then(() => { console.log('push to shop') }).catch((er) => {
+      await Shop.findByIdAndUpdate(shopId, { $addToSet: { likes: userId } }).then(() => { console.log('push to shop') }).catch((er) => {
         console.log("error")
         return callback(er)
       });
-      let user = await User.findByIdAndUpdate(userId, { $push: { favoriteShops: shopId } }, { new: true, }).then((res) => {
+      let user = await User.findByIdAndUpdate(userId, { $addToSet: { favoriteShops: shopId } }, { new: true, }).then((res) => {
         console.log("data push to user")
-        return callback(null, { favoriteShops: res.favoriteShops });
+        return callback(null, {favlist:res.favoriteShops});
       });
     } else {
       console.log("is false")
       await Shop.findByIdAndUpdate(shopId, { $pull: { likes: userId } }).then(() => { console.log('poped by shop') });
       let user = await User.findByIdAndUpdate(userId, { $pull: { favoriteShops: shopId } }, { new: true, }).then((res) => {
         console.log("data poped to user")
-        return callback(null, { favoriteShops: res.favoriteShops });
+        return callback(null, {favlist:res.favoriteShops});
       });
     }
 
