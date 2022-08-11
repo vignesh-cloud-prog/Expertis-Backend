@@ -255,7 +255,14 @@ async function getShops(req, callback) {
       .sort({ "rating.totalMembers": -1, "rating.avg": -1 })
       .limit(10)
       .populate("services");
+    // let options = {
+    //   page: req.query.page || 1,
+    //   limit: req.query.limit || 10,
+    // };
 
+    // await Shop.paginate(query, options).then((results) => {
+    //   return callback(null, results);
+    // })
     return callback(null, shops);
   } catch (e) {
     return callback(e);
@@ -374,6 +381,52 @@ async function getServices(id, callback) {
   }
 }
 
+async function getAllShopsWithPagination(req, callback) {
+  try {
+    // Create query object to hold search criteria
+    let query;
+    const pinCode = req.query.pinCode;
+    let city = req.query.city;
+    let gender = req.query.gender;
+    let pattern = [];
+    if (pinCode !== undefined && pinCode !== null) {
+      pattern.push({ "contact.pinCode": pinCode });
+    }
+    if (gender !== undefined && gender !== null) {
+      if (gender.toLowerCase() == "male")
+        pattern.push({ gender: { $ne: "WOMEN" } });
+      else if (gender.toLowerCase() == "female")
+        pattern.push({ gender: { $ne: "MEN" } });
+    }
+
+    if (city !== undefined && city !== null) {
+      city = new RegExp(city, "i");
+      pattern.push({ "contact.address": city });
+    }
+
+    if (pattern.length > 0) {
+      query = { $or: pattern };
+    }
+    // Find shops with the given query and sort by rating
+    // const shops = await Shop.find(query)
+    // .sort({ "rating.totalMembers": -1, "rating.avg": -1 })
+    // .limit(10)
+    // .populate("services");
+    let options = {
+      page: req.query.page || 1,
+      limit: req.query.limit || 10,
+      sort: { "rating.totalMembers": -1, "rating.avg": -1 }
+    };
+
+    await Shop.paginate(query, options).then((results) => {
+      return callback(null, results);
+    })
+    // return callback(null,shops);
+  } catch (e) {
+    return callback(e);
+  }
+}
+
 module.exports = {
   createShop,
   updateservice: updateService,
@@ -388,4 +441,5 @@ module.exports = {
   getShops,
   getSlot,
   getServices,
+  getAllShopsWithPagination,
 };

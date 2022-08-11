@@ -30,5 +30,6 @@ router.post("/reset-password", usersController.reset_password);
 router.delete("/delete/:id", usersController.deleteUser);
 router.get("/allUser", usersController.getAllUser);
 router.get("/admin/analytics", usersController.getAdminAnalytics);
+router.post("/fav/:id", usersController.addOrRemoveFav);
 
 module.exports = router;
