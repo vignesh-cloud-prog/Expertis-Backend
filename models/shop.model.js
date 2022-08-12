@@ -3,6 +3,7 @@ const { Schema } = mongoose;
 const uniqueValidator = require("mongoose-unique-validator");
 const jwt = require("jsonwebtoken");
 const { workingHours } = require("../utils/defaults.js");
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const ShopRatingSchema = new Schema({
   avg: {
@@ -297,7 +298,7 @@ ShopSchema.set("toJSON", {
     delete returnedObject.__v;
   },
 });
-
+ShopSchema.plugin(mongoosePaginate);
 ShopSchema.plugin(uniqueValidator, { message: "Shop already exist." });
 
 const Shop = mongoose.model("Shop", ShopSchema);

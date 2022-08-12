@@ -22,7 +22,7 @@ function authenticateToken(req, res, next) {
       // console.log("user ", user);
 
       req.user = user.data;
-      // console.log("user in req ", req.user);
+      console.log("user in req ", req.user);
       next();
     });
   } catch (err) {

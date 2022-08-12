@@ -270,3 +270,15 @@ exports.getAdminAnalytics = (req, res, next) => {
     });
   });
 };
+
+exports.addOrRemoveFav = (req, res, next) => {
+  userServices.addOrRemoveFavList(req, (error, results) => {
+    if (error) {
+      return next(error);
+    }
+    return res.status(200).send({
+      message: "Success",
+      data: results,
+    });
+  });
+};

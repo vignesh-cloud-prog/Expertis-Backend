@@ -15,5 +15,6 @@ router.get("/shop/analytics/:id", shopsController.getShopAnalyticsById);
 router.get("/shops/:shopId", shopsController.getShopByShopId);
 router.patch("/shop/", shopsController.updateShop);
 router.delete("/shop/:id", shopsController.deleteShop);
+router.get("/allshops", shopsController.getAllShop);
 
 module.exports = router;
