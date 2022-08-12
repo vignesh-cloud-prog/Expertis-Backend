@@ -125,8 +125,19 @@ exports.login = (req, res, next) => {
 };
 
 exports.verifyToken = (req, res, next) => {
-  return res.status(200).json({ message: "Authorized User!!" });
-};
+  const id= req.user.id;
+  userServices.getUser(id, (error, results) => {
+    if (error) {
+      return next(error);
+    }
+    return res.status(200).send({
+      message: "Authorized User!!",
+      data: results,
+    });
+  }
+  );
+}
+
 
 exports.forgetPassword = (req, res, next) => {
   const email = req.body.email;

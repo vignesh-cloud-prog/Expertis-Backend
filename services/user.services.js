@@ -233,6 +233,21 @@ async function changePassword(params, callback) {
     });
 }
 
+async function getUser(id, callback) {
+  User.findById(id).populate({ path: "shop", populate: { path: "services" } })
+    .then((response) => {
+      if (!response)
+        callback(
+          `User was not found!`  
+        );
+      else callback(null, response);
+    }).catch((error) => {
+      return callback(error);
+    }
+    );
+}
+
+
 async function updateUser(userData, callback) {
   const userId = userData.id;
 
@@ -396,6 +411,7 @@ module.exports = {
   login,
   register,
   updateUser,
+  getUser,
   forgetPassword,
   verifyOTP,
   changePassword,
