@@ -27,11 +27,9 @@
   "homepage": "https://github.com/vignesh-cloud-prog/Expertis-Backend#readme",
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "body-parser": "^1.20.0",
     "chai": "^4.3.6",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
-    "ejs": "^3.1.5",
     "express": "^4.17.1",
     "express-unless": "^1.0.0",
     "express-validator": "^6.14.2",
