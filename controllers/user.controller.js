@@ -4,8 +4,7 @@ const { uploadUserPic } = require("../middleware/upload.js");
 
 const crypto = require("crypto");
 const { isValidVariable } = require("../utils/utils");
-const key = "verysecretkey";
-
+const key = process.env.CRYPTO_SECRET_KEY || "forgetSecretKey"; 
 /**
  * 1. To secure the password, we are using the bcryptjs, It stores the hashed password in the database.
  * 2. In the SignIn API, we are checking whether the assigned and retrieved passwords are the same or not using the bcrypt.compare() method.
@@ -195,6 +194,8 @@ exports.changePassword = (req, res, next) => {
     .createHmac("sha256", key)
     .update(data)
     .digest("hex");
+  console.log("newCalculatedHash: ", newCalculatedHash);
+  console.log("hashValue: ", hashValue);
   // Match the hashes
   if (newCalculatedHash === hashValue) {
     // Create new hash with new password

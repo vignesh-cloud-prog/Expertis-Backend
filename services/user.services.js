@@ -10,7 +10,7 @@ const auth = require("../middleware/auth.js");
 const jwt = require("jsonwebtoken");
 const otpGenerator = require("otp-generator");
 const crypto = require("crypto");
-const key = process.env.CRYPTO_SECRET_KEY || "verySecretKey"; // Key for cryptography. Keep it secret
+const key = process.env.CRYPTO_SECRET_KEY || "forgetSecretKey"; // Key for cryptography. Keep it secret
 const { sendOTPMail } = require("../utils/mailer");
 
 async function register(params, callback) {
@@ -201,8 +201,11 @@ async function forgetPassword(email, callback) {
     const data = `${email}.${otp}.${expires}`; // phone.otp.expiry_timestamp
     const hash = crypto.createHmac("sha256", key).update(data).digest("hex"); // creating SHA256 hash of the data
     const fullHash = `${hash}.${expires}`; // Hash.expires, format to send to the user
+    console.log("fullHash", fullHash);
+    console.log("otp", otp);
+    
     let msg =
-      "Thank you for choosing Expertis. Use the following OTP to reset password pocess. OTP is valid for 5 minutes";
+      "Thank you for choosing Expertis. Use the following OTP to reset password process. OTP is valid for 5 minutes";
     sendOTPMail(email, otp, msg)
       .then((par) => {
         return callback(null, { hash: fullHash, email: user.email });
