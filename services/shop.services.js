@@ -107,9 +107,9 @@ async function addService(params, callback) {
   const { id } = params;
   // Creating the service and saving it in the database
   Services.create({ ...params.service_data, shop: id })
-    .then((document) => {
+    .then(async(document) => {
       // Add the service to the shop's services list
-      Shop.findByIdAndUpdate(
+     let updatedShop= await Shop.findByIdAndUpdate(
         id,
         {
           $push: {
@@ -118,16 +118,8 @@ async function addService(params, callback) {
         },
         { new: true }
       )
-        .then((res) => {
-          if (res == null) {
-            return callback("Shop not found");
-          } else {
-            return callback(null, res);
-          }
-        })
-        .catch((err) => {
-          return callback(err);
-        });
+      console.log("updated shop", updatedShop);
+      return callback(null, document);
     })
     .catch((e) => {
       return callback(e);

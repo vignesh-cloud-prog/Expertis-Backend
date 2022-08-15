@@ -68,6 +68,8 @@ exports.addService = (req, res, next) => {
         },
       };
 
+      
+
       if (model.service_data.photo == "") {
         delete model.service_data.photo;
       }
