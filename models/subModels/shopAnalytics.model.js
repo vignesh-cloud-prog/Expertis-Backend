@@ -6,7 +6,7 @@ const ViewSchema = require("./view.model");
 const ShopAnalyticsSchema = new Schema({
   shop: {
     type: Schema.Types.ObjectId,
-    ref: "shop",
+    ref: "Shop",
     required: true,
   },
   views: {

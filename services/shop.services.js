@@ -332,14 +332,16 @@ async function addShopView(req, callback) {
 }
 
 async function getShopAnalyticsById(req, callback) {
-  ShopAnalytics.findOne({ shop: req.params.id })
-    .then((response) => {
-      if (!response) callback("Not found Shop with id " + req.params.id);
-      else callback(null, response);
-    })
-    .catch((error) => {
-      return callback(error);
-    });
+  try{
+    let shopAnalytics = await ShopAnalytics.findOne({shop:req.params.id}).populate("shop", "likes members tags reviews appointments services").exec();
+    if(!shopAnalytics){
+      return callback(null, {views:[],bookings:[]})
+    }
+    return callback(null, shopAnalytics);
+  }
+  catch(e){
+    return callback(e);
+  }
 }
 
 async function getShopById(shopId, callback) {
