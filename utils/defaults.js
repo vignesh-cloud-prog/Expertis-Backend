@@ -1,8 +1,8 @@
 exports.workingHours = {
   sunday: {
     isOpen: true,
-    openingTime: "08:00 AM",
-    closingTime: "08:00 PM",
+    openingTime: "06:00 AM",
+    closingTime: "11:00 PM",
     breaks: [
       {
         from: "02:00 PM",
@@ -13,8 +13,8 @@ exports.workingHours = {
   },
   monday: {
     isOpen: true,
-    openingTime: "08:00 AM",
-    closingTime: "08:00 PM",
+    openingTime: "06:00 AM",
+    closingTime: "11:00 PM",
     breaks: [
       {
         from: "02:00 PM",
@@ -25,8 +25,8 @@ exports.workingHours = {
   },
   tuesday: {
     isOpen: false,
-    openingTime: "08:00 AM",
-    closingTime: "08:00 PM",
+    openingTime: "06:00 AM",
+    closingTime: "11:00 PM",
     breaks: [
       {
         from: "02:00 PM",
@@ -37,8 +37,8 @@ exports.workingHours = {
   },
   wednesday: {
     isOpen: true,
-    openingTime: "08:00 AM",
-    closingTime: "08:00 PM",
+    openingTime: "06:00 AM",
+    closingTime: "11:00 PM",
     breaks: [
       {
         from: "02:00 PM",
@@ -49,8 +49,8 @@ exports.workingHours = {
   },
   thursday: {
     isOpen: true,
-    openingTime: "08:00 AM",
-    closingTime: "08:00 PM",
+    openingTime: "06:00 AM",
+    closingTime: "11:00 PM",
     breaks: [
       {
         from: "02:00 PM",
@@ -61,8 +61,8 @@ exports.workingHours = {
   },
   friday: {
     isOpen: true,
-    openingTime: "08:00 AM",
-    closingTime: "08:00 PM",
+    openingTime: "06:00 AM",
+    closingTime: "11:00 PM",
     breaks: [
       {
         from: "02:00 PM",
@@ -73,8 +73,8 @@ exports.workingHours = {
   },
   saturday: {
     isOpen: true,
-    openingTime: "08:00 AM",
-    closingTime: "08:00 PM",
+    openingTime: "06:00 AM",
+    closingTime: "11:00 PM",
     breaks: [
       {
         from: "02:00 PM",

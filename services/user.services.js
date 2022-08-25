@@ -384,9 +384,9 @@ async function getAllUser(req, callback) {
 }
 
 async function getAdminAnalytics(req, callback) {
-  let user = await User.findOne({ _id: req.user._id });
+  let user = await User.findOne({ _id: req.user.id });
   if (!user.roles.isAdmin) {
-    return res.status(400).send({
+    return callback({
       message: "You are not authorized to get these data",
     });
   }
