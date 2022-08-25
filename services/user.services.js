@@ -12,6 +12,8 @@ const otpGenerator = require("otp-generator");
 const crypto = require("crypto");
 const key = process.env.CRYPTO_SECRET_KEY || "forgetSecretKey"; // Key for cryptography. Keep it secret
 const { sendOTPMail } = require("../utils/mailer");
+const { APP_NAME } = require("../utils/constants.js");
+
 
 async function register(params, callback) {
   const { email } = params;
@@ -32,7 +34,7 @@ async function register(params, callback) {
   });
   // Send OTP to user through email
   let msg =
-    "Thank you for choosing Expertis. Use the following OTP to verify your account. OTP is valid for 5 minutes";
+    `Thank you for choosing ${APP_NAME}. Use the following OTP to verify your account. OTP is valid for 5 minutes`;
   sendOTPMail(email, otp, msg)
     .then((response) => {
       // Create new user in the database
@@ -205,7 +207,7 @@ async function forgetPassword(email, callback) {
     console.log("otp", otp);
     
     let msg =
-      "Thank you for choosing Expertis. Use the following OTP to reset password process. OTP is valid for 5 minutes";
+      `Thank you for choosing ${APP_NAME}. Use the following OTP to reset password process. OTP is valid for 5 minutes`;
     sendOTPMail(email, otp, msg)
       .then((par) => {
         return callback(null, { hash: fullHash, email: user.email });
