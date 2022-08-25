@@ -13,7 +13,7 @@ const SlotBooking = require("../models/slotsBooking.model");
 const { query } = require("express");
 var ObjectId = require("mongoose").Types.ObjectId;
 
-async function createShop(shopData, callback) {
+async function createShop(req, shopData, callback) {
   try {
     const { owner } = shopData;
     const { email, phone } = shopData.contact;
@@ -53,10 +53,16 @@ async function createShop(shopData, callback) {
           },
           { new: true }
         )
-          .then((res) => {
+          .then( async (res) => {
             if (res == null) {
               return callback("Document not found");
             } else {
+            await  ShopAnalytics.create({
+                shop: shop._id,
+                views: {
+                  from: req.user.id,
+                },
+              })
               return callback(null, response);
             }
           })
