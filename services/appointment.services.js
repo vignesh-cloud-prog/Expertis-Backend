@@ -418,9 +418,9 @@ async function acceptAppointment(req, res, callback) {
     const appointment = await Appointment.findById(id);
     //console.log("appointment ", appointment);
     if (!appointment) return callback("Appointment not found");
-    console.log("appointment.memberId ", appointment.memberId);
     if (
-      !(await isAuthorizedUser(appointment.memberId, req.headers.authorization))
+      appointment.memberId.toString() !== req.user.id &&
+      req.user.isAdmin == false
     ) {
       return callback("User not authorized");
     }
