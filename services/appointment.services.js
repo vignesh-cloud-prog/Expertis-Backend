@@ -414,26 +414,25 @@ async function rejectAppointment(req, res, callback) {
 async function acceptAppointment(req, res, callback) {
   try {
     const { id } = req.params;
-    //console.log("appointmentId ", id);
     const appointment = await Appointment.findById(id);
-    //console.log("appointment ", appointment);
     if (!appointment) return callback("Appointment not found");
+    // check if user is authorized to accept the appointment
     if (
       appointment.memberId.toString() !== req.user.id &&
       req.user.isAdmin == false
     ) {
       return callback("User not authorized");
     }
-
-    // console.log("now here to update");
+    // Update the appointment status to accepted
     const updatedAppointment = await Appointment.findByIdAndUpdate(
       { _id: id },
       {
         appointmentStatus: "ACCEPTED",
       },
       { new: true }
-    );
-    // console.log("updated in  databse")
+    )
+      .populate("shopId", "owner shopId shopName shopLogo contact members")
+      .populate("userId", "name gender roles userPic favoriteShops address");
     if (!updatedAppointment) return callback("Operation failed");
     const { userId, shopId } = appointment;
     const shopdata = await Shop.findById(shopId);
@@ -481,9 +480,9 @@ async function acceptAppointment(req, res, callback) {
     console.log("mail sent to user for conformation", calLink);
     return callback(null, updatedAppointment);
   } catch (error) {
-    console.log("error", error)
     return callback(error);
   }
+  
 }
 
 async function completeAppointment(req, res, callback) {
