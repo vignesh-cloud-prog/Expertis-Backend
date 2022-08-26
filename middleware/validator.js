@@ -17,7 +17,7 @@ const userRegisterValidationRules = () => {
       .isEmpty()
       .trim()
       .escape()
-      .isLength({ min: 3, max: 20 })
+      .isLength({ min: 3, max: 50 })
       .withMessage("Name must be between 3 and 20 characters"),
     body("phone")
       .isLength({ min: 10, max: 10 })
