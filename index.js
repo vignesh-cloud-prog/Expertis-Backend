@@ -26,19 +26,7 @@ const database_url =
 
 const database = database_url || dbConfig.db;
 mongoose.Promise = global.Promise;
-mongoose
-  .connect(database, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(
-    () => {
-      console.log("Database connected");
-    },
-    (error) => {
-      console.log("Database can't be connected: " + error);
-    }
-  );
+
 
 // middleware for authenticating token submitted with requests
 /**
@@ -74,10 +62,26 @@ app.use("/tags", require("./routes/tags.routes"));
 // middleware for error responses
 app.use(errors.errorHandler);
 const PORT = process.env.PORT || 4000;
+
+mongoose
+  .connect(database, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(
+    () => {
+      console.log("Database connected");
+      app.listen(PORT, function () {
+        console.log("Bablus Backend is live 🚀");
+        console.log('You can send requests')
+        console.log(`visit http://localhost:${PORT}`);
+      });
+    },
+    (error) => {
+      console.log("Database can't be connected: " + error);
+    }
+  );
 // listen for requests
-app.listen(PORT, function () {
-  //console.log("Now listening for requests 🚀");
-  //console.log(`http://localhost:${PORT}`);
-});
+
 
 module.exports = app;
