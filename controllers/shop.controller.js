@@ -7,11 +7,6 @@ exports.createShop = (req, res, next) => {
     if (err) {
       next(err);
     } else {
-      const url = req.protocol + "://" + req.get("host");
-
-      const path =
-        req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
-
       var model = {
         shopId: req.body.shopId,
         owner: req.body.owner,
@@ -22,17 +17,12 @@ exports.createShop = (req, res, next) => {
           email: req.body.email,
           phone: req.body.phone,
         },
-        // workingHours: JSON.parse( req.body.workingHours),
         tags: req.body.tags,
-        shopLogo: path != "" ? url + "/" + path : "",
+        shopLogo: req.file && req.file.cloudinaryUrl ? req.file.cloudinaryUrl : (req.file ? (req.protocol + "://" + req.get("host") + "/" + req.file.path.replace(/\\/g, "/")) : ""),
       };
-
       if (model.shopLogo == "") {
         delete model.shopLogo;
       }
-
-      // //console.log(model);
-
       shopServices.createShop(req, model, (error, results) => {
         if (error) {
           return next(error);
@@ -51,11 +41,6 @@ exports.addService = (req, res, next) => {
     if (err) {
       next(err);
     } else {
-      const url = req.protocol + "://" + req.get("host");
-
-      const path =
-        req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
-
       var model = {
         id: req.body.shop,
         service_data: {
@@ -64,18 +49,12 @@ exports.addService = (req, res, next) => {
           time: req.body.time,
           tags: req.body.tags,
           description: req.body.description,
-          photo: path != "" ? url + "/" + path : "",
+          photo: req.file && req.file.cloudinaryUrl ? req.file.cloudinaryUrl : (req.file ? (req.protocol + "://" + req.get("host") + "/" + req.file.path.replace(/\\/g, "/")) : ""),
         },
       };
-
-      
-
       if (model.service_data.photo == "") {
         delete model.service_data.photo;
       }
-
-      //console.log(model);
-
       shopServices.addservice(model, (error, results) => {
         if (error) {
           return next(error);
@@ -88,16 +67,12 @@ exports.addService = (req, res, next) => {
     }
   });
 };
+
 exports.updateService = (req, res, next) => {
   uploadServicePhoto(req, res, function (err) {
     if (err) {
       next(err);
     } else {
-      const url = req.protocol + "://" + req.get("host");
-
-      const path =
-        req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
-
       var model = {
         id: req.body.id,
         service_data: {
@@ -106,16 +81,12 @@ exports.updateService = (req, res, next) => {
           time: req.body.time,
           tags: req.body.tags,
           description: req.body.description,
-          photo: path != "" ? url + "/" + path : "",
+          photo: req.file && req.file.cloudinaryUrl ? req.file.cloudinaryUrl : (req.file ? (req.protocol + "://" + req.get("host") + "/" + req.file.path.replace(/\\/g, "/")) : ""),
         },
       };
-
       if (model.service_data.photo == "") {
         delete model.service_data.photo;
       }
-
-      //console.log(model);
-
       shopServices.updateservice(model, (error, results) => {
         if (error) {
           return next(error);
@@ -265,8 +236,6 @@ exports.updateShop = (req, res, next) => {
         isOpen,
       } = req.body;
       if (isValidVariable(owner)) {
-        console.log("owner ", owner);
-        console.log("user ", req.user);
         if (owner != req.user.id) {
           if (!req.user.isAdmin)
             return res.status(401).send({
@@ -280,14 +249,7 @@ exports.updateShop = (req, res, next) => {
           data: "",
         });
       }
-      // TODO: Working Hours
-
-      const url = req.protocol + "://" + req.get("host");
-
-      const path =
-        req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
-
-      let shopLogoUrl = path != "" ? url + "/" + path : "";
+      let shopLogoUrl = req.file && req.file.cloudinaryUrl ? req.file.cloudinaryUrl : (req.file ? (req.protocol + "://" + req.get("host") + "/" + req.file.path.replace(/\\/g, "/")) : "");
       var model = {
         id: req.body.id,
       };
@@ -346,9 +308,6 @@ exports.updateShop = (req, res, next) => {
       if (Object.keys(contact).length > 0) {
         model.contact = contact;
       }
-
-      console.log("model ", model);
-
       shopServices.updateShop(model, (error, results) => {
         if (error) {
           return next(error);

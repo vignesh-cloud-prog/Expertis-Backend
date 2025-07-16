@@ -30,11 +30,7 @@ exports.updateUser = (req, res, next) => {
       } = req.body;
 
       //console.log("Inside update user")
-      const url = req.protocol + "://" + req.get("host");
-
-      const path =
-        req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
-      let picURL = path != "" ? url + "/" + path : "";
+      let picURL = req.file && req.file.cloudinaryUrl ? req.file.cloudinaryUrl : (req.file ? (req.protocol + "://" + req.get("host") + "/" + req.file.path.replace(/\\/g, "/")) : "");
 
       let model = {
         id: req.body.id,

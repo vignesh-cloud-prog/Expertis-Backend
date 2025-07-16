@@ -7,24 +7,15 @@ exports.addReview = (req, res, next) => {
     if (err) {
       next(err);
     } else {
-      const url = req.protocol + "://" + req.get("host");
-
-      const path =
-        req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
-
-      console.log("add rev", req.user);
-
       var model = {
         from: req.user.id,
         to: req.body.to,
         rating: req.body.rating,
         model_type: req.body.model_type,
         comment: req.body.comment,
-        reviewPhotos: path != "" ? url + "/" + path : "",
+        reviewPhotos: req.file && req.file.cloudinaryUrl ? req.file.cloudinaryUrl : (req.file ? (req.protocol + "://" + req.get("host") + "/" + req.file.path.replace(/\\/g, "/")) : ""),
         title: req.body.title,
       };
-      //console.log(model);
-
       reviewServices.addReview(model, (error, results) => {
         if (error) {
           return next(error);

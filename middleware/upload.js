@@ -1,6 +1,7 @@
 const multer = require("multer");
 const Path = require("path");
 const fs = require("fs");
+const { uploadImage } = require("../config/cloudinary");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -48,6 +49,25 @@ const fileFilter = (req, file, callback) => {
   callback(null, true);
 };
 
+function cloudinaryUploadWrapper(multerMiddleware, fieldName) {
+  return function (req, res, next) {
+    multerMiddleware(req, res, async function (err) {
+      if (err) return next(err);
+      if (req.file && req.file.path) {
+        try {
+          const result = await uploadImage(req.file.path, undefined, { folder: fieldName });
+          req.file.cloudinaryUrl = result.secure_url;
+          // Optionally delete local file after upload
+          fs.unlink(req.file.path, () => {});
+        } catch (cloudErr) {
+          return next(cloudErr);
+        }
+      }
+      next();
+    });
+  };
+}
+
 let uploadShopLogo = multer({
   storage: storage,
   fileFilter: fileFilter,
@@ -75,9 +95,9 @@ let uploadTagPic = multer({
 });
 
 module.exports = {
-  uploadShopLogo: uploadShopLogo.single("shopLogo"),
-  uploadUserPic: uploadUserPic.single("userPic"),
-  uploadTagPic: uploadTagPic.single("tagPic"),
-  uploadReviewPhoto: uploadReviewPhoto.single("reviewPic"),
-  uploadServicePhoto: uploadServicePhoto.single("servicePhoto"),
+  uploadShopLogo: cloudinaryUploadWrapper(uploadShopLogo.single("shopLogo"), "shopLogo"),
+  uploadUserPic: cloudinaryUploadWrapper(uploadUserPic.single("userPic"), "userPic"),
+  uploadTagPic: cloudinaryUploadWrapper(uploadTagPic.single("tagPic"), "tagPic"),
+  uploadReviewPhoto: cloudinaryUploadWrapper(uploadReviewPhoto.single("reviewPic"), "reviewPic"),
+  uploadServicePhoto: cloudinaryUploadWrapper(uploadServicePhoto.single("servicePhoto"), "servicePhoto"),
 };

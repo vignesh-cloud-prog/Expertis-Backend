@@ -6,19 +6,11 @@ exports.createTag = (req, res, next) => {
     if (err) {
       next(err);
     } else {
-      const url = req.protocol + "://" + req.get("host");
-
-      const path =
-        req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
-
       var model = {
         tagName: req.body.tagName,
-        tagPic: path != "" ? url + "/" + path : "",
+        tagPic: req.file && req.file.cloudinaryUrl ? req.file.cloudinaryUrl : (req.file ? (req.protocol + "://" + req.get("host") + "/" + req.file.path.replace(/\\/g, "/")) : ""),
         description: req.body.description,
       };
-
-      //console.log(model);
-
       tagServices.createTag(model, (error, results) => {
         if (error) {
           return next(error);
@@ -53,16 +45,10 @@ exports.updateTag = (req, res, next) => {
       let model = {
         id: req.body.id,
       };
-
-      const url = req.protocol + "://" + req.get("host");
-
-      const path =
-        req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
-      const tagPicUrl = path != "" ? url + "/" + path : "";
+      const tagPicUrl = req.file && req.file.cloudinaryUrl ? req.file.cloudinaryUrl : (req.file ? (req.protocol + "://" + req.get("host") + "/" + req.file.path.replace(/\\/g, "/")) : "");
       if (tagPicUrl != "" && tagPicUrl !== undefined && tagPicUrl !== null) {
         model.tagPic = tagPicUrl;
       }
-
       if (tagName != "" && tagName !== undefined && tagName !== null) {
         model.tagName = tagName;
       }
@@ -73,9 +59,6 @@ exports.updateTag = (req, res, next) => {
       ) {
         model.description = description;
       }
-
-      //console.log(model);
-
       tagServices.updateTag(model, (error, results) => {
         if (error) {
           return next(error);
