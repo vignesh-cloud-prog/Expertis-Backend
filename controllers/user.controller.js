@@ -362,7 +362,16 @@ exports.googleAuth = async (req, res, next) => {
       phone: user.phone,
       gender: user.gender,
     });
-    res.json({ token });
+    // Build response data similar to email/password login
+    const userObj = user.toObject ? user.toObject() : user;
+    res.status(200).send({
+      message: "Success",
+      data: {
+        ...userObj,
+        token,
+        message: "Login Successful",
+      },
+    });
   } catch (err) {
     // Log technical error for debugging
     console.error("Google Auth Error:", err);
