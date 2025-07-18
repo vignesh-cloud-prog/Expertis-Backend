@@ -38,7 +38,8 @@ app.use(
   auth.authenticateToken.unless({
     path: [
       { url: "/users/login", methods: ["POST"] },
-      { url: "/users/register", methods: ["POST"] },
+      { url: "/auth/register", methods: ["POST"] },
+      { url: "/users/auth/google", methods: ["POST"] },
       { url: /^\/users\/verify\/.*/, methods: ["GET"] },
       { url: /^\/uploads\/.*/, methods: ["GET"] },
       { url: "/users/forget-password", methods: ["POST"] },

@@ -45,7 +45,7 @@ const UserSchema = new Schema(
     },
     phone: {
       type: Number,
-      required: true,
+      required: false,
     },
     dob: {
       type: Date,
@@ -63,10 +63,14 @@ const UserSchema = new Schema(
       required: false,
     },
     pinCode: {
-      type: Number,
+      type: String,
       required: false,
-      min: [6, "Minimum 6 digit Pin Code"],
-      max: [6, "Maximum 6 digit Pin Code"],
+      validate: {
+        validator: function(v) {
+          return /^\d{6}$/.test(v);
+        },
+        message: "Pin Code must be exactly 6 digits"
+      },
     },
     userPic: {
       type: String,
@@ -74,7 +78,13 @@ const UserSchema = new Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: false,
+    },
+    googleId: {
+      type: String,
+      required: false,
+      unique: true,
+      sparse: true,
     },
     verified: {
       type: Boolean,

@@ -5,6 +5,10 @@ const { uploadUserPic } = require("../middleware/upload.js");
 const crypto = require("crypto");
 const { isValidVariable } = require("../utils/utils");
 const key = process.env.CRYPTO_SECRET_KEY || "forgetSecretKey"; 
+const { OAuth2Client } = require("google-auth-library");
+const auth = require("../middleware/auth.js");
+const User = require("../models/user.model");
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 /**
  * 1. To secure the password, we are using the bcryptjs, It stores the hashed password in the database.
  * 2. In the SignIn API, we are checking whether the assigned and retrieved passwords are the same or not using the bcrypt.compare() method.
@@ -278,4 +282,106 @@ exports.addOrRemoveFav = (req, res, next) => {
       data: results,
     });
   });
+};
+
+exports.googleAuth = async (req, res, next) => {
+  const { idToken } = req.body;
+  if (!idToken) {
+    return res.status(400).json({ error: "idToken is required" });
+  }
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken : idToken.trim(),
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    if (!payload) {
+      return res.status(401).json({ error: "Invalid Google token payload" });
+    }
+    console.log("payload: ", payload);  
+    const { email, name, sub: googleId, picture, given_name, family_name, email_verified, gender } = payload;
+    if (!email || !googleId) {
+      return res.status(401).json({ error: "Google token missing required fields" });
+    }
+    // Map gender to enum
+    const genderMap = { male: "MALE", female: "FEMALE", other: "OTHERS", others: "OTHERS" };
+    const mappedGender = genderMap[(gender || "").toLowerCase()];
+    let user = await User.findOne({ email });
+    if (user) {
+      // Build update object only with fields that need to be updated
+      const updateFields = {};
+      if (!user.googleId && googleId) {
+        updateFields.googleId = googleId;
+      }
+      if (!user.userPic && picture) {
+        updateFields.userPic = picture;
+      }
+      // Only set gender if mappedGender is defined and user.gender is not already set
+      if ((!user.gender || user.gender === null) && mappedGender) {
+        updateFields.gender = mappedGender;
+      }
+      if (Object.keys(updateFields).length > 0) {
+        await User.updateOne({ _id: user._id }, { $set: updateFields });
+        // Refresh user from DB to get updated fields
+        user = await User.findById(user._id);
+      }
+    } else {
+      // Only set fields that are present in the payload
+      const userData = {
+        email,
+        googleId,
+        verified: email_verified,
+        password: googleId, // Not used, but required by schema
+        favoriteShops: [],
+        shop: [],
+        appointments: [],
+      };
+      if (name || given_name || family_name) {
+        userData.name = name || `${given_name || ""} ${family_name || ""}`.trim() || email;
+      }
+      if (picture) {
+        userData.userPic = picture;
+      }
+      // Only add gender if mappedGender is defined
+      if (mappedGender) {
+        userData.gender = mappedGender;
+      }
+      user = new User(userData);
+      await user.save();
+    }
+    // Issue JWT using same logic as other logins
+    const token = auth.generateAccessToken({
+      id: user._id,
+      email: user.email,
+      name: user.name,
+      isAdmin: user.roles?.isAdmin,
+      isShopMember: user.roles?.isShopMember,
+      isShopOwner: user.roles?.isShopOwner,
+      isVerified: user.verified,
+      dob: user.dob,
+      phone: user.phone,
+      gender: user.gender,
+    });
+    res.json({ token });
+  } catch (err) {
+    // Log technical error for debugging
+    console.error("Google Auth Error:", err);
+    let userMessage = "An error occurred during Google authentication.";
+    if (err && typeof err.message === "string") {
+      if (err.message.includes("Token used too late")) {
+        userMessage = "Your Google sign-in link or token has expired. Please try signing in again.";
+      } else if (err.message.includes("Token used too early")) {
+        userMessage = "Your Google sign-in token is not yet valid. Please try again in a moment.";
+      } else if (err.message.includes("Invalid Google token payload")) {
+        userMessage = "Google authentication failed. Please try again.";
+      } else if (err.message.includes("user validation failed")) {
+        userMessage = "There was a problem creating or updating your account. Please contact support if this continues.";
+      } else if (err.message.toLowerCase().includes("expired")) {
+        userMessage = "Your Google sign-in token has expired. Please try again.";
+      } else if (err.message.toLowerCase().includes("invalid")) {
+        userMessage = "Invalid Google sign-in token. Please try again.";
+      }
+    }
+    res.status(401).json({ error: userMessage });
+  }
 };
